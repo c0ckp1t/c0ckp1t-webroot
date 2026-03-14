@@ -1,0 +1,10 @@
+[
+  { "path": "/client", "name": "client", "children": [
+    { "path": "", "location":  "core/nodes/root.vue" },
+    { "path": "auth", "location":  "/v3/actions/auth/www/public/main.vue", "type": "JTE", "jtePrjId": -1 },
+    { "path": "user", "location": "/v3/actions/user/www/public/main.vue",  "type": "JTE", "jtePrjId": -1, "children": [
+      { "path": "test", "location": "core/nodes/place-holder.vue", "type": "JTE", "jtePrjId": -1  }
+      ]}
+    ]}
+]
+

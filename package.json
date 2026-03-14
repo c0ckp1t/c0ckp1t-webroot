@@ -1,0 +1,50 @@
+{
+  "name": "c0ckp1t",
+  "version": "1.0.13",
+  "description": "A Vue 3 zero-build web dashboard framework with Islands architecture, WebSocket backends, and reusable UI components",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "sorsha",
+  "homepage": "https://c0ckp1t.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/c0ckp1t/webroot.git"
+  },
+  "keywords": [
+    "vue3",
+    "dashboard",
+    "cockpit",
+    "websocket",
+    "islands-architecture",
+    "no-build",
+    "esm",
+    "admin-panel",
+    "sfc-loader",
+    "bootstrap5"
+  ],
+  "files": [
+    "index-cdn.html",
+    "index.html",
+    "style.css",
+    "Config.mjs",
+    "favicon.ico",
+    "favicon-32x32.png",
+    "favicon-64x64.png",
+    "favicon-192x192.png",
+    "core/",
+    "components/",
+    "js_ext/",
+    "css/",
+    "c0ckp1t-demo/"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.2",
+    "eslint-plugin-vue": "^10.8.0",
+    "globals": "^17.3.0"
+  }
+}

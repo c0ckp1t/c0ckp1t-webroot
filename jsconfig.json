@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "vue": ["./js_ext/vue.js"],
+      "vue-router": ["./js_ext/vue-router.esm-browser.prod.js"],
+      "vue3-sfc-loader": ["./js_ext/vue3-sfc-loader.esm.js"],
+
+      "GlobalStore": ["./core/GlobalStore.mjs"],
+      "Logging": ["./core/Logging.mjs"],
+      "NotifyUtils": ["./core/notify/NotifyUtils.mjs"],
+      "CoreUtils": ["./core/CoreUtils.mjs"],
+      "VueUtils": ["./core/VueUtils.mjs"],
+      "JsUtils": ["./core/JsUtils.mjs"],
+      "WsUtils": ["./core/WsUtils.mjs"],
+      "Island": ["./core/Island.mjs"],
+      "IslandDefault": ["./core/IslandDefault.mjs"]
+    }
+  },
+  "include": ["**/*.js", "**/*.mjs", "**/*.vue"],
+  "exclude": ["node_modules"]
+}

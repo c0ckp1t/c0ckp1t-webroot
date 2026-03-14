@@ -1,0 +1,32 @@
+/* style.css */
+
+:root {
+  /* Base Settings */
+  font-size: 1em; /*browser's default of 16 px*/
+}
+
+/* x-components */
+.x-button {
+  margin: 3px;
+}
+
+.x-input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.x-checkbox {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.x-label{
+  margin-top: 5px;
+  /*margin-bottom: 5px;*/
+}
+
+.x-section {
+    margin-bottom: 10px;
+   margin-top: 5px;
+}
+

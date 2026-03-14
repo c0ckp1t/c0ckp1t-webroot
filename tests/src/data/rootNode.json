@@ -1,0 +1,439 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [],
+                  "depth": 4,
+                  "endpoint": "/auth/default/api/auth",
+                  "expanded": false,
+                  "isLeaf": true,
+                  "isRoot": false,
+                  "name": "auth",
+                  "path": [
+                    "auth",
+                    "default",
+                    "api",
+                    "auth"
+                  ],
+                  "_expanded": false,
+                  "store": {}
+                },
+                {
+                  "children": [],
+                  "depth": 4,
+                  "endpoint": "/auth/default/api/session",
+                  "expanded": false,
+                  "isLeaf": true,
+                  "isRoot": false,
+                  "name": "session",
+                  "path": [
+                    "auth",
+                    "default",
+                    "api",
+                    "session"
+                  ],
+                  "_expanded": false,
+                  "store": {}
+                }
+              ],
+              "depth": 3,
+              "endpoint": "/auth/default/api",
+              "expanded": false,
+              "isLeaf": false,
+              "isRoot": false,
+              "name": "api",
+              "path": [
+                "auth",
+                "default",
+                "api"
+              ],
+              "routes": [
+                {
+                  "relativePath": "",
+                  "name": "place-holder",
+                  "location": "/c0ckp1t/node/place-holder.vue",
+                  "type": "STATIC",
+                  "accessLevel": 0,
+                  "jtePrjId": -1
+                }
+              ],
+              "_expanded": false,
+              "store": {}
+            }
+          ],
+          "config": "/v3/actions/auth/default/config.json",
+          "depth": 2,
+          "endpoint": "/auth/default",
+          "expanded": false,
+          "isLeaf": false,
+          "isRoot": false,
+          "name": "default",
+          "path": [
+            "auth",
+            "default"
+          ],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "config": "/v3/actions/auth/www/config.json",
+      "depth": 1,
+      "endpoint": "/auth",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "auth",
+      "path": [
+        "auth"
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/jte/api/builder",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "builder",
+              "path": [
+                "jte",
+                "api",
+                "builder"
+              ],
+              "_expanded": false,
+              "store": {}
+            },
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/jte/api/code",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "code",
+              "path": [
+                "jte",
+                "api",
+                "code"
+              ],
+              "_expanded": false,
+              "store": {}
+            },
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/jte/api/prj",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "prj",
+              "path": [
+                "jte",
+                "api",
+                "prj"
+              ],
+              "_expanded": false,
+              "store": {}
+            }
+          ],
+          "depth": 2,
+          "endpoint": "/jte/api",
+          "expanded": false,
+          "isLeaf": false,
+          "isRoot": false,
+          "name": "api",
+          "path": [
+            "jte",
+            "api"
+          ],
+          "routes": [
+            {
+              "relativePath": "",
+              "name": "place-holder",
+              "location": "/c0ckp1t/node/place-holder.vue",
+              "type": "STATIC",
+              "accessLevel": 0,
+              "jtePrjId": -1
+            }
+          ],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "config": "/v3/actions/jte/www/config.json",
+      "depth": 1,
+      "endpoint": "/jte",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "jte",
+      "path": [
+        "jte"
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [],
+      "config": "/v3/actions/osgi/www/config.json",
+      "depth": 1,
+      "endpoint": "/osgi",
+      "expanded": true,
+      "isLeaf": true,
+      "isRoot": false,
+      "name": "osgi",
+      "path": [
+        "osgi"
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/storage/api/p1t-kv",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "p1t-kv",
+              "path": [
+                "storage",
+                "api",
+                "p1t-kv"
+              ],
+              "_expanded": false,
+              "store": {}
+            },
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/storage/api/p1t-log",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "p1t-log",
+              "path": [
+                "storage",
+                "api",
+                "p1t-log"
+              ],
+              "_expanded": false,
+              "store": {}
+            },
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/storage/api/schema-def",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "schema-def",
+              "path": [
+                "storage",
+                "api",
+                "schema-def"
+              ],
+              "_expanded": false,
+              "store": {}
+            },
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/storage/api/storage-inst",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "storage-inst",
+              "path": [
+                "storage",
+                "api",
+                "storage-inst"
+              ],
+              "_expanded": false,
+              "store": {}
+            }
+          ],
+          "depth": 2,
+          "endpoint": "/storage/api",
+          "expanded": false,
+          "isLeaf": false,
+          "isRoot": false,
+          "name": "api",
+          "path": [
+            "storage",
+            "api"
+          ],
+          "routes": [
+            {
+              "relativePath": "",
+              "name": "place-holder",
+              "location": "/c0ckp1t/node/place-holder.vue",
+              "type": "STATIC",
+              "accessLevel": 0,
+              "jtePrjId": -1
+            }
+          ],
+          "_expanded": false,
+          "store": {}
+        },
+        {
+          "children": [],
+          "config": "/v3/actions/storage/sqlite/config.json",
+          "depth": 2,
+          "endpoint": "/storage/sqlite",
+          "expanded": false,
+          "isLeaf": true,
+          "isRoot": false,
+          "name": "sqlite",
+          "path": [
+            "storage",
+            "sqlite"
+          ],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "config": "/v3/actions/storage/www/config.json",
+      "depth": 1,
+      "endpoint": "/storage",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "storage",
+      "path": [
+        "storage"
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "depth": 2,
+          "endpoint": "/sys/resolver",
+          "expanded": false,
+          "isLeaf": true,
+          "isRoot": false,
+          "name": "resolver",
+          "path": [
+            "sys",
+            "resolver"
+          ],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "config": "/v3/actions/sys/www/config.json",
+      "depth": 1,
+      "endpoint": "/sys",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "sys",
+      "path": [
+        "sys"
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/user/api/kv",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "kv",
+              "path": [
+                "user",
+                "api",
+                "kv"
+              ],
+              "_expanded": false,
+              "store": {}
+            }
+          ],
+          "depth": 2,
+          "endpoint": "/user/api",
+          "expanded": false,
+          "isLeaf": false,
+          "isRoot": false,
+          "name": "api",
+          "path": [
+            "user",
+            "api"
+          ],
+          "routes": [
+            {
+              "relativePath": "",
+              "name": "place-holder",
+              "location": "/c0ckp1t/node/place-holder.vue",
+              "type": "STATIC",
+              "accessLevel": 0,
+              "jtePrjId": -1
+            }
+          ],
+          "_expanded": false,
+          "store": {}
+        },
+        {
+          "children": [],
+          "depth": 2,
+          "endpoint": "/user/test",
+          "expanded": false,
+          "isLeaf": true,
+          "isRoot": false,
+          "name": "test",
+          "path": [
+            "user",
+            "test"
+          ],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "config": "/v3/actions/user/www/config.json",
+      "depth": 1,
+      "endpoint": "/user",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "user",
+      "path": [
+        "user"
+      ],
+      "_expanded": true,
+      "store": {}
+    }
+  ],
+  "config": "/v3/actions/root/config.json",
+  "depth": 0,
+  "endpoint": "/",
+  "expanded": true,
+  "isLeaf": false,
+  "isRoot": true,
+  "name": "",
+  "path": [],
+  "_expanded": true,
+  "store": {}
+}

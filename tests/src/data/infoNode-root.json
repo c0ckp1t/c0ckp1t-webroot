@@ -1,0 +1,516 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [],
+                  "depth": 4,
+                  "endpoint": "/auth/default/api/auth",
+                  "expanded": false,
+                  "isLeaf": true,
+                  "isRoot": false,
+                  "name": "auth",
+                  "path": [
+                    "auth",
+                    "default",
+                    "api",
+                    "auth"
+                  ],
+                  "routes": [
+                    {
+                      "relativePath": "",
+                      "name": "_api",
+                      "location": "/c0ckp1t/node/_api.vue",
+                      "type": "STATIC",
+                      "accessLevel": 0,
+                      "jtePrjId": -1
+                    }
+                  ],
+                  "_expanded": false,
+                  "store": {}
+                },
+                {
+                  "children": [],
+                  "depth": 4,
+                  "endpoint": "/auth/default/api/session",
+                  "expanded": false,
+                  "isLeaf": true,
+                  "isRoot": false,
+                  "name": "session",
+                  "path": [
+                    "auth",
+                    "default",
+                    "api",
+                    "session"
+                  ],
+                  "routes": [
+                    {
+                      "relativePath": "",
+                      "name": "_api",
+                      "location": "/c0ckp1t/node/_api.vue",
+                      "type": "STATIC",
+                      "accessLevel": 0,
+                      "jtePrjId": -1
+                    }
+                  ],
+                  "_expanded": false,
+                  "store": {}
+                }
+              ],
+              "depth": 3,
+              "endpoint": "/auth/default/api",
+              "expanded": false,
+              "isLeaf": false,
+              "isRoot": false,
+              "name": "api",
+              "path": [
+                "auth",
+                "default",
+                "api"
+              ],
+              "routes": [
+                {
+                  "relativePath": "",
+                  "name": "place-holder",
+                  "location": "/c0ckp1t/node/place-holder.vue",
+                  "type": "STATIC",
+                  "accessLevel": 0,
+                  "jtePrjId": -1
+                }
+              ],
+              "_expanded": false,
+              "store": {}
+            }
+          ],
+          "depth": 2,
+          "endpoint": "/auth/default",
+          "expanded": false,
+          "isLeaf": false,
+          "isRoot": false,
+          "name": "default",
+          "path": [
+            "auth",
+            "default"
+          ],
+          "routes": [
+            {
+              "relativePath": "",
+              "name": "auth-default",
+              "location": "/v3/actions/auth/default/main.vue",
+              "type": "JTE",
+              "accessLevel": 0,
+              "jtePrjId": -1
+            }
+          ],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "depth": 1,
+      "endpoint": "/auth",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "auth",
+      "path": [
+        "auth"
+      ],
+      "routes": [
+        {
+          "relativePath": "",
+          "name": "auth",
+          "location": "/v3/actions/auth/www/main.vue",
+          "type": "JTE",
+          "accessLevel": 0,
+          "jtePrjId": -1
+        },
+        {
+          "relativePath": "/homepage",
+          "name": "homepage",
+          "location": "/v3/actions/auth/www/pages/page-homepage.vue",
+          "type": "JTE",
+          "accessLevel": 0,
+          "jtePrjId": -1
+        },
+        {
+          "relativePath": "/auth/homepage",
+          "name": "homepage",
+          "location": "/auth",
+          "type": "REDIRECT",
+          "accessLevel": 0,
+          "jtePrjId": -1
+        }
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [],
+      "depth": 1,
+      "endpoint": "/osgi",
+      "expanded": true,
+      "isLeaf": true,
+      "isRoot": false,
+      "name": "osgi",
+      "path": [
+        "osgi"
+      ],
+      "routes": [
+        {
+          "relativePath": "",
+          "name": "osgi",
+          "location": "/v3/actions/osgi/www/main.vue",
+          "type": "JTE",
+          "accessLevel": 0,
+          "jtePrjId": -1
+        }
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/storage/api/p1t-kv",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "p1t-kv",
+              "path": [
+                "storage",
+                "api",
+                "p1t-kv"
+              ],
+              "routes": [
+                {
+                  "relativePath": "",
+                  "name": "_api",
+                  "location": "/c0ckp1t/node/_api.vue",
+                  "type": "STATIC",
+                  "accessLevel": 0,
+                  "jtePrjId": -1
+                }
+              ],
+              "_expanded": false,
+              "store": {}
+            },
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/storage/api/p1t-log",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "p1t-log",
+              "path": [
+                "storage",
+                "api",
+                "p1t-log"
+              ],
+              "routes": [
+                {
+                  "relativePath": "",
+                  "name": "_api",
+                  "location": "/c0ckp1t/node/_api.vue",
+                  "type": "STATIC",
+                  "accessLevel": 0,
+                  "jtePrjId": -1
+                }
+              ],
+              "_expanded": false,
+              "store": {}
+            },
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/storage/api/schema-def",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "schema-def",
+              "path": [
+                "storage",
+                "api",
+                "schema-def"
+              ],
+              "routes": [
+                {
+                  "relativePath": "",
+                  "name": "_api",
+                  "location": "/c0ckp1t/node/_api.vue",
+                  "type": "STATIC",
+                  "accessLevel": 0,
+                  "jtePrjId": -1
+                }
+              ],
+              "_expanded": false,
+              "store": {}
+            },
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/storage/api/storage-inst",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "storage-inst",
+              "path": [
+                "storage",
+                "api",
+                "storage-inst"
+              ],
+              "routes": [
+                {
+                  "relativePath": "",
+                  "name": "_api",
+                  "location": "/c0ckp1t/node/_api.vue",
+                  "type": "STATIC",
+                  "accessLevel": 0,
+                  "jtePrjId": -1
+                }
+              ],
+              "_expanded": false,
+              "store": {}
+            }
+          ],
+          "depth": 2,
+          "endpoint": "/storage/api",
+          "expanded": false,
+          "isLeaf": false,
+          "isRoot": false,
+          "name": "api",
+          "path": [
+            "storage",
+            "api"
+          ],
+          "routes": [
+            {
+              "relativePath": "",
+              "name": "place-holder",
+              "location": "/c0ckp1t/node/place-holder.vue",
+              "type": "STATIC",
+              "accessLevel": 0,
+              "jtePrjId": -1
+            }
+          ],
+          "_expanded": false,
+          "store": {}
+        },
+        {
+          "children": [],
+          "depth": 2,
+          "endpoint": "/storage/sqlite",
+          "expanded": false,
+          "isLeaf": true,
+          "isRoot": false,
+          "name": "sqlite",
+          "path": [
+            "storage",
+            "sqlite"
+          ],
+          "routes": [
+            {
+              "relativePath": "",
+              "name": "sqlite",
+              "location": "/v3/actions/storage/sqlite/www/main.vue",
+              "type": "JTE",
+              "accessLevel": 0,
+              "jtePrjId": -1
+            }
+          ],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "depth": 1,
+      "endpoint": "/storage",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "storage",
+      "path": [
+        "storage"
+      ],
+      "routes": [
+        {
+          "relativePath": "",
+          "name": "storage",
+          "location": "/v3/actions/storage/www/main.vue",
+          "type": "JTE",
+          "accessLevel": 0,
+          "jtePrjId": -1
+        }
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "depth": 2,
+          "endpoint": "/sys/resolver",
+          "expanded": false,
+          "isLeaf": true,
+          "isRoot": false,
+          "name": "resolver",
+          "path": [
+            "sys",
+            "resolver"
+          ],
+          "routes": [],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "depth": 1,
+      "endpoint": "/sys",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "sys",
+      "path": [
+        "sys"
+      ],
+      "routes": [
+        {
+          "relativePath": "",
+          "name": "sys",
+          "location": "/v3/actions/sys/www/main.vue",
+          "type": "JTE",
+          "accessLevel": 0,
+          "jtePrjId": -1
+        }
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [],
+              "depth": 3,
+              "endpoint": "/user/api/kv",
+              "expanded": false,
+              "isLeaf": true,
+              "isRoot": false,
+              "name": "kv",
+              "path": [
+                "user",
+                "api",
+                "kv"
+              ],
+              "routes": [
+                {
+                  "relativePath": "",
+                  "name": "_api",
+                  "location": "/c0ckp1t/node/_api.vue",
+                  "type": "STATIC",
+                  "accessLevel": 0,
+                  "jtePrjId": -1
+                }
+              ],
+              "_expanded": false,
+              "store": {}
+            }
+          ],
+          "depth": 2,
+          "endpoint": "/user/api",
+          "expanded": false,
+          "isLeaf": false,
+          "isRoot": false,
+          "name": "api",
+          "path": [
+            "user",
+            "api"
+          ],
+          "routes": [
+            {
+              "relativePath": "",
+              "name": "place-holder",
+              "location": "/c0ckp1t/node/place-holder.vue",
+              "type": "STATIC",
+              "accessLevel": 0,
+              "jtePrjId": -1
+            }
+          ],
+          "_expanded": false,
+          "store": {}
+        },
+        {
+          "children": [],
+          "depth": 2,
+          "endpoint": "/user/test",
+          "expanded": false,
+          "isLeaf": true,
+          "isRoot": false,
+          "name": "test",
+          "path": [
+            "user",
+            "test"
+          ],
+          "routes": [],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "depth": 1,
+      "endpoint": "/user",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "user",
+      "path": [
+        "user"
+      ],
+      "routes": [
+        {
+          "relativePath": "",
+          "name": "user",
+          "location": "/v3/actions/user/www/main.vue",
+          "type": "JTE",
+          "accessLevel": 0,
+          "jtePrjId": -1
+        },
+        {
+          "relativePath": "/homepage",
+          "name": "homepage",
+          "location": "/v3/actions/user/www/pages/page-homepage.vue",
+          "type": "JTE",
+          "accessLevel": 0,
+          "jtePrjId": -1
+        },
+        {
+          "relativePath": "/user/homepage",
+          "name": "homepage",
+          "location": "/user",
+          "type": "REDIRECT",
+          "accessLevel": 0,
+          "jtePrjId": -1
+        }
+      ],
+      "_expanded": true,
+      "store": {}
+    }
+  ],
+  "depth": 0,
+  "endpoint": "/",
+  "expanded": true,
+  "isLeaf": false,
+  "isRoot": true,
+  "name": "",
+  "path": [],
+  "routes": [],
+  "_expanded": true,
+  "store": {}
+}

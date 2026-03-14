@@ -1,0 +1,97 @@
+{
+  "children": [
+    {
+      "children": [],
+      "depth": 1,
+      "endpoint": "/auth",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "auth",
+      "path": [
+        "auth"
+      ],
+      "routes": [
+        {
+          "relativePath": "",
+          "name": "auth",
+          "location": "/v3/actions/auth/www/public/main.vue",
+          "type": "JTE",
+          "accessLevel": 1000,
+          "jtePrjId": -1
+        }
+      ],
+      "_expanded": true,
+      "store": {}
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "depth": 2,
+          "endpoint": "/user/test",
+          "expanded": false,
+          "isLeaf": true,
+          "isRoot": false,
+          "name": "test",
+          "path": [
+            "user",
+            "test"
+          ],
+          "routes": [
+            {
+              "relativePath": "",
+              "name": "user",
+              "location": "core/nodes/place-holder.vue",
+              "type": "JTE",
+              "accessLevel": 1000,
+              "jtePrjId": -1
+            }
+          ],
+          "_expanded": false,
+          "store": {}
+        }
+      ],
+      "depth": 1,
+      "endpoint": "/user",
+      "expanded": true,
+      "isLeaf": false,
+      "isRoot": false,
+      "name": "user",
+      "path": [
+        "user"
+      ],
+      "routes": [
+        {
+          "relativePath": "",
+          "name": "user",
+          "location": "/v3/actions/user/www/public/main.vue",
+          "type": "JTE",
+          "accessLevel": 1000,
+          "jtePrjId": -1
+        }
+      ],
+      "_expanded": true,
+      "store": {}
+    }
+  ],
+  "depth": 0,
+  "endpoint": "/",
+  "expanded": true,
+  "isLeaf": false,
+  "isRoot": true,
+  "name": "",
+  "path": [],
+  "routes": [
+    {
+      "relativePath": "",
+      "name": "root",
+      "location": "core/nodes/root.vue",
+      "type": "STATIC",
+      "accessLevel": 1000,
+      "jtePrjId": -1
+    }
+  ],
+  "_expanded": true,
+  "store": {}
+}

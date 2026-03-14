@@ -1,0 +1,11 @@
+
+layout tall
+cd
+launch bash
+
+new_tab opencode
+launch bash
+
+new_tab testing
+launch bash
+
