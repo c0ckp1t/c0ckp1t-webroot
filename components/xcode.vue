@@ -1,37 +1,42 @@
 <script setup>
-import {computed,  reactive, onMounted} from 'vue'
+import {computed, defineProps, reactive, onMounted} from 'vue'
 
-import {store as storeMain, api as apiMain} from '@/GlobalStore.mjs'
-import {getLogger} from "../core/Logging.mjs"
+import {store as storeMain, api as apiMain } from 'GlobalStore'
+import {getLogger} from "Logging";
+import {Http} from "WsUtils"
 
 const props = defineProps({
   url: {type: String, required: true},
   lang: {type: String, default: 'text'},
-  startLine: {type: Number, default: null}, // note: start line is 0 indexed, most editors are 1 indexed
-  endLine: {type: Number, default: null},
+  startLine: {type: [Number, String], default: null}, // note: start line is 0 indexed, most editors are 1 indexed
+  endLine: {type: [Number, String], default: null},
+  registryName: {
+    type: String,
+    default: storeMain.defaultInstanceId
+  }
 })
-
 // ________________________________________________________________________________
 // LOGGING
 // ________________________________________________________________________________
-const LOG_HEADER = 'xcode.vue'
+const LOG_HEADER = 'code-item.vue'
 const logger = getLogger(LOG_HEADER)
-logger.debug("INIT")
+logger.debug("[INIT]")
 
 // ________________________________________________________________________________
 // STATE
 // ________________________________________________________________________________
 const local = reactive({
-  id: "xcode.vue",
+  id: LOG_HEADER,
   isLoading: false,
 // !# C0CKP1T_START local
   code: "Not Available",
   lang: props.lang,
   fullCode: "N/A",
-  fullView: false
+  fullView: false,
+  hasError: false,
+  copied: false,
 // !# C0CKP1T_END local
 })
-
 
 const HTML_ESCAPE_TEST_RE = /[&<>"]/
 const HTML_ESCAPE_REPLACE_RE = /[&<>"]/g
@@ -52,35 +57,38 @@ function escapeHtml(str) {
   }
   return str
 }
-
+const registry = storeMain.r[props.registryName]
 async function findCode() {
   if (typeof props.url !== 'string' || props.url.length < 3) {
     local.fullCode = `[INVALID_URL] - problem with props.url\n\n`
+    local.hasError = true
+    return
   }
-
-  const resp = await apiMain.fetchText(props.url)
+  logger.debug(`[findCode] - ${props.url}`)
+  const resp = await registry.getText( props.url)
   logger.debug(resp)
   if (!resp.isOk) {
-    if (resp.result.includes('File does not exist')) {
-    } else {
-      logger.error(resp)
-      return
-    }
+    local.fullCode = `[API_ERROR]\n${resp.result}\n\n`
+    local.hasError = true
+    return
   }
+  // Get the full code
   local.fullCode = resp.result
+  local.hasError = false
 }
 
 // // Highlighter function. Should return escaped HTML
 const html = computed(() => {
-  console.log("Recomputing HTML")
-  console.log(props)
+  // console.log("Recomputing HTML")
+  // console.log(props)
   // Handle line range if specified
   let code = local.fullCode
   if (local.fullCode && local.fullView === false) {
     const lines = local.fullCode.split('\n')
-    const start = props.startLine != null ? props.startLine : 0
-    const end = props.endLine != null ? props.endLine + 1 : lines.length // +1 because slice excludes end
+    const start = props.startLine != null ? parseInt(props.startLine) : 0
+    const end = props.endLine != null ? parseInt(props.endLine) + 1 : lines.length // +1 because slice excludes end
 
+    // console.log(`slice - start=${start} - end=${end}`)
     // Extract only the lines we want
     code = lines.slice(start, end).join('\n')
   }
@@ -96,6 +104,20 @@ const html = computed(() => {
 
   return '<pre class="hljs"><code>' + escapeHtml(local.code) + '</code></pre>';
 })
+
+// ________________________________________________________________________________
+// COPY TO CLIPBOARD
+// ________________________________________________________________________________
+async function copyCode() {
+  try {
+    await navigator.clipboard.writeText(props.code)
+    local.copied = true
+    logger.debug("[copyCode] - copied to clipboard")
+    setTimeout(() => { local.copied = false }, 2000)
+  } catch (err) {
+    logger.error("[copyCode] - failed to copy", err)
+  }
+}
 // ________________________________________________________________________________
 // INIT
 // ________________________________________________________________________________
@@ -106,34 +128,72 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="code-item">
-    <div class="row mb-2">
-      <div class="col-auto">
-        <x-label :isCompact="true" k="File:">{{ props.url ?? 'INVALID' }}</x-label>
+  <div>
+    <div class="code-item container" >
+
+      <div class="row mb-0 mt-0 pt-0 pb-0 align-items-center" v-if="!local.fullView">
+        <div class="col-auto">
+          <span class="filename">{{ props.url?.split('/').pop() ?? 'INVALID' }}</span>
+        </div>
+        <div class="col"></div>
+        <div class="col-auto">
+          <ExecButton class="btn-sm btn btn-dark" icon="fa-rotate-right" :callback="() => findCode()"></ExecButton>
+        </div>
+        <div class="col-auto">
+          <x-toggle k="Full" v-model="local.fullView"></x-toggle>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-sm btn-dark copy-btn" @click="copyCode" :title="local.copied ? 'Copied!' : 'Copy to clipboard'">
+            <i :class="local.copied ? 'fa fa-check' : 'fa fa-copy'"></i>
+            <span v-if="local.copied" class="copy-feedback">Copied!</span>
+          </button>
+        </div>
       </div>
-      <div class="col">
+
+      <div class="full-view mb-0 pb-0 mt-0 pt-0" v-else>
+
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <span class="filename">{{ props.url ?? 'INVALID' }}</span>
+          </div>
+          <div class="col"></div>
+          <div class="col-auto">
+            <ExecButton icon="fa-rotate-right" :callback="() => findCode()"></ExecButton>
+          </div>
+          <div class="col-auto">
+            <x-toggle k="Full" v-model="local.fullView"></x-toggle>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-sm btn-dark copy-btn" @click="copyCode" :title="local.copied ? 'Copied!' : 'Copy to clipboard'">
+              <i :class="local.copied ? 'fa fa-check' : 'fa fa-copy'"></i>
+              <span v-if="local.copied" class="copy-feedback">Copied!</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="row align-items-center">
+          <div class="col-auto">
+            <x-label :isCompact="true" k="Lang:">{{ local.lang }}</x-label>
+          </div>
+          <div class="col-auto" v-if="props.startLine && props.endLine">
+            <x-label :isCompact="true" k="Lines:">{{ props.startLine }}-{{ props.endLine }}</x-label>
+          </div>
+        </div>
+
       </div>
-      <div class="col-auto">
-        <x-label :isCompact="true" k="Lang:">{{ local.lang }}</x-label>
-      </div>
-      <div class="col-auto" v-if="props.startLine && props.endLine">
-        <x-label :isCompact="true" k="Lines:">{{ props.startLine}}-{{props.endLine}}</x-label>
-      </div>
-      <div class="col-auto">
-        <ExecButton icon="fa-rotate-right" :callback="() => findCode()"></ExecButton>
-      </div>
-      <div class="col-auto">
-        <x-toggle k="Full" v-model="local.fullView"></x-toggle>
-      </div>
-    </div>
-    <div v-html="html"></div>
+
+      <div v-html="html"></div>
+
+    </div> <!-- code-item -->
+
   </div>
 </template>
 
 <style scoped>
 .code-item {
+  color: white;
   border: 1px solid black;
-  padding: 2px;
+  background-color: #434e5a;
 }
 
 </style>

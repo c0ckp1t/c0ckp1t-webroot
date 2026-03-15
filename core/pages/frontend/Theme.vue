@@ -38,7 +38,6 @@ const local = reactive({
   isLoading: false,
   
   // UI state for this page only
-  showCSSOutput: false,
   copySuccess: false,
   
   // Demo form state
@@ -353,15 +352,11 @@ onMounted(async () => {
           <ExecButton class="btn btn-outline-success" icon="fa-download me-1" :callback="downloadCSS">
             Download CSS
           </ExecButton>
-          <button @click="local.showCSSOutput = !local.showCSSOutput" class="btn btn-outline-info">
-            <i class="fa-solid fa-code me-1"></i>
-            {{ local.showCSSOutput ? 'Hide' : 'Show' }} CSS
-          </button>
         </div>
       </div>
 
       <!-- ========== CSS OUTPUT ========== -->
-      <div v-if="local.showCSSOutput" class="css-output-section mb-4">
+      <div  class="css-output-section mb-4">
         <h4 class="text-muted mb-3">
           <i class="fa-solid fa-file-code me-2"></i>Generated CSS
         </h4>

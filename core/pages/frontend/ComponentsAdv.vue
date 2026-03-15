@@ -13,7 +13,7 @@ import {reactive, computed, ref, onMounted, onUnmounted, defineAsyncComponent, w
 import {getLogger} from "Logging";
 // !# C0CKP1T_START imports
 import ComponentView from "./component-view.vue";
-import ExecButton from "../../../components/ExecButton.vue";
+import {store as storeMain} from "GlobalStore";
 // !# C0CKP1T_END imports
 
 // ________________________________________________________________________________
@@ -31,6 +31,8 @@ const local = reactive({
   id: LOG_HEADER,
   isLoading: false,
   updated: Date.now(),
+  pathPrefix: storeMain.config?.componentPrefix ?? "",
+  defaultExpand: false,
 
   tree: [
     {
@@ -217,11 +219,11 @@ async function delay() {
   <!--  !# C0CKP1T_START template -->
   <x-section :level="2" k="Components Advanced">
 
-    <ComponentView name="x-upload" url="/components/xupload.vue">
+    <ComponentView name="x-upload"  :url="`${local.pathPrefix}/components/xupload.vue`" :defaultExpand="local.defaultExpand">
       <x-upload>Hello Title</x-upload>
     </ComponentView>
 
-    <ComponentView name="x-tree" url="/components/xtree.vue">
+    <ComponentView name="x-tree"  :url="`${local.pathPrefix}/components/xtree.vue`" :defaultExpand="local.defaultExpand">
       <div class="row">
         <div class="col-md-6">
           <h6>File Tree (with nested folders)</h6>
@@ -242,15 +244,15 @@ async function delay() {
     </ComponentView>
 
 
-    <ComponentView name="v-ace-editor" url="/components/vue3-ace-editor.vue">
+    <ComponentView name="v-ace-editor"  :url="`${local.pathPrefix}/components/vue3-ace-editor.vue`" :defaultExpand="local.defaultExpand">
         <v-ace-editor height="400px" :fontSize="17" v-model="local.myTextEditor" lang="kotlin" theme="twilight" debug/>
     </ComponentView>
 
-    <ComponentView name="x-terminal" url="/components/xterminal.vue">
+    <ComponentView name="x-terminal"  :url="`${local.pathPrefix}/components/xterminal.vue`" :defaultExpand="local.defaultExpand">
       <XTerminal height="400px" :fontSize="17" v-model="local.myTextEditor" theme="twilight" />
     </ComponentView>
 
-    <ComponentView name="code-mirror" url="/components/code-mirror.vue">
+    <ComponentView name="code-mirror"  :url="`${local.pathPrefix}/components/code-mirror.vue`" :defaultExpand="local.defaultExpand">
       <code-mirror
           v-model="local.myTextEditor"
           lang="javascript"
@@ -260,13 +262,21 @@ async function delay() {
       />
     </ComponentView>
 
-    <ComponentView name="x-sound" url="/components/xsound.vue">
+    <ComponentView name="x-sound"  :url="`${local.pathPrefix}/components/xsound.vue`" :defaultExpand="local.defaultExpand">
       <XSound
           url="https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.2/core/img/state-uniqueId-8k.wav"
           id="stateId" :autoLoad="true"/>
     </ComponentView>
 
-    <ComponentView name="x-markdown" url="/components/xsound.vue">
+    <ComponentView name="x-code"  :url="`${local.pathPrefix}/components/xcode.vue`" :defaultExpand="local.defaultExpand">
+      <x-code lang="javascript"  url="https://raw.githubusercontent.com/c0ckp1t/c0ckp1t-webroot/refs/heads/main/docs/Introduction.md" />
+    </ComponentView>
+
+    <ComponentView name="x-code-slot"  :url="`${local.pathPrefix}/components/xcode-slot.vue`" :defaultExpand="local.defaultExpand">
+      <x-code-slot lang="javascript" title="Random JS Code" :code="`function helloWorld() {\n  console.log('Hello, world!');\n}`" />
+    </ComponentView>
+
+    <ComponentView name="x-markdown"  :url="`${local.pathPrefix}/components/xmarkdown.vue`" :defaultExpand="local.defaultExpand">
       <div class="row mb-2">
         <div class="col-auto">
           <x-toggle k="Toggle Between Markdown And Text" v-model="local.textOrMarkdown"></x-toggle>
@@ -284,7 +294,7 @@ async function delay() {
 
     </ComponentView>
 
-<!--    <ComponentView name="x-code" url="/components/xcode.vue"> </ComponentView>-->
+<!--    <ComponentView name="x-code"  :url="`${local.pathPrefix}/components/xcode.vue"> </ComponentView>-->
 
   </x-section>
   <!--  !# C0CKP1T_END template -->

@@ -1,10 +1,21 @@
 
+# Known Issues
 
 
-# Loading SVG issues
+## Theming 
 
-does not work
+I created the `Theme.vue` and `Theme.mjs` with Opus 4.6. It is pretty much AI slop (but it works).
+It needs to be cleaned up. 
+
+
+## Loading SVG issues 
+
+(or likely same issue with any image)
+
+In a SFC
+
 :src="../assets/loading.svg"
+does not work
 
 but
 src="../assets/loading.svg"

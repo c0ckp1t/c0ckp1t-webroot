@@ -20,8 +20,10 @@ import {getLogger} from 'Logging';
 export default class IslandDefault {
     constructor(apiMain, config) {
 
-        this.instanceId = config.instanceId
-        this.config = config
+        this.instanceId = config.instanceId;
+        this.type = "IslandDefault";
+        this.config = config;
+        this.apiMain = apiMain;
 
         this.LOG_HEADER = `${this.instanceId}`;
         this.logger = getLogger(this.LOG_HEADER);
@@ -69,7 +71,7 @@ export default class IslandDefault {
     // ________________________________________________________________________________
     routeByEndpoint = async (endpoint) => {
         this.logger.debug(`routeByEndpoint - endpoint=${endpoint}`);
-        await this.apiMain.routeByEndpoint( `/${this.instanceId}${endpoint}` );
+        await this.apiMain.routeByEndpoint(`/${this.instanceId}${endpoint}`);
     }
 
     /**
@@ -92,7 +94,7 @@ export default class IslandDefault {
         this.logger.info(`selectNode - node.endpoint=${node.endpoint}`);
         this.store.selectedNode = null;
         this.store.selectedNode = node;
-        await this.apiMain.routeByEndpoint( node.endpoint );
+        await this.apiMain.routeByEndpoint(node.endpoint);
     }
 
     // ________________________________________________________________________________
@@ -154,14 +156,14 @@ export default class IslandDefault {
      * @param type
      * @returns {Promise<Response>}
      */
-    resolver =  async (path, type) => {
+    resolver = async (path, type) => {
         /**
          * Path.normalize() in vue3-sfc-loader's defaultPathResolve
          *  collapses // in https:// down to https:/
          *  It uses Path.normalize(Path.join(Path.dirname(getPathname(refPath.toString()))
          *  but Node's posix.dirname doesn't understand URL protocols
          */
-        if(path.startsWith("https:/c")) {
+        if (path.startsWith("https:/c")) {
             path = path.replace("https:/c", "https://c");
         }
         this.logger.debug(`[resolver] - fetching - ${path} - ${type}`)
@@ -172,9 +174,13 @@ export default class IslandDefault {
 
 
     getText = async (endpoint) => {
+        this.logger.debug(`[getText] - ${endpoint}`);
+        if (endpoint.startsWith("http") || endpoint.startsWith("HTTP")) {
+            return await Http.getText(endpoint, "omit")
+        } else {
             const path = `${this.config.SERVER_API_URL}${endpoint}`;
-            this.logger.debug(`[getText] - ${path}`);
             return await Http.getText(path)
+        }
     }
 
     async getBinary(endpoint) {
@@ -198,9 +204,9 @@ export default class IslandDefault {
     // ________________________________________________________________________________
     // init
     // ________________________________________________________________________________
-    init = async ()   => {
-       await this.rootNode()
-       this.state.isReady = true
+    init = async () => {
+        await this.rootNode()
+        this.state.isReady = true
     }
 
 } // end of IslandDefault class

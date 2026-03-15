@@ -170,13 +170,13 @@ export function assert(condition, message) {
 // ________________________________________________________________________________
 export const Http = {
 
-    async getText (path){
+    async getText (path, credentials = "include") {
         try {
             const response = await fetch(path, {
                 // "include" - will send cookies and authentication headers with the request, even for cross-origin URLs.
                 // "same-origin"  - (the default in browsers) sends cookies only if the request is to the same origin.
                 // "omit" - never sends cookies, regardless of the origin.
-                credentials: "include",
+                credentials: credentials,
                 method: "GET",
             });
             return await httpResponseToResp(response, path)
@@ -188,10 +188,10 @@ export const Http = {
         }
     },
 
-    async getBinary(path) {
+    async getBinary(path, credentials = "include") {
         try {
             const response = await fetch(path, {
-                credentials: "include",
+                credentials: credentials,
                 method: "GET",
             });
             if (!response.ok) {
@@ -212,10 +212,10 @@ export const Http = {
         }
     },
 
-    async getJson(path) {
+    async getJson(path, credentials = "include") {
         try {
             const response = await fetch(path, {
-                credentials: "include",
+                credentials: credentials,
                 method: "GET",
                 headers: {
                     "Accept": "application/json"
@@ -230,10 +230,10 @@ export const Http = {
         }
     },
 
-    async postJson(path, body) {
+    async postJson(path, body, credentials = "include") {
         try {
             const response = await fetch(path, {
-                credentials: "include",
+                credentials: credentials,
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

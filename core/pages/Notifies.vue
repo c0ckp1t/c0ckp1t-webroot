@@ -11,6 +11,7 @@ import {api as apiMain} from 'GlobalStore'
 import {store as notifyStore, api as notifyApi} from 'NotifyUtils'
 import {getLogger, listLoggers, setLogger, clearLocalStorage} from "Logging";
 import { eventBus } from 'WsUtils'
+import ExecButton from "../../components/ExecButton.vue";
 
 // ________________________________________________________________________________
 // LOGGING
@@ -86,22 +87,22 @@ onMounted(() => {
 
 
 <template>
-  <x-section extra="fs-4" :visible="true" k="Notification">
+  <x-section :level="2" :visible="true" k="Notification">
 
     <template v-slot:header>
       <ExecButton icon="fa-info" :callback="() => apiMain.selectDocumentation(notifyStore.documentation)"></ExecButton>
     </template>
 
-    <x-section extra="fs-4" :visible="true" k="Queued">
-      <button @click="generateNotify" class="btn btn-dark mb-2">Generate Notify</button>
-      <button @click="generateClientEvent" class="btn btn-dark mb-2">Generate Client Event</button>
+    <x-section :level="3" :visible="true" k="Queued">
+      <ExecButton :callback="() => generateNotify()" >Generate Notify</ExecButton>
+      <ExecButton :callback="() => generateClientEvent()" >Generate Client Event</ExecButton>
 
       <x-table-open :exclude="['']" :arr="notifyStore.notifyQueue" v-slot="slotProps">
       </x-table-open>
     </x-section>
 
-    <x-section extra="fs-4" :visible="true" k="Archive">
-      <ExecButton :callback=" () => notifyApi.clearNotifyHistory()" icon="fa-trash me-1" class="btn btn-dark mb-2">Clear
+    <x-section :level="3" :visible="true" k="Archive">
+      <ExecButton :callback=" () => notifyApi.clearNotifyHistory()" icon="fa-trash me-1" >Clear
       </ExecButton>
 
       <x-table-open :exclude="['']" :arr="notifyStore.notifyLog" v-slot="slotProps">
@@ -109,9 +110,9 @@ onMounted(() => {
     </x-section>
 
 
-    <x-section extra="fs-4" :visible="true" k="Logger Configuration">
-      <ExecButton :callback=" () => updateLoggers" icon="fa-rotate-right me-1" class="btn btn-dark me-2 mb-2"></ExecButton>
-      <ExecButton :callback=" () => clearLocalStorage" icon="fa-trash me-1" class="btn btn-dark mb-2">Clear Local Storage
+    <x-section :level="3" :visible="true" k="Logger Configuration">
+      <ExecButton :callback=" () => updateLoggers" icon="fa-rotate-right me-1" ></ExecButton>
+      <ExecButton :callback=" () => clearLocalStorage" icon="fa-trash me-1" >Clear Local Storage
       </ExecButton>
 
       <div class="row mb-2">

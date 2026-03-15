@@ -40,13 +40,14 @@ export default class Island {
 
         this.instanceId = config.instanceId
         this.SERVER_API_URL = config.SERVER_API_URL
+        this.type = "Island"
+        this.apiMain = apiMain;
 
         this.LOG_HEADER = `${this.instanceId}`;
         this.logger = getLogger(this.LOG_HEADER);
         this.logger.debug('[INIT]');
 
         this.connection = new Connection(config)
-
         // ________________________________________________________________________________
         // STATE - NOT saved in browser storage
         // ________________________________________________________________________________
@@ -335,6 +336,9 @@ export default class Island {
 
     getText = async (endpoint) => {
         this.logger.info(`[getText] -  endpoint=${endpoint}`)
+        if (endpoint.startsWith("http") || endpoint.startsWith("HTTP")) {
+            return await Http.getText(endpoint, "omit")
+        }
         if (endpoint.startsWith('/c0ckp1t/')) {
             const path = `${this.config.SERVER_API_URL}${endpoint}`;
             return await Http.getText(path)

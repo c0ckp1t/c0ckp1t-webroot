@@ -1,4 +1,5 @@
 import {markRaw, reactive, watch, defineAsyncComponent, createApp} from 'vue'
+import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from 'Logging';
 
 // ________________________________________________________________________________
@@ -67,6 +68,7 @@ let cachedDarkBg = null
 // STORE
 // ________________________________________________________________________________
 export const store = reactive({
+    bootswatchURL: storeMain.config?.bootswatchURL || "https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist",
     // ________________________________________________________________________________
     // Theme Colors (for theme editor persistence across navigation)
     // ________________________________________________________________________________
@@ -842,6 +844,10 @@ function loadBootswatchTheme(themeName, setThemeMode) {
     const bootstrapMainLink = document.getElementById(BOOTSTRAP_MAIN_ID)
     if (bootstrapMainLink) {
         bootstrapMainLink.disabled = true
+    } else {
+        // It is important to insert the Bootswatch CSS after certain styles, and this
+        //  determines where it will be inserted.
+        logger.warn("The original bootstrap.min.css is missing (bad because will insert at bottom)")
     }
 
     // Find or create the Bootswatch link element
@@ -859,7 +865,8 @@ function loadBootswatchTheme(themeName, setThemeMode) {
     }
 
     // Set the href to load the Bootswatch CSS
-    bootswatchLink.href = `/css/bootwatch/${themeName}/bootstrap.min.css`
+    // bootswatchLink.href = `/css/bootwatch/${themeName}/bootstrap.min.css`
+    bootswatchLink.href = `${store.bootswatchURL}/${themeName}/bootstrap.min.css`
     bootswatchLink.disabled = false
 
     // Set to light mode by default for consistent viewing

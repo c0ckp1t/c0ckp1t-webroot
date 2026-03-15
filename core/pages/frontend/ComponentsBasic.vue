@@ -10,6 +10,7 @@
 // IMPORTS
 // ________________________________________________________________________________
 import {reactive, computed, ref, onMounted, onUnmounted, defineAsyncComponent, watch} from 'vue'
+import { store as storeMain, api as apiMain } from 'GlobalStore'
 import {getLogger} from "Logging";
 // !# C0CKP1T_START imports
 import ComponentView from "./component-view.vue";
@@ -30,6 +31,9 @@ const local = reactive({
   id: LOG_HEADER,
   isLoading: false,
   updated: Date.now(),
+  pathPrefix: storeMain.config?.componentPrefix ?? "",
+  defaultExpand: false,
+
   toc: [
     {to: 'x-input', name: 'x-input'},
     {to: 'x-label', name: 'x-label'},
@@ -50,7 +54,6 @@ const local = reactive({
     {to: 'x-nav', name: 'x-nav'},
     {to: 'x-tabs', name: 'x-tabs'},
   ],
-  pathPrefix: "/v4/webroot/assets/ui/",
   imgDefault: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.2/core/img/logo_v1.svg",
 
   xInputTextNumber: 123,
@@ -105,8 +108,7 @@ onMounted(async () => {
   <!--  !# C0CKP1T_START template -->
   <x-section :level="2" :visible="true" k="X Vue Components">
 
-
-    <ComponentView name="x-section" url="/components/xsection.vue">
+    <ComponentView name="x-section" :url="`${local.pathPrefix}/components/xsection.vue`" :defaultExpand="local.defaultExpand">
 
       <x-section :level="5" k="Level 6" :visible="true">
         <template v-slot:header><span class="text-white">Header</span></template>
@@ -138,7 +140,7 @@ onMounted(async () => {
 
     </ComponentView>
 
-    <ComponentView name="ExecButton" url="/components/ExecButton.vue">
+    <ComponentView name="ExecButton"  :url="`${local.pathPrefix}/components/ExecButton.vue`" :defaultExpand="local.defaultExpand">
       <ExecButton :callback="() => delay()"> Default</ExecButton>
       <ExecButton class="btn btn-primary" icon="fa-heart me-1" :callback="() => delay()"> btn-primary</ExecButton>
       <ExecButton class="btn btn-dark" icon="fa-heart me-1" :callback="() => delay()"> btn-dark</ExecButton>
@@ -147,7 +149,7 @@ onMounted(async () => {
       <ExecButton class="btn btn-link" icon="fa-heart me-1" :callback="() => delay()"> btn-link</ExecButton>
     </ComponentView>
 
-    <ComponentView name="x-input" url="/components/xinput.vue">
+    <ComponentView name="x-input"  :url="`${local.pathPrefix}/components/xinput.vue`" :defaultExpand="local.defaultExpand">
       <x-input k="Default" v-model="local.xInputText"></x-input>
       <x-input k="Number" v-model="local.xInputTextNumber" type="Number"></x-input>
       <x-input k="showLabel=false" v-model="local.xInputText" :showLabel="false"></x-input>
@@ -157,7 +159,7 @@ onMounted(async () => {
       </x-input>
     </ComponentView>
 
-    <ComponentView name="x-label" url="/components/xlabel.vue">
+    <ComponentView name="x-label"  :url="`${local.pathPrefix}/components/xlabel.vue`" :defaultExpand="local.defaultExpand">
       <x-label k="Default">my label value template</x-label>
       <x-label k="Website">https://example.com</x-label>
       <x-label k="D" :isCompact="true">compact</x-label>
@@ -165,7 +167,7 @@ onMounted(async () => {
     </ComponentView>
 
 
-    <ComponentView name="x-checkbox" url="/components/xcheckbox.vue">
+    <ComponentView name="x-checkbox"  :url="`${local.pathPrefix}/components/xcheckbox.vue`" :defaultExpand="local.defaultExpand">
       <x-checkbox k="" v-model="local.myCheckBox" class="fs-5"/>
       <x-checkbox k="Default" v-model="local.myCheckBox"/>
       <x-checkbox k="style=boder: 1px solid red" v-model="local.myCheckBox" style="border: 1px solid red"/>
@@ -177,15 +179,15 @@ onMounted(async () => {
 
     </ComponentView>
 
-    <ComponentView name="x-check" url="/components/xcheck.vue">
+    <ComponentView name="x-check"  :url="`${local.pathPrefix}/components/xcheck.vue`" :defaultExpand="local.defaultExpand">
         <x-check k="My Check Box" :v="local.myCheckBox" />
     </ComponentView>
 
-    <ComponentView name="x-toggle" url="/components/xtoggle.vue">
+    <ComponentView name="x-toggle"  :url="`${local.pathPrefix}/components/xtoggle.vue`" :defaultExpand="local.defaultExpand">
       <x-toggle k="My Toggle" v-model="local.myToggle"></x-toggle>
     </ComponentView>
 
-    <ComponentView name="x-toggle3" url="/components/xtoggle3.vue">
+    <ComponentView name="x-toggle3"  :url="`${local.pathPrefix}/components/xtoggle3.vue`" :defaultExpand="local.defaultExpand">
       <div class="container">
         <x-toggle3 k="My Toggle" v-model="local.myToggle3"></x-toggle3>
       </div>
@@ -194,32 +196,32 @@ onMounted(async () => {
       </div>
     </ComponentView>
 
-    <ComponentView name="x-collapse" url="/components/xcollapse.vue">
+    <ComponentView name="x-collapse"  :url="`${local.pathPrefix}/components/xcollapse.vue`" :defaultExpand="local.defaultExpand">
       <x-collapse k="Services" v-model="local.myToggle">Body of collapse</x-collapse>
       <x-collapse style="border: 1px solid green" k="Services" v-model="local.myToggle">Body of collapse</x-collapse>
     </ComponentView>
 
-    <ComponentView name="x-kv" url="/components/xkv.vue">
+    <ComponentView name="x-kv"  :url="`${local.pathPrefix}/components/xkv.vue`" :defaultExpand="local.defaultExpand">
       <x-kv k="local" :obj="local.myMap"></x-kv>
     </ComponentView>
 
-    <ComponentView name="x-list" url="/components/xlist.vue">
+    <ComponentView name="x-list"  :url="`${local.pathPrefix}/components/xlist.vue`" :defaultExpand="local.defaultExpand">
       <x-list k="local" v-model="local.myList"></x-list>
     </ComponentView>
 
-    <ComponentView name="x-map" url="/components/xmap.vue">
+    <ComponentView name="x-map"  :url="`${local.pathPrefix}/components/xmap.vue`" :defaultExpand="local.defaultExpand">
       <x-map k="local" v-model="local.myMap"></x-map>
     </ComponentView>
 
-    <ComponentView name="x-dropdown" url="/components/xdropdown.vue">
+    <ComponentView name="x-dropdown"  :url="`${local.pathPrefix}/components/xdropdown.vue`" :defaultExpand="local.defaultExpand">
       <x-dropdown k="Route Type: " :items="local.myDropDownItems" v-model="local.myDropDown"></x-dropdown>
     </ComponentView>
 
-    <ComponentView name="x-dropdown2" url="/components/xdropdown2.vue">
+    <ComponentView name="x-dropdown2"  :url="`${local.pathPrefix}/components/xdropdown2.vue`" :defaultExpand="local.defaultExpand">
       <x-dropdown2 k="Route Type: " :items="local.myDropDownItems" v-model="local.myDropDown"></x-dropdown2>
     </ComponentView>
 
-    <ComponentView name="x-json" url="/components/xjson.vue">
+    <ComponentView name="x-json"  :url="`${local.pathPrefix}/components/xjson.vue`" :defaultExpand="local.defaultExpand">
       <x-json :obj="local.myTableData"></x-json>
       <div class="mt-2">
         <x-json :obj="local.myTableData" :expanded="true"></x-json>
@@ -227,7 +229,7 @@ onMounted(async () => {
     </ComponentView>
 
 
-    <ComponentView name="x-table-open" url="/components/xtable-open.vue">
+    <ComponentView name="x-table-open"  :url="`${local.pathPrefix}/components/xtable-open.vue`" :defaultExpand="local.defaultExpand">
       <x-table-open :exclude="[]" :arr="local.myTableData" v-slot="slotProps">
         {{ local.myTableData[slotProps.v] }}
       </x-table-open>
@@ -247,7 +249,7 @@ onMounted(async () => {
     </ComponentView>
 
 
-    <ComponentView name="x-nav" url="/components/xnav.vue">
+    <ComponentView name="x-nav"  :url="`${local.pathPrefix}/components/xnav.vue`" :defaultExpand="local.defaultExpand">
       <div class="container">
         <x-nav :arr="local.xnav" v-model="local.xNavSel"></x-nav>
       </div>
@@ -256,7 +258,7 @@ onMounted(async () => {
       </div>
     </ComponentView>
 
-    <ComponentView name="x-tabs" url="/components/xtabs.vue">
+    <ComponentView name="x-tabs"  :url="`${local.pathPrefix}/components/xtabs.vue`" :defaultExpand="local.defaultExpand">
 
 
       <x-tabs>
@@ -276,18 +278,18 @@ onMounted(async () => {
       </x-tabs>
     </ComponentView>
 
-    <ComponentView name="x-textarea" url="/components/xtextarea.vue">
+    <ComponentView name="x-textarea"  :url="`${local.pathPrefix}/components/xtextarea.vue`" :defaultExpand="local.defaultExpand">
       <div class="container">
         <x-textarea k="Description" :lines="5" v-model="local.textArea"></x-textarea>
       </div>
     </ComponentView>
 
-    <ComponentView name="x-hidden" url="/components/xhidden.vue">
+    <ComponentView name="x-hidden"  :url="`${local.pathPrefix}/components/xhidden.vue`" :defaultExpand="local.defaultExpand">
       <x-hidden k="Hidden"> This is hidden text</x-hidden>
     </ComponentView>
 
 
-    <ComponentView name="x-card" url="/components/xcard.vue">
+    <ComponentView name="x-card"  :url="`${local.pathPrefix}/components/xcard.vue`" :defaultExpand="local.defaultExpand">
       <x-card k="Title" :no-image="true">Content here</x-card>
       <hr>
       <x-card k="Title">Content here</x-card>
@@ -315,7 +317,7 @@ onMounted(async () => {
       </div>
     </ComponentView>
 
-    <ComponentView name="x-card-h" url="/components/xcard-h.vue">
+    <ComponentView name="x-card-h"  :url="`${local.pathPrefix}/components/xcard-h.vue`" :defaultExpand="local.defaultExpand">
       <x-card-h k="Title" :no-image="true">Content here</x-card-h>
       <x-card-h k="Title">Content here</x-card-h>
       <x-card-h k="Title" :img-src="local.imgDefault">Content here</x-card-h>

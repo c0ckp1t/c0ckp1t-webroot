@@ -27,7 +27,8 @@ const LogWsExec2 = defineAsyncComponent(() => import("./traffic/log-ws-exec2.vue
 // ________________________________________________________________________________
 const local = reactive({
   id: `ws-log`,
-  isVisibile: {}
+  isVisibile: {},
+  doc: "./docs/Frontend/Traffic.md",
 })
 
 //________________________________________________________________________________
@@ -82,11 +83,11 @@ function clickTable(idx) {
 
 
 <template>
-  <x-section extra="fs-4" :visible="true" k="Websocket Logs">
+  <x-section :level="2" :visible="true" k="Websocket Logs">
 
 
     <template v-slot:header>
-      <ExecButton icon="fa-info" :callback="() => apiMain.selectDocumentation(logStore.documentation)"></ExecButton>
+      <ExecButton icon="fa-info" :callback="() => apiMain.routeByEndpoint(local.doc)"></ExecButton>
     </template>
 
       <x-collapse k="logStore">

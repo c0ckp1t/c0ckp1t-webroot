@@ -8,7 +8,7 @@
 // ________________________________________________________________________________
 // IMPORTS
 // ________________________________________________________________________________
-import {reactive} from 'vue'
+import {reactive, watch} from 'vue'
 import {getLogger} from "Logging"
 // !# C0CKP1T_START imports
 
@@ -19,8 +19,12 @@ const props = defineProps({
   },
   url: {
     type: String,
-    default: '/v4/webroot/assets/ui/xinput.vue'
+    default: ''
   },
+  defaultExpand: {
+    type: Boolean,
+    default: true
+  }
 })
 // !# C0CKP1T_END imports
 
@@ -35,21 +39,31 @@ logger.debug("[INIT]")
 const local = reactive({
   id: LOG_HEADER,
   showCode: false,
+  showContent: props.defaultExpand
 })
+
+function showCode() {
+  if(local.showContent === false) {
+    local.showContent = true
+  }
+  local.showCode = !local.showCode
+}
+
+
 // !# C0CKP1T_END script
 </script>
 
 <template>
   <!--  !# C0CKP1T_START template -->
-  <x-section :id="props.name" :level="3" :k="props.name" class="mb-4">
+  <x-section :id="props.name" :level="3" :k="props.name" class="mb-4" :visible="local.showContent">
     <template v-slot:header>
-      <button class="btn btn-light btn-sm" @click.stop="local.showCode = !local.showCode">
+      <button v-if="props.url" class="btn btn-primary btn-sm" @click.stop="showCode">
         <i class="fa-solid fa-eye me-1"></i>Code
       </button>
     </template>
 
     <div class="container mb-2" v-if="local.showCode">
-      <x-markdown :v="`<CodeItem url=${props.url} lang=javascript></CodeItem>`"></x-markdown>
+      <x-code  :url="props.url" lang="javascript" />
     </div>
     <div class="container mb-2">
       <slot></slot>

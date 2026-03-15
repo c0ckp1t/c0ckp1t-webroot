@@ -8,7 +8,7 @@
 // IMPORTS
 // ________________________________________________________________________________
 import {reactive, markRaw, onMounted, ref, defineAsyncComponent, watch} from 'vue'
-import {store as storeMain, api as apiMain } from 'GlobalStore'
+import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
 import node from "./nodes/node.vue"
 import ConnectionHeader from "./sfc/connection-header.vue"
@@ -47,20 +47,20 @@ onMounted(async () => {
   itemRef.value.addEventListener('show.bs.offcanvas', () => {
     storeMain.mainOffCanvasOpen = true
   })
-  
+
   itemRef.value.addEventListener('shown.bs.offcanvas', () => {
     // Measure actual width after fully shown
     storeMain.mainOffCanvasWidth = itemRef.value.offsetWidth
   })
-  
+
   itemRef.value.addEventListener('hide.bs.offcanvas', () => {
     storeMain.mainOffCanvasOpen = false
   })
-  
+
   itemRef.value.addEventListener('hidden.bs.offcanvas', () => {
     storeMain.mainOffCanvasWidth = 0
   })
-  
+
   // THEN initialize and show
   await init()
 })
@@ -69,7 +69,7 @@ onMounted(async () => {
 
 
 <template>
-  <div ref="itemRef" class="offcanvas offcanvas-start" tabindex="-1"  data-bs-scroll="true"
+  <div ref="itemRef" class="offcanvas offcanvas-start" tabindex="-1" data-bs-scroll="true"
        data-bs-backdrop="false" aria-labelledby="offcanvasRightLabel">
 
     <div class="offcanvas-body">
@@ -80,19 +80,20 @@ onMounted(async () => {
           <node :v="storeMain.r[k].store.root" :id="k"></node>
         </ul>
       </div>
-
     </div>
+
   </div>
 </template>
 
 
 <style scoped>
+
 .offcanvas {
-  width: fit-content;                   /* Shrink to content */
-  max-width: 500px;                     /* Your chosen max-width */
-  top: var(--navbar-height);            /* Start below navbar */
+  width: fit-content !important;
+  max-width: 500px !important;
+  top: var(--navbar-height); /* Start below navbar */
   height: calc(100vh - var(--navbar-height)); /* Fill remaining viewport */
-  z-index: 1020;                        /* Below navbar (1030) */
+  z-index: 1020; /* Below navbar (1030) */
 }
 
 </style>

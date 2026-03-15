@@ -9,7 +9,6 @@ import {ref, markRaw, reactive, watch, onMounted, computed, defineAsyncComponent
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
 import {useRouter} from "vue-router";
-import {substrAfterFirstSlash} from "JsUtils";
 
 const ConnectionHeaderDetails = defineAsyncComponent(() => import("./connections/connection-header-details.vue"))
 const router = useRouter()
@@ -24,6 +23,7 @@ const logger = getLogger(LOG_HEADER)
 // STATE
 //________________________________________________________________________________
 const local = reactive({
+  id: LOG_HEADER,
   isLoading: false,
   showStoreObject: false,
   showStateObject: false,
@@ -32,8 +32,6 @@ const local = reactive({
   isPasswordVisible: false
 });
 
-
-// TODO: how to get this ? Probably from URL? or as a prop
 const instanceId = computed(() => {
   return router.currentRoute.value.params?.id ?? null
 })
@@ -75,8 +73,6 @@ onMounted(() => {
 
 <template>
   <div class="mt-2 mb-2 connection" v-if="connection">
-
-
 
     <div class="row mt-2 mb-2">
       <div class="col"></div>

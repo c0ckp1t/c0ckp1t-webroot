@@ -33,6 +33,10 @@ const props = defineProps({
   remotePathMapping: {
     type: String,
     default: "/docs"
+  },
+  enableToc: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -240,7 +244,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div class="col-auto order-first order-lg-last">
+      <div class="col-auto order-first order-lg-last" v-if="props.enableToc">
         <MdToc :v="local.markdownText" :maxLevel="2" />
       </div>
 
@@ -253,7 +257,7 @@ onMounted(() => {
 <style scoped>
 .md-code {
   padding: 1rem;
-  border: 1px solid var(--color3);
+  border: 1px solid var(--bs-secondary);
   border-radius: 0.5rem;
   white-space: pre-wrap;
   word-break: break-all;

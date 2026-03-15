@@ -189,6 +189,7 @@ export function defaultVueComponents(prefix = "") {
         XTextarea: { path: `${prefix}/components/xtextarea.vue`, hash: `f8bb08419082aa5443630ab07172674b50c7a248` },
         XHidden: { path: `${prefix}/components/xhidden.vue`, hash: `ecb396e12dd894040e715c0854275e4d5016fcb9` },
         XCode: { path: `${prefix}/components/xcode.vue`, hash: `4d9d9165fea0539c9a983fcdffae8dedcfd537ae` },
+        XCodeSlot: { path: `${prefix}/components/xcode-slot.vue`, hash: `` },
         XButton: { path: `${prefix}/components/xbutton.vue`, hash: `2e956caa47e46377ea5a809f7438d0fc38be73b9` },
         XTabs: { path: `${prefix}/components/xtabs.vue`, hash: `83dc219106bdc86ae86dcd16cf95ebd7f11bc952` },
         XKv: { path: `${prefix}/components/xkv.vue`, hash: `8951d3a5e3786cfc9c705b13c1f71e3f90dd2552` },

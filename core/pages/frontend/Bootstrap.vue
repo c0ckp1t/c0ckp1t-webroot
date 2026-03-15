@@ -12,7 +12,7 @@
 import {reactive, computed, ref, onMounted, onUnmounted, defineAsyncComponent, watch} from 'vue'
 import {getLogger} from "Logging";
 // !# C0CKP1T_START imports
-import ComponentView from "./component-view.vue";
+import ComponentView from "./component-view-html.vue";
 // !# C0CKP1T_END imports
 
 // ________________________________________________________________________________
@@ -30,6 +30,8 @@ const local = reactive({
   id: LOG_HEADER,
   isLoading: false,
   updated: Date.now(),
+  defaultExpand: false,
+
   toc: [
     {to: 'navbars', name: 'Navbars'},
     {to: 'buttons', name: 'Buttons'},
@@ -69,7 +71,7 @@ onMounted(async () => {
 
 
     <!-- Navbars -->
-    <ComponentView name="navbars" url="https://bootswatch.com/default/">
+    <ComponentView name="navbars" :defaultExpand="local.defaultExpand">
       <nav class="navbar navbar-expand-lg bg-primary mb-3" data-bs-theme="dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Navbar</a>
@@ -145,7 +147,7 @@ onMounted(async () => {
     </ComponentView>
 
     <!-- Buttons -->
-    <ComponentView name="buttons" url="https://bootswatch.com/default/">
+    <ComponentView name="buttons" :defaultExpand="local.defaultExpand">
       <div class="mb-3">
         <button type="button" class="btn btn-primary me-1">Primary</button>
         <button type="button" class="btn btn-secondary me-1">Secondary</button>
@@ -235,7 +237,7 @@ onMounted(async () => {
     </ComponentView>
 
     <!-- Typography -->
-    <ComponentView name="typography" url="https://bootswatch.com/default/">
+    <ComponentView name="typography" :defaultExpand="local.defaultExpand">
       <div class="row">
         <div class="col-lg-4">
           <div class="bs-component">
@@ -288,7 +290,7 @@ onMounted(async () => {
     </ComponentView>
 
     <!-- Tables -->
-    <ComponentView name="tables" url="https://bootswatch.com/default/">
+    <ComponentView name="tables" :defaultExpand="local.defaultExpand">
       <table class="table table-hover">
         <thead>
         <tr>
@@ -364,7 +366,7 @@ onMounted(async () => {
     </ComponentView>
 
     <!-- Forms -->
-    <ComponentView name="forms" url="https://bootswatch.com/default/">
+    <ComponentView name="forms" :defaultExpand="local.defaultExpand">
       <div class="row">
         <div class="col-lg-6">
           <form>
@@ -527,7 +529,7 @@ onMounted(async () => {
     </ComponentView>
 
     <!-- Navs -->
-    <ComponentView name="navs" url="https://bootswatch.com/default/">
+    <ComponentView name="navs" :defaultExpand="local.defaultExpand">
       <div class="row mb-5">
         <div class="col-lg-6">
           <h2 id="nav-tabs">Tabs</h2>
@@ -719,7 +721,7 @@ onMounted(async () => {
     </ComponentView>
 
     <!-- Indicators -->
-    <ComponentView name="indicators" url="https://bootswatch.com/default/">
+    <ComponentView name="indicators" :defaultExpand="local.defaultExpand">
       <div class="row">
         <div class="col-lg-12">
           <h2>Alerts</h2>
@@ -810,7 +812,7 @@ onMounted(async () => {
     </ComponentView>
 
     <!-- Progress -->
-    <ComponentView name="progress" url="https://bootswatch.com/default/">
+    <ComponentView name="progress" :defaultExpand="local.defaultExpand">
       <h3 id="progress-basic">Basic</h3>
       <div class="bs-component mb-3">
         <div class="progress">
@@ -871,7 +873,7 @@ onMounted(async () => {
     </ComponentView>
 
     <!-- Containers -->
-    <ComponentView name="containers" url="https://bootswatch.com/default/">
+    <ComponentView name="containers" :defaultExpand="local.defaultExpand">
       <div class="row">
         <div class="col-lg-12">
           <h2>List groups</h2>
@@ -1035,7 +1037,7 @@ onMounted(async () => {
     </ComponentView>
 
     <!-- Dialogs -->
-    <ComponentView name="dialogs" url="https://bootswatch.com/default/">
+    <ComponentView name="dialogs" :defaultExpand="local.defaultExpand">
       <div class="row">
         <div class="col-lg-6">
           <h2>Modals</h2>
@@ -1132,9 +1134,6 @@ onMounted(async () => {
 
 <style scoped>
 /* !# C0CKP1T_START style */
-.container {
-  display: flex;
-  justify-content: center;
-}
+
 /* !# C0CKP1T_END style */
 </style>

@@ -81,6 +81,9 @@ export const DEFAULTS = {
         "anonymous": "INFO",
         "demo": "INFO"
     },
+
+
+    bootswatchURL: "https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist",
 };
 
 

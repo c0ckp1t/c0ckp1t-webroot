@@ -76,12 +76,12 @@ onMounted(() => {
 
 <template>
   <div class="page-connections">
-    <x-section extra="fs-4" k="Connections" >
+    <x-section :level="2" k="Connections" >
       <div v-for="(v, k) in storeMain.r" class="row m-2">
         <ConnectionHeaderDetails :id="k"></ConnectionHeaderDetails>
       </div>
 
-      <x-section extra="fs-5" :visible="true" k="Create New Connection">
+      <x-section :level="3" :visible="true" k="Create New Connection">
         <div class="row mb-2">
           <div class="col">
             <x-input k="Name" v-model="local.connectionName"></x-input>

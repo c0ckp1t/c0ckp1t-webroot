@@ -102,7 +102,7 @@ onMounted(() => {
 
 
 <template>
-  <x-section :level="3" :visible="true" k="Cache">
+  <x-section :level="2" :visible="true" k="Cache">
 
     <template v-slot:header>
       <ExecButton icon="fa-rotate-right" :callback="() => init()"></ExecButton>
