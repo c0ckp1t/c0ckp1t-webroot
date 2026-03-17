@@ -220,7 +220,7 @@ export const api = {
 
     routeByEndpoint: async (endpoint) => {
         const path = endpoint.split("/")
-        logger.info(`[routeByEndpoint] - endpoint=${endpoint}, path=${path}`)
+        logger.debug(`[routeByEndpoint] - endpoint=${endpoint}, path=${path}`)
         try {
             if(path.length > 3) {
                 extractLastPath(endpoint)

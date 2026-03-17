@@ -1,4 +1,12 @@
 <script setup>
+/*
+  This component is used to display code snippets with syntax highlighting.
+  It fetches the code from a specified URL and can display either the full code or a specific line range.
+  It also includes a button to copy the code to the clipboard.
+
+  <x-code url="" lang="html" />
+
+*/
 import {computed, defineProps, reactive, onMounted} from 'vue'
 
 import {store as storeMain, api as apiMain } from 'GlobalStore'

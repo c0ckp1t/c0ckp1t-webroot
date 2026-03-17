@@ -8,7 +8,7 @@ const { map, takeWhile, filter, take, distinctUntilChanged } = rxjs.operators;
 import { Code2, toBinary, fromBinary, eventBus } from 'WsUtils'
 
 // Note: This is global because we want to search across all connections
-import { api as apiLogger } from './WsLogUtils.mjs'
+import { api as apiLogger } from 'WsLogUtils'
 
 //________________________________________________________________________________
 // ConnectionStates

@@ -251,6 +251,7 @@ export const Http = {
     }
 }
 
+const endpointNotFoundSuffixes = ['.vue', '.mjs', '.md']
 export async function httpResponseToResp(response, endpoint) {
     if (!response.ok) {
         return {
@@ -259,7 +260,7 @@ export async function httpResponseToResp(response, endpoint) {
         };
     }
     const text = await response.text();
-    if (text.startsWith('<!DOCTYPE html>')) {
+    if (text.startsWith('<!DOCTYPE html>') && endpointNotFoundSuffixes.some(suffix => endpoint.endsWith(suffix))) {
         return {
             isOk: false,
             result: `[NOT_FOUND]\n\n${endpoint}`
@@ -270,4 +271,3 @@ export async function httpResponseToResp(response, endpoint) {
         result: text
     };
 }
-

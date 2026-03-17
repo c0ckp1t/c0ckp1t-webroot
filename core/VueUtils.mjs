@@ -23,6 +23,7 @@ import * as GlobalStore from 'GlobalStore'
 import * as JsUtils from "JsUtils";
 import * as NotifyUtils from "NotifyUtils";
 import * as WsUtils from "WsUtils";
+import * as WsLogUtils from "WsLogUtils";
 
 const katexTags = ['mn', 'mfrac', 'mrow', 'annotation', 'semantics', 'math',
     'mi', 'mo', "mtext", "msub", "mspace", "msup", "mover", "munder", "msqrt",
@@ -68,6 +69,7 @@ const options =  {
     moduleCache: {
         vue: Vue,
         "vue-router": VueRouter,
+        WsLogUtils: WsLogUtils,
         JsUtils: JsUtils,
         WsUtils: WsUtils,
         Logging: Logging,

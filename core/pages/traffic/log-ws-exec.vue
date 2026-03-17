@@ -4,9 +4,9 @@
 // ________________________________________________________________________________
 // IMPORTS
 // ________________________________________________________________________________
-import { reactive, watch, onMounted, computed } from 'vue'
+import {reactive, watch, onMounted, computed} from 'vue'
 import {store as storeMain, api as methods} from 'GlobalStore'
-import { getLogger } from "Logging"
+import {getLogger} from "Logging"
 import {toBinary, fromBinary, fromByteArray, Code2} from "WsUtils"
 
 const $moment = storeMain.app.config.globalProperties.$moment;
@@ -37,9 +37,10 @@ const exec = computed(() => {
   let resp = null
   let complete = null
   let error = null
-  props.v.in.forEach( pkt => {
-    if(pkt.code === Code2.EXEC_RESP) {
+  props.v.in.forEach(pkt => {
+    if (pkt.code === Code2.EXEC_RESP) {
       resp = fromBinary(pkt.bytes)
+      resp.result = tryJsonParse(resp.result)
     } else if (pkt.code === Code2.ACCEPT) {
       accept = "ACCEPT"
     } else if (pkt.code === Code2.COMPLETE) {
@@ -58,6 +59,27 @@ const exec = computed(() => {
   }
 })
 
+function tryJsonParse(result) {
+  try {
+    return JSON.parse(result);
+  } catch (error) {
+    return result;
+  }
+}
+
+function tryJsonParseRecursive(result) {
+  try {
+    const parsedJson = JSON.parse(result);
+    for (let key in parsedJson) {
+      if (typeof parsedJson[key] === 'string') {
+        parsedJson[key] = recursiveJsonParse(parsedJson[key]);
+      }
+    }
+    return parsedJson;
+  } catch (error) {
+    return dto;
+  }
+}
 // ________________________________________________________________________________
 // EVENT METHODS
 // ________________________________________________________________________________
@@ -70,49 +92,38 @@ function toggleVisible() {
 
 <template>
   <div class="log-ws-exec">
+
     <div class="row">
       <div class="col-auto">
-        {{props.v.type}}
+        <x-label :isCompact="true" k="type"> {{ props.v.type }}</x-label>
       </div>
       <div class="col-auto">
-        {{props.v.out[0].args}}
-      </div>
-    </div>
-    <div class="row mt-2">
-        <div v-if="exec.accept !== null">
-          <span class="fw-bold pe-2">{{exec.accept}}</span>
-        </div>
-        <div v-else>
-          MISSING ACCEPT
-        </div>
-
-        <div v-if="exec.resp !== null">
-          <div class="row">
-            <x-collapse k="EXEC_RESP">
-              <x-json :obj="exec.resp"></x-json>
-            </x-collapse>
-          </div>
-        </div>
-        <div v-else>
-          Missing EXEC_RESP
-        </div>
-
-        <div v-if="exec.complete !== null">
-          <span class="fw-bold text-success pe-2">{{exec.complete}}</span>
-        </div>
-        <div v-else>
-          MISSING COMPLETE
-        </div>
-
-      <div v-if="exec.error !== null">
-        {{exec.error}}
+        <x-label :isCompact="true" k="args">{{ props.v.out[0].args }}</x-label>
       </div>
     </div>
 
-    <div class="row mt-2">
-      <x-collapse k="Log Entity">
-        <x-json :obj="props.v"></x-json>
-      </x-collapse>
+    <div class="row container">
+
+      <x-section :level="4" :k="exec.accept !== null ? 'ACCEPTED' : 'MISSING ACCEPT'" :visible="true">
+        <span class="fw-bold pe-2">{{ exec.accept }}</span>
+      </x-section>
+
+      <x-section :level="4" :k="exec.resp !== null ? 'EXEC_RESP' : 'MISSING EXEC_RESP'" :visible="true">
+        <x-json :expanded="true"  :obj="exec.resp"></x-json>
+      </x-section>
+
+      <x-section :level="4" :k="exec.complete !== null ? 'COMPLETED' : 'MISSING COMPLETE'" :visible="true">
+        <span class="fw-bold text-success pe-2">{{ exec.complete }}</span>
+      </x-section>
+
+      <x-section :level="4" :k="exec.complete !== null ? 'COMPLETED' : 'MISSING COMPLETE'" :visible="true"
+                 v-if="exec.error !== null">
+        {{ exec.error }}
+      </x-section>
+
+      <x-section :level="5" k="Log Entity" :visible="false">
+        <x-json :expanded="true" :obj="props.v"></x-json>
+      </x-section>
     </div>
   </div>
 </template>

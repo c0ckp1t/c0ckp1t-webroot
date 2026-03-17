@@ -110,7 +110,7 @@ ${message}
     }
 
     retrieveText = async (registry, remotePath) => {
-        logger.info(`[retrieveText] - instanceId=${registry?.instanceId} remotePath=${remotePath}`)
+        logger.debug(`[retrieveText] - instanceId=${registry?.instanceId} remotePath=${remotePath}`)
         /**
         const key = remotePathURL.substring(remotePathURL.lastIndexOf('/') + 1)
         const cachedText = await cacheGet(key)

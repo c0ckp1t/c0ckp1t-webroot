@@ -95,7 +95,7 @@ export default class Island {
      * @returns {Promise<void>}
      */
     selectNode = async (node) => {
-        this.logger.info(`selectNode - node.endpoint=${node.endpoint}`);
+        this.logger.debug(`selectNode - node.endpoint=${node.endpoint}`);
         // this.apiMain.
         this.store.selectedNode = null;
         this.store.selectedNode = node;
@@ -168,6 +168,25 @@ export default class Island {
         // adjustNode(rootNode)
 
         this.store.root = rootNode;
+    }
+
+    /**
+     * Call when we recompile or make changes to a node
+     */
+    reload = async (node) => {
+        this.logger.debug('[reload]');
+        // Should I just reload entire island? or just the node?
+        // clear from routes
+        // i.e, /admin/wf/c0ckp1t-com
+        //      /admin/wf/c0ckp1t-com/admin
+        //      /admin/auth/api
+        //      /admin/auth/connections
+        //      etc ...
+        // clear from cache
+        // i.e, /admin/v3/workflows/ocr/www/components/sidebar.vue
+        //      /admin/v3/workflows/ocr/www/main.vue
+        //      etc ...
+        // reload root node
     }
 
 
@@ -335,7 +354,7 @@ export default class Island {
     }
 
     getText = async (endpoint) => {
-        this.logger.info(`[getText] -  endpoint=${endpoint}`)
+        this.logger.debug(`[getText] -  endpoint=${endpoint}`)
         if (endpoint.startsWith("http") || endpoint.startsWith("HTTP")) {
             return await Http.getText(endpoint, "omit")
         }
@@ -346,7 +365,7 @@ export default class Island {
         const args = ["read", endpoint]
         const res = await this.exec("/sys/resolver", args)
         if (!res.isOk) {
-            this.logger.info(`[getText] - error - endpoint=${endpoint}`)
+            this.logger.debug(`[getText] - error - endpoint=${endpoint}`)
             throw Error(`[READ_ERROR] - args=${args} - result=${res.result}`)
         }
         return res

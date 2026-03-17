@@ -91,7 +91,7 @@ export default class IslandDefault {
      * @returns {Promise<void>}
      */
     selectNode = async (node) => {
-        this.logger.info(`selectNode - node.endpoint=${node.endpoint}`);
+        this.logger.debug(`selectNode - node.endpoint=${node.endpoint}`);
         this.store.selectedNode = null;
         this.store.selectedNode = node;
         await this.apiMain.routeByEndpoint(node.endpoint);

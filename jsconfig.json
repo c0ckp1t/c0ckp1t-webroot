@@ -13,6 +13,7 @@
       "VueUtils": ["./core/VueUtils.mjs"],
       "JsUtils": ["./core/JsUtils.mjs"],
       "WsUtils": ["./core/WsUtils.mjs"],
+      "WsLogUtils": ["./core/WsLogUtils.mjs"],
       "Island": ["./core/Island.mjs"],
       "IslandDefault": ["./core/IslandDefault.mjs"]
     }

@@ -1,5 +1,5 @@
 
-# Known Issues
+# Issues 
 
 
 ## Theming 
@@ -23,4 +23,12 @@ does work.
 
 This means
 when it is a variable it doesn't go through VueUtils for some reason
+
+
+# Improvements
+
+## Switching islands
+
+When switching islands it would be great to call a function in the island to perform actions against the global store. This includes changing the nav bar and the footer and the title. perhaps even the theme.
+
 

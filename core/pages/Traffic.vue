@@ -1,15 +1,7 @@
 <script setup>
 /*
-    c0ckp1t-wslog.vue
-    This is a frontend for WsLogUtils
-
-      START -> FACK 1 ms -> ACK -> LACK 12 ms
-      Start always happens at time 0 ms
-      FACK 1ms means it took 1ms to get an ACK from c0ckp1t
-      LACK 12ms means it took 12ms from start until it completed the flow and sent LACK
-
-      START means REQ or LREQ
-
+    Traffic.vue
+    This is a frontend for WsLogUtils.mjs
 */
 
 //________________________________________________________________________________
@@ -18,7 +10,8 @@
 import { defineAsyncComponent, reactive, watch, onMounted, computed } from 'vue'
 import { store as storeMain, api as apiMain} from 'GlobalStore'
 
-import { store as logStore, api as logApi } from './traffic/WsLogUtils.mjs'
+import { store as logStore, api as logApi } from 'WsLogUtils'
+import ExecButton from "../../components/ExecButton.vue";
 const LogWsExec = defineAsyncComponent(() => import("./traffic/log-ws-exec.vue"))
 const LogWsExec2 = defineAsyncComponent(() => import("./traffic/log-ws-exec2.vue"))
 
@@ -26,59 +19,22 @@ const LogWsExec2 = defineAsyncComponent(() => import("./traffic/log-ws-exec2.vue
 // LOCAL STATE
 // ________________________________________________________________________________
 const local = reactive({
-  id: `ws-log`,
-  isVisibile: {},
-  doc: "./docs/Frontend/Traffic.md",
+  id: `Traffic.mjs`,
 })
-
-//________________________________________________________________________________
-// HELPERS
-//________________________________________________________________________________
-function recursiveJsonParse(dto) {
-  try {
-    //TODO: check value?
-    const parsedJson = JSON.parse(dto.message);
-    for (let key in parsedJson) {
-      if (typeof parsedJson[key] === 'string') {
-        parsedJson[key] = recursiveJsonParse(parsedJson[key]);
-      }
-    }
-    return parsedJson;
-  } catch (error) {
-    return dto;
-  }
-}
-
-function extractDtoType(dto) {
-  try {
-    return dto.type
-  } catch (error) {
-    return "unknown";
-  }
-}
 
 //________________________________________________________________________________
 // EVENT HANDLERS
 //________________________________________________________________________________
-function clearLogs() {
-  console.log(`clear logs not implemented`)
-}
-
-function select(index) {
-  console.log(`[${local.id}] -select ${index}`)
-  const id = index
-  if (Object.hasOwn(local.isVisibile, id)) {
-    delete local.isVisibile[id]
-  } else {
-    local.isVisibile[id] = true
-  }
-}
-
 function clickTable(idx) {
 
 }
 
-
+function jumpTo(index) {
+  const el = document.getElementById(`jump-${index}`)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+}
 </script>
 
 
@@ -87,22 +43,23 @@ function clickTable(idx) {
 
 
     <template v-slot:header>
-      <ExecButton icon="fa-info" :callback="() => apiMain.routeByEndpoint(local.doc)"></ExecButton>
+      <ExecButton icon="fa-info" :callback="() => apiMain.routeByEndpoint(logStore.documentation)"></ExecButton>
+      <ExecButton icon="fa-flask" :callback="() => logApi.addTestPkt()">Test</ExecButton>
     </template>
 
       <x-collapse k="logStore">
         <x-json :obj="logStore"></x-json>
       </x-collapse>
 
-      <div class="row mt-2 mb-3">
+      <div class="row mt-2 mb-3 align-items-center">
         <div class="col-auto">
           <x-toggle k="Logging Enabled" v-model="logStore.enabled"></x-toggle>
         </div>
         <div class="col-auto">
-          <x-label k="Index"><span class="input-group-text"><a :href="`/#/default/traffic/#jump-${logStore.historyIdx - 1}`">{{ logStore.historyIdx - 1 }}</a></span></x-label>
+          <x-label k="Index"><a href="#" @click.prevent="jumpTo(logStore.historyIdx - 1)">{{ logStore.historyIdx - 1 }}</a></x-label>
         </div>
         <div class="col-auto">
-          <button class="btn btn-dark" @click="logApi.clearLogs">Clear Logs</button>
+          <ExecButton icon="fa-trash me-1" :callback=" () => logApi.clearLogs()">Clear Logs</ExecButton>
         </div>
       </div>
 
@@ -112,7 +69,7 @@ function clickTable(idx) {
           <div v-if="logStore.history[slotProps.v].type === 'EXEC_REQ'">
             <LogWsExec :v="logStore.history[slotProps.v]"></LogWsExec>
           </div>
-          <div v-if="logStore.history[slotProps.v].type === 'EXEC2_REQ'">
+          <div v-else-if="logStore.history[slotProps.v].type === 'EXEC2_REQ'">
             <LogWsExec2 :v="logStore.history[slotProps.v]"></LogWsExec2>
           </div>
           <div v-else>
@@ -146,7 +103,9 @@ function clickTable(idx) {
   <!-- ________________________________________________________________________________ -->
 <style scoped>
 .active{
-  background-color: rgb(250 164 203);
+  background-color: var(--bs-warning);
+  color: var(--bs-dark);
+  padding: 2px;
   font-weight: 800;
   font-size: 1.2rem;
 }

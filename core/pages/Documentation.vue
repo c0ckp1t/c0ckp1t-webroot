@@ -112,7 +112,7 @@ function adjustHrefPath(documentPath) {
 async function reload() {
   // await docUtils.removeFromCache(local.currentPath, documentURL)
   const documentPath = docUtils.browserPathToDocumentPath(local.currentPath)
-  logger.info("[reload] documentPath=", documentPath)
+  logger.debug("[reload] documentPath=", documentPath)
   await href(documentPath)
 }
 
@@ -123,7 +123,7 @@ async function goToHomePage() {
 async function href(documentPath) {
   const browserPath = docUtils.documentPathToBrowserPath(local.currentPath, documentPath)
   const remotePath = docUtils.browserPathToRemotePath(browserPath)
-  logger.info(`[href] \nbrowserPath=${browserPath}\ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
+  logger.debug(`[href] \nbrowserPath=${browserPath}\ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
   local.markdownText = ""
 
   const resp = await docUtils.retrieveText(registry, remotePath)

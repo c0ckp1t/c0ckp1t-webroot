@@ -11,14 +11,13 @@ import {api as apiMain} from 'GlobalStore'
 import {store as notifyStore, api as notifyApi} from 'NotifyUtils'
 import {getLogger, listLoggers, setLogger, clearLocalStorage} from "Logging";
 import { eventBus } from 'WsUtils'
-import ExecButton from "../../components/ExecButton.vue";
 
 // ________________________________________________________________________________
 // LOGGING
 // ________________________________________________________________________________
-const LOG_HEADER = 'notify/notify-logs.vue'
+const LOG_HEADER = 'pages/Notifies.vue'
 const logger = getLogger(LOG_HEADER)
-logger.info("[INIT]")
+logger.debug("[INIT]")
 
 // ________________________________________________________________________________
 // STATE
