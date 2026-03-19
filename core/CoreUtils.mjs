@@ -61,16 +61,20 @@ export const DEFAULTS = {
     appMainComponent: "/core/PageMain.vue",
     // Used for requestion app components and files (GlobalStore.appEndpoint)
     appEndpoint: "",
-
     // Nav Configuration
     navCloseLogo: "/core/img/logo_v1.svg",
     navOpenLogo: "/core/img/logo_v2.svg",
     navHasSearch: false,
     navHasThemeSel: true,
-
+    // Footer Configuration
+    showFooter: true,
+    // NavBar Configuration
+    showTopNavBar: true,
+    // Documentation Configuration
+    showDocReload: true,
+    showDocTrail: false,
     // Determine if VueRouter is createWebHashHistory or createWebHistory
     vueRouterModeIsHash: true,
-
     // Logger Config (see Logging.mjs)
     defaultLogLevel: "INFO",
     defaultLoggerLevels: {
@@ -81,8 +85,7 @@ export const DEFAULTS = {
         "anonymous": "INFO",
         "demo": "INFO"
     },
-
-
+    // Theming
     bootswatchURL: "https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist",
 };
 

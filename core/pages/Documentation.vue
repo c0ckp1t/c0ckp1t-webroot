@@ -191,7 +191,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container mt-2">
 
 <!--        {{router}}-->
     <!--    <hr>-->
@@ -201,12 +201,12 @@ onMounted(() => {
 <!--        home {{ local.homepage }} <br>-->
 
 
-    <div class="row text-center mb-22" v-if="storeMain.showDocPath">
+    <div class="row text-center mb-22" v-if="storeMain.showDocTrail">
       <span class="fw-bold m-1">Current: <span>{{ local.currentPath }}</span> </span>
     </div>
 
     <div class="row markdown-header align-items-center" v-if="storeMain.showDocReload">
-      <div class="col-auto">
+      <div class="col-auto" v-if="local.currentPath !== local.homepage">
         <button class="btn btn-primary" @click="goToHomePage()" :title="local.homepage">
           <i class="fa-solid fa-house"></i> Home Page
         </button>
@@ -232,7 +232,7 @@ onMounted(() => {
 
     </div>
 
-    <div class="row mt-4">
+    <div class="row mt-2">
       <div class="col order-last order-lg-first">
         <div class="row markdown-body mb-4">
           <div class="col" v-if="local.isHTMLVisible">

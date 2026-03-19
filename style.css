@@ -30,3 +30,18 @@
    margin-top: 5px;
 }
 
+/* MARKDOWN */
+
+.xmarkdown h1 {
+    color:  #ffc107;
+    font-weight: bold;
+}
+
+.xmarkdown h2 {
+    color:  #ffed8e;
+    font-weight: bold;
+}
+
+.xmarkdown h3 {
+    color:  #07a2ff;
+}

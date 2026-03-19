@@ -19,7 +19,7 @@ import {getLogger} from "Logging";
 // ________________________________________________________________________________
 // LOGGING
 // ________________________________________________________________________________
-const LOG_HEADER = "pages/About.vue"
+const LOG_HEADER = "frontend/Components.vue"
 const logger = getLogger(LOG_HEADER)
 logger.debug("[INIT]")
 

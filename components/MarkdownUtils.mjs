@@ -68,7 +68,11 @@ export function replaceHrefLinks(inputString, adjustHrefPath = (path) => path) {
       if (match.toLowerCase().includes("http") || match.toLowerCase().includes("class")) {
         return `${match} class="link-primary" target="_blank"`
       }
-      
+     // Check for internal route links (starts with :/)
+     if (param.startsWith(':/')) {
+        const routePath = param.slice(1)  // Remove the leading ':'
+        return `a href="${routePath}" @click.prevent="routeEndpoint('${routePath}')"`
+      }
       // Relative/absolute document links - use Vue handler
       return `a  href="${param}" @click.prevent="href('${param}')"`
 

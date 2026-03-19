@@ -144,7 +144,7 @@ const navbarClass = computed(() => ({
 
     <NotifyToast/>
     <!-- ==========  FOOTER ========== -->
-    <footer class="container-fluid p-4 bg-body-tertiary border-top">
+    <footer class="container-fluid p-4 bg-body-tertiary border-top" v-if="storeMain.showFooter">
       <div class="row mt-4 align-items-center justify-content-center">
         <div class="col-6 d-flex flex-column align-items-center">
           <img src="./img/logo_v1.svg" width="24" height="24" class="d-block mb-3" alt="Product logo" role="img" />

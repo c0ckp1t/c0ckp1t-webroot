@@ -45,9 +45,20 @@ export const store = reactive({
     // Text appears next to logo in pages/navigation.vue
     name: "C0ckp1t",
     id: LOG_HEADER,
-    config: null,
     appEndpoint: "",
     serverInfo: findHostnamePortProtocol(),
+
+    // ________________________________________________________________________________
+    // Configuration
+    // ________________________________________________________________________________
+    config: null,
+    // Documentation Configuration
+    showDocReload: true,
+    showDocTrail: true,
+    // FOOTER Configuration
+    showFooter: true,
+    // TOP NAVBAR Configuration
+    showTopNavBar: true,
 
     // ________________________________________________________________________________
     // Registries
@@ -63,16 +74,6 @@ export const store = reactive({
     isAuthenticated: false,
     username: null,
 
-    // ________________________________________________________________________________
-    // TOP NAVBAR
-    // ________________________________________________________________________________
-    showTopNavBar: true,
-
-    // ________________________________________________________________________________
-    // documentation
-    // ________________________________________________________________________________
-    showDocReload: true,
-    showDocPath: true,
 
     // ________________________________________________________________________________
     // Vue App Instance - gets created in App.vue
@@ -317,8 +318,11 @@ export const api = {
         store.appEndpoint = config.appEndpoint ?? ""
         store.defaultInstanceId = config.instanceId ?? "default"
         store.name = config.appName ?? "C0ckp1t"
+        store.showTopNavBar = config.showTopNavBar ?? true
+        store.showFooter = config.showFooter ?? true
+        store.showDocReload  = config.showDocReload ?? true
+        store.showDocTrail = config.showDocTrail ?? true
         store.config = config
-        const vueRouterModeIsHash = config.vueRouterModeIsHash ?? true
 
         // Load default island
         const decoratedIslandConfig = {
@@ -330,6 +334,7 @@ export const api = {
         await islandDefault.init()
 
         // Create Vue Router
+        const vueRouterModeIsHash = config.vueRouterModeIsHash ?? true
         const router = VueRouter.createRouter({
             history: vueRouterModeIsHash ? VueRouter.createWebHashHistory() : VueRouter.createWebHistory(),
             routes: transformRoutes(api.loadModule, config.routes)

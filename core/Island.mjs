@@ -54,6 +54,7 @@ export default class Island {
         this.state = reactive({
             isLoading: false,
             isReady: false,
+            workflowTable: { }
         })
 
         // ________________________________________________________________________________
@@ -62,7 +63,6 @@ export default class Island {
         this.store = reactive({
             id: this.LOG_HEADER,
             updated: null,
-
             showRegistry: true,
             root: null,
             selectedNode: null,
@@ -92,14 +92,17 @@ export default class Island {
      *   - endpoint = "/documentation"
      *   - name = "documentation"
      * @param {Object} node
+     * @param {Boolean} route
      * @returns {Promise<void>}
      */
-    selectNode = async (node) => {
+    selectNode = async (node, route = true) => {
         this.logger.debug(`selectNode - node.endpoint=${node.endpoint}`);
         // this.apiMain.
         this.store.selectedNode = null;
         this.store.selectedNode = node;
-        await this.routeByEndpoint(node.endpoint);
+        if(route) {
+            await this.routeByEndpoint(node.endpoint);
+        }
     }
 
     // ________________________________________________________________________________
@@ -160,6 +163,11 @@ export default class Island {
 
         const rootNode = JSON.parse(resp.result);
         adjustNode(rootNode)
+        console.log("calling create workflowTABLE")
+        console.log("calling create workflowTABLE")
+        console.log("calling create workflowTABLE")
+        console.log("calling create workflowTABLE")
+        this.createWorkflowTable(rootNode)
         this.logger.debug("rootNode:");
         this.logger.debug(rootNode);
 
@@ -389,15 +397,6 @@ export default class Island {
         return await Http.postJson(path, body)
     }
 
-    // ________________________________________________________________________________
-    // init
-    // ________________________________________________________________________________
-    init = async () => {
-        await this.connect()
-        this.state.isReady = true
-    }
-
-
     _createExecResultMapper(convertStdoutToText = true) {
         return (pktBytes) => {
             const result = fromBinary(pktBytes);
@@ -435,6 +434,36 @@ export default class Island {
             }
         };
     }
+
+    createWorkflowTable = (node) => {
+        // if endpoint starts with "/wf/" and depth is 2
+        //  then we likely are looking at workflow nodes
+        if(node.endpoint.startsWith("/wf/") && node.depth === 2) {
+            if(typeof node.kv === 'object' && node.kv !== null && typeof node.kv["wfId"] === "string") {
+               const key = node.endpoint.replace("/wf/", "")
+               this.state.workflowTable[key] = node
+                   // =  {
+                   // wfId : node.kv["wfId"],
+                   // type : node.kv["type"],
+               // }
+            }
+        }
+        // we recurse into / and its children only.
+        if(node.depth === 0 || node.depth === 1) {
+            node.children.forEach((child) => {
+                this.createWorkflowTable(child);
+            });
+        }
+    }
+
+    // ________________________________________________________________________________
+    // init
+    // ________________________________________________________________________________
+    init = async () => {
+        await this.connect()
+        this.state.isReady = true
+    }
+
 } // end of IslandDefault class
 
 

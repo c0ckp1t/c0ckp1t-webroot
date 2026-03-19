@@ -1,6 +1,6 @@
 {
   "name": "c0ckp1t",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "A Vue 3 zero-build web dashboard framework with Islands architecture, WebSocket backends, and reusable UI components",
   "type": "module",
   "license": "Apache-2.0",

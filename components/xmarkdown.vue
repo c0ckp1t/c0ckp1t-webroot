@@ -13,7 +13,7 @@
 // IMPORT
 // ______________________________________________________________________________________
 import {reactive, ref, markRaw, onMounted,  watch, computed, onErrorCaptured, defineAsyncComponent} from 'vue'
-// import {store, methods} from 'GlobalStore'
+import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging"
 import {md} from "./Markdown.mjs"
 
@@ -158,6 +158,9 @@ function renderMarkdown(html) {
       }
     },
     methods: {
+      async routeEndpoint(endpoint) {
+        await apiMain.routeByEndpoint(endpoint)
+      },
       href(path) {
         emit('href', path)
       },
