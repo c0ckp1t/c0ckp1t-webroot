@@ -12,7 +12,6 @@ import {validateIslandConfig, findHostnamePortProtocol, validateAppConfig} from 
 import {substrAfterFirstSlash, extractLastPath} from "JsUtils";
 
 import IslandDefault from 'IslandDefault'
-import Island from 'Island'
 
 // ________________________________________________________________________________
 // LOGGING
@@ -55,6 +54,7 @@ export const store = reactive({
     // Documentation Configuration
     showDocReload: true,
     showDocTrail: true,
+    allowDocWrite: true,
     // FOOTER Configuration
     showFooter: true,
     // TOP NAVBAR Configuration
@@ -67,6 +67,10 @@ export const store = reactive({
     defaultInstanceId: "default",
     selectedInstId: null,
     router: null,
+    registryType: [
+        {k: 'Remote Island', v: 'Island'},
+        {k: 'Default Island', v: 'IslandDefault'}
+    ],
 
     // ________________________________________________________________________________
     // Login
@@ -144,12 +148,23 @@ export const api = {
             ...config,
             SERVER_API_URL: store.serverInfo.serverUrl,
         }
+
         let island= null
-        if(decoratedIslandConfig.type === "LOCAL") {
-            island = new IslandDefault(api, decoratedIslandConfig)
-            await api.insertRoutes(`/${island.instanceId}`, config.routes)
-        } else {
-            island = new Island(api, decoratedIslandConfig)
+        switch (decoratedIslandConfig.type) {
+            case "LOCAL":
+            case "DEFAULT":
+            case "default":
+            case "IslandDefault":
+                island = new IslandDefault(api, decoratedIslandConfig)
+                await api.insertRoutes(`/${island.instanceId}`, config.routes)
+                break
+            default:
+                try {
+                    const { default: Island } = await import(decoratedIslandConfig.type)
+                    island = new Island(api, decoratedIslandConfig)
+                } catch(e) {
+                    throw new Error(`Unknown island type: ${decoratedIslandConfig.type}`)
+                }
         }
         store.r[island.instanceId] = island
         await island.init()
@@ -307,6 +322,9 @@ export const api = {
         app.config.errorHandler = (err, vm, info) => {
             console.error('Global error handler:', err, vm, info);
         };
+        app.config.warnHandler = (err, vm, info) => {
+            console.warn('Global warn handler:', err, vm, info);
+        };
 
         //________________________________________________________________________________
         // Create Default Island
@@ -322,6 +340,8 @@ export const api = {
         store.showFooter = config.showFooter ?? true
         store.showDocReload  = config.showDocReload ?? true
         store.showDocTrail = config.showDocTrail ?? true
+        store.allowDocWrite = config.allowDocWrite ?? false
+        store.allowDocReload = config.allowDocReload ?? false
         store.config = config
 
         // Load default island

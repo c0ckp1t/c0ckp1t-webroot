@@ -2,6 +2,11 @@
 # Issues 
 
 
+## Lazy Loading
+
+Island should be lazy loaded. Right now it is pulling Connection. Which pulls rxjs
+
+
 ## Theming 
 
 I created the `Theme.vue` and `Theme.mjs` with Opus 4.6. It is pretty much AI slop (but it works).

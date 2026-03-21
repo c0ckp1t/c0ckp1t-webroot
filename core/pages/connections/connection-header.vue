@@ -1,6 +1,7 @@
 <script setup>
-/*
-  Used in the sidebar above the registry tree to display information about the connection
+/**
+ * Used in the sidebar above the registry tree to display
+ *  information about the connection
  */
 // ________________________________________________________________________________
 // IMPORTS
@@ -15,7 +16,7 @@ const props = defineProps({
 // ________________________________________________________________________________
 // LOGGING
 // ________________________________________________________________________________
-const LOG_HEADER = 'connection-header.vue'
+const LOG_HEADER = 'connections/connection-header.vue'
 const logger = getLogger(LOG_HEADER)
 logger.debug("[INIT]")
 
@@ -32,24 +33,24 @@ const registry = storeMain.r[props.id]
 
 
 <template>
-  <div class="connection-header w-100">
-    <div class="press " @click="apiMain.routeByEndpoint(`/default/connections/${props.id}`)">
-      <i class="text-success fa-solid fa-globe ms-1"
-         :class="{ 'text-success': registry.connection.state.isConnected, 'text-warning': !registry.connection.state.isConnected }"></i>
-      <span class="state-text ms-1 fw-bold">{{ registry.connection.state.sessionStateString }}</span>
-      <div class="instance-id text-primary fw-bold ">{{ registry?.instanceId ?? 'Invalid Registry'}}</div>
+  <div class="connection-header">
+    <div class="press " @click="apiMain.routeByEndpoint(`/${storeMain.defaultInstanceId}/connections/${props.id}`)">
+      <i class="text-success fa-solid fa-globe me-1"
+         :class="{ 'text-success': registry.state.isReady, 'text-warning': !registry.state.isReady}">
+      </i>
+      <span class="instance-id text-primary fw-bold ">{{ registry?.instanceId ?? 'Invalid Registry'}}</span>
     </div>
   </div>
 </template>
 
 <style scoped>
 .connection-header {
-  width: 100%;
+
 }
 
 .press {
+  padding: 3px;
   background-color: var(--bs-secondary-bg);
-  color: #b1cfe9;
   cursor: pointer;
   line-height: 1.1rem;
   text-align: center;

@@ -32,7 +32,7 @@ const local = reactive({
   isLoading: false,
   updated: Date.now(),
   pathPrefix: storeMain.config?.componentPrefix ?? "",
-  defaultExpand: false,
+  defaultExpand: storeMain.config?.componentsDefaultExpand ?? false,
 
   toc: [
     {to: 'x-input', name: 'x-input'},

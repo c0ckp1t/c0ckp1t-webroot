@@ -138,6 +138,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-c0ckp1t-dev/
 js_ext/vue3-sfc-loader/
 js_ext/vue3-sfc-loader
+js_ext/vue3-sfc-loader2.esm.js
+js_ext/vue3-sfc-loader2.esm.js.map

@@ -21,7 +21,7 @@
         "imports": {
             "vue": "/js_ext/vue.esm-browser.prod.min.js",
             "vue-router": "/js_ext/vue-router.esm-browser.prod.js",
-            "vue3-sfc-loader": "/js_ext/vue3-sfc-loader.esm.js",
+            "vue3-sfc-loader": "/js_ext/vue3-sfc-loader2.esm.js",
 
             "GlobalStore": "/core/GlobalStore.mjs",
             "Logging": "/core/Logging.mjs",
@@ -62,17 +62,15 @@ import {api as apiMain} from 'GlobalStore';
 // Application Configuration
 import { createConfig } from './Config.mjs';
 // Islands
-import ConfigAdmin from './ConfigAdmin.mjs'
-import ConfigAnonymous from './ConfigAnonymous.mjs'
-import ConfigDemo from './c0ckp1t-demo/Config.mjs'
+// import ConfigAdmin from './ConfigAdmin.mjs'
+// import ConfigAnonymous from './ConfigAnonymous.mjs'
 // Create Application
 const config = createConfig();
 initLogger(config)
 await apiMain.init("app-default", config)
 // Create Islands
-await apiMain.registerIsland( ConfigAdmin)
-await apiMain.registerIsland(ConfigAnonymous)
-await apiMain.registerIsland(ConfigDemo)
+// await apiMain.registerIsland( ConfigAdmin)
+// await apiMain.registerIsland(ConfigAnonymous)
 </script>
 
 <script src="/js_ext/bootstrap.bundle.min.js"></script>

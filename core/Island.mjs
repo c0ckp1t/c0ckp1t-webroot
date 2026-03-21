@@ -163,10 +163,6 @@ export default class Island {
 
         const rootNode = JSON.parse(resp.result);
         adjustNode(rootNode)
-        console.log("calling create workflowTABLE")
-        console.log("calling create workflowTABLE")
-        console.log("calling create workflowTABLE")
-        console.log("calling create workflowTABLE")
         this.createWorkflowTable(rootNode)
         this.logger.debug("rootNode:");
         this.logger.debug(rootNode);
@@ -212,11 +208,10 @@ export default class Island {
                 adjustConfig(config, this.instanceId)
                 await this.apiMain.insertRoutes(`/${this.instanceId}${node.endpoint}`, config)
             } else {
-                this.logger.warn(`[node=${node.name}] - failed to load config`)
-                this.logger.warn(`path=${node.config.path}`)
-                this.logger.warn(`endpoint=/${this.instanceId}${node.endpoint}`)
-                this.logger.warn(`depth=${node.depth}`)
-                this.logger.warn(`accessLevel=${this.store.context.accessLevel}`)
+                this.logger.warn(`[node=${node.name}] - failed to load config - path=${node.config.path} `)
+                this.logger.debug(`endpoint=/${this.instanceId}${node.endpoint}`)
+                this.logger.debug(`depth=${node.depth}`)
+                this.logger.debug(`accessLevel=${this.store.context.accessLevel}`)
                 // This happens when i.e osgi doesn't have a config.json
                 // it tries to read it and fails
                 if (node.depth === 1) {
@@ -230,7 +225,7 @@ export default class Island {
                         )
                     }
                 } else if(node.depth === 2 && node.endpoint.startsWith(`/wf/`)) {
-                    this.logger.warn(`insert admin`)
+                    this.logger.debug(`insert admin`)
                     await this.apiMain.insertRoutes(`/${this.instanceId}${node.endpoint}`,
                         [{"path": node.name, "location": `/${this.instanceId}/v3/actions/root/admin/_admin.vue`}],
                     )
@@ -442,10 +437,6 @@ export default class Island {
             if(typeof node.kv === 'object' && node.kv !== null && typeof node.kv["wfId"] === "string") {
                const key = node.endpoint.replace("/wf/", "")
                this.state.workflowTable[key] = node
-                   // =  {
-                   // wfId : node.kv["wfId"],
-                   // type : node.kv["type"],
-               // }
             }
         }
         // we recurse into / and its children only.

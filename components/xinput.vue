@@ -69,7 +69,7 @@ const typeCheck = computed (() => {
   <input :type="type" aria-label="message" class="form-control"
          :style="props.inputStyle" v-model="message" v-else>
 
-  <div class="input-group-text text-dark icon-container" @click="isPasswordVisible = !isPasswordVisible" v-if="type.toUpperCase() === 'PASSWORD'">
+  <div class="input-group-text text-primary icon-container" @click="isPasswordVisible = !isPasswordVisible" v-if="type.toUpperCase() === 'PASSWORD'">
     <i class="fa-solid fa-eye" v-if="isPasswordVisible"></i>
     <i class="fa-solid fa-eye-slash" v-if="!isPasswordVisible"></i>
   </div>

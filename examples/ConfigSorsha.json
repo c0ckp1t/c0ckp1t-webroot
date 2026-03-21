@@ -1,0 +1,17 @@
+{
+    "isDev": false,
+    "WITH_CREDENTIALS": false,
+    "instanceId": "sorsha",
+    "type": "Island",
+    "appEndpoint": "",
+    "connection": {
+        "readOnly": true,
+        "hostname": "sorsha.com",
+        "port": 443,
+        "protocol": "https",
+        "endpoint": "socket",
+        "username": "sorsha",
+        "password": "sorsha",
+        "isSecure": true
+    }
+}

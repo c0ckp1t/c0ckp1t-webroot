@@ -43,14 +43,20 @@ export function validateIslandConfig(config) {
 // ________________________________________________________________________________
 export const DEFAULTS = {
     isDev: true,
-    // XMLHttpRequest from a different domain cannot set cookie values for their own
-    // domain unless withCredentials is set to true before making the request.
-    // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
+    /**
+     * XMLHttpRequest from a different domain cannot set cookie values for their own
+     * domain unless withCredentials is set to true before making the request.
+     * https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredential/
+     *
+     * `true` tells the browser “this cross-origin request should include credentials”,
+     *  meaning: - send cookies (and HTTP auth) *with* the request, and
+     *  allow the browser to store cookies from the response, *if* the server also opts in.
+     */
     WITH_CREDENTIALS: false,
 
     defaultInstanceId: "default",
     instanceId: "default",
-    type: "LOCAL",
+    type: "IslandDefault",
     // Determines GlobalStore.name
     appName: "C0ckp1t Application",
     // Used for default routes prefix (used only in config)
@@ -73,6 +79,10 @@ export const DEFAULTS = {
     // Documentation Configuration
     showDocReload: true,
     showDocTrail: false,
+    allowDocWrite: true,
+    allowDocReload: true,
+    // Components Configuration
+    componentsDefaultExpand: true,
     // Determine if VueRouter is createWebHashHistory or createWebHistory
     vueRouterModeIsHash: true,
     // Logger Config (see Logging.mjs)

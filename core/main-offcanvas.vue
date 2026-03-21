@@ -11,7 +11,7 @@ import {reactive, markRaw, onMounted, ref, defineAsyncComponent, watch} from 'vu
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
 import node from "./nodes/node.vue"
-import ConnectionHeader from "./sfc/connection-header.vue"
+import ConnectionHeader from "./pages/connections/connection-header.vue"
 // ________________________________________________________________________________
 // LOGGING
 // ________________________________________________________________________________

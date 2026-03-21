@@ -12,7 +12,7 @@
 //________________________________________________________________________________
 import { reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
+import {api as notifyApi} from 'NotifyUtils'
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import { getLogger } from "Logging";
 
@@ -73,7 +73,6 @@ const local = reactive({
   markdownText: "",
   snapshot: "",
   showScrollToTop: false,
-  isDev: storeMain.config.isDev,
 });
 
 
@@ -123,7 +122,7 @@ async function goToHomePage() {
 async function href(documentPath) {
   const browserPath = docUtils.documentPathToBrowserPath(local.currentPath, documentPath)
   const remotePath = docUtils.browserPathToRemotePath(browserPath)
-  logger.debug(`[href] \nbrowserPath=${browserPath}\ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
+  logger.info(`[href] \nbrowserPath=${browserPath}\ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
   local.markdownText = ""
 
   const resp = await docUtils.retrieveText(registry, remotePath)
@@ -146,7 +145,7 @@ async function href(documentPath) {
 
 function fetchImage(documentPath) {
   const remotePathURL = docUtils.documentPathToRemotePath(instanceId, local.baseLocalURL, local.currentPath, documentPath);
-  logger.info(`[fetchImage]  - documentPath=${documentPath} - remotePath=${remotePathURL}`);
+  logger.debug(`[fetchImage]  - documentPath=${documentPath} - remotePath=${remotePathURL}`);
 
   // default registry case: fetch bytes and convert to Blob URL
   return new Promise(async (resolve, reject) => {
@@ -166,7 +165,23 @@ function fetchImage(documentPath) {
   });
 }
 
+async function saveMarkdown() {
 
+  const documentPath = docUtils.browserPathToDocumentPath(local.currentPath)
+  const browserPath = docUtils.documentPathToBrowserPath(local.currentPath, documentPath)
+  const remotePath = docUtils.browserPathToRemotePath(browserPath)
+
+  logger.debug(`[saveMarkdown] \ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
+  const args = ["write", remotePath, local.markdownText]
+    const resp = await registry.exec("/sys/resolver", args)
+    logger.info(resp)
+    if (!resp.isOk) {
+      notifyApi.badDetails(`${local.id} - saveMarkdown failed`, resp.result)
+      return
+    }
+    local.snapshot = local.markdownText
+    local.isDirty = false
+}
 
 // ________________________________________________________________________________
 // INIT
@@ -191,7 +206,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container mt-2">
+  <div class="container documentation mt-4">
 
 <!--        {{router}}-->
     <!--    <hr>-->
@@ -201,7 +216,7 @@ onMounted(() => {
 <!--        home {{ local.homepage }} <br>-->
 
 
-    <div class="row text-center mb-22" v-if="storeMain.showDocTrail">
+    <div class="row text-center mb-2" v-if="storeMain.showDocTrail">
       <span class="fw-bold m-1">Current: <span>{{ local.currentPath }}</span> </span>
     </div>
 
@@ -220,28 +235,34 @@ onMounted(() => {
           {{ local.previousPath }}
         </ExecButton>
       </div>
-      <div class="col-auto" v-if="local.isDev">
-        <ExecButton icon="fa-rotate-right" :callback="() => reload()">Reload</ExecButton>
+      <div class="col-auto" >
+        <x-toggle k="HTML" v-model="local.isHTMLVisible"></x-toggle>
       </div>
-      <div class="col-auto" v-if="false">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="remoteWork" v-model="local.isHTMLVisible">
-          <label class="form-check-label" for="remoteWork">HTML</label>
-        </div>
+      <div class="col-auto" v-if="storeMain.allowDocWrite">
+        <x-toggle k="Markdown" v-model="local.isEditVisible" ></x-toggle>
       </div>
-
+      <div class="col-auto" v-if="storeMain.allowDocReload">
+        <ExecButton class="btn btn-primary btn-sm" icon="fa-rotate-right" :callback="() => reload()">Reload</ExecButton>
+      </div>
     </div>
 
     <div class="row mt-2">
       <div class="col order-last order-lg-first">
         <div class="row markdown-body mb-4">
+
           <div class="col" v-if="local.isHTMLVisible">
             <x-markdown :fetchImage="fetchImage" @href="href" :adjustHrefPath="adjustHrefPath"
               :v="local.markdownText"></x-markdown>
           </div>
-          <div v-if="false">
-            <pre class="md-code mt-4">{{local.markdownText}}</pre>
+          <div class="col" :class="{'is-dirty': local.isDirty}" v-if="local.isEditVisible">
+
+            <ExecButton class="btn btn-primary btn-sm mt-1" icon="fa-floppy-disk" :callback="() => saveMarkdown()" :disabled="!local.isDirty"  v-if="registry?.store?.context?.accessLevel <= 500">
+            </ExecButton>
+
+            <v-ace-editor v-model="local.markdownText" lang="markdown" theme="twilight"
+                          style="height: 800px"></v-ace-editor>
           </div>
+
         </div>
       </div>
       <div class="col-auto order-first order-lg-last" v-if="props.enableToc">

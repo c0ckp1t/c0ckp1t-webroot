@@ -23,7 +23,7 @@ import {deepMerge, DEFAULTS} from "CoreUtils";
 // ________________________________________________________________________________
 // Default Nav Tree Builder
 // ________________________________________________________________________________
-function buildNavTree(instanceId) {
+export function buildNavTree(instanceId) {
     return {
         icon: "fa-house",
         depth: 0,
@@ -139,7 +139,7 @@ function buildNavTree(instanceId) {
 // ________________________________________________________________________________
 // Routes Builder
 // ________________________________________________________________________________
-function buildRoutes(instanceId = "default", prefix = "") {
+export function buildRoutes(instanceId = "default", prefix = "") {
     return [
         { path: '/', name: 'root', children: [
                 {path: '', redirect: `/${instanceId}/docs/Introduction.md`},

@@ -29,27 +29,12 @@ export default class IslandDefault {
         this.logger = getLogger(this.LOG_HEADER);
         this.logger.debug('[INIT]');
 
-        this.connection = {
-            state: {
-                isConnected: true,
-                isAuthenticated: false,
-                isReady: true,
-                sessionStateString: "INITIALIZED",
-                connStateString: "CONNECTED",
-                errorMessages: [],
-                subscriptionCount: 0,
-            },
-            store: {
-                username: "default",
-            }
-        };
-
         // ________________________________________________________________________________
         // STATE - NOT saved in browser storage
         // ________________________________________________________________________________
         this.state = reactive({
             isLoading: false,
-            isReady: false,
+            isReady: false
         })
 
         // ________________________________________________________________________________
@@ -171,7 +156,6 @@ export default class IslandDefault {
         if (!res.ok) throw Object.assign(new Error(res.statusText + ' ' + path), {res});
         return res
     }
-
 
     getText = async (endpoint) => {
         this.logger.debug(`[getText] - ${endpoint}`);

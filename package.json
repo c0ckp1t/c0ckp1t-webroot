@@ -34,8 +34,7 @@
     "core/",
     "components/",
     "js_ext/",
-    "css/",
-    "c0ckp1t-demo/"
+    "css/"
   ],
   "scripts": {
     "lint": "eslint .",

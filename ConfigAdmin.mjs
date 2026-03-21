@@ -15,7 +15,7 @@ export default {
     WITH_CREDENTIALS: WITH_CREDENTIALS,
 
     instanceId: instanceId,
-    type: "REMOTE",
+    type: "Island",
     appEndpoint: appEndpoint,
 
     connection: {
