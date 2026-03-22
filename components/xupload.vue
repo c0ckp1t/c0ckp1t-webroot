@@ -46,9 +46,9 @@ const typeObj = computed(() => {
     case 'VIDEO':
       return { type, allowUpload: true, accept: `${type.toLowerCase()}/*` }
     case 'TEXT':
-      return { type, allowUpload: true, accept: 'text/plain' }
-    case 'JSON':
-      return { type, allowUpload: true, accept: 'application/json' }
+      return { type, allowUpload: true, accept: '.txt,.csv,.json,.xml,.log,.md,.yml,.yaml,.ini,.cfg,.conf,text/*' }
+    case 'ANY':
+      return { type, allowUpload: true, accept: '*/*' }
     default:
       return { type, allowUpload: false, accept: '*/*' }
   }
@@ -121,7 +121,7 @@ function uploadSelectedFiles() {
 
     <div class="mt-1">
       <button class="btn btn-sm btn-primary w-100" @click="uploadSelectedFiles" :disabled="!files || files.length === 0">
-        Upload
+        Upload {{props.type}}
       </button>
     </div>
 

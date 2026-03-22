@@ -34,6 +34,9 @@
             "WsLogUtils": "/core/WsLogUtils.mjs",
             "IslandDefault": "/core/IslandDefault.mjs",
 
+            "rxjs": "/js_ext/rxjs.esm.mjs",
+            "rxjs/operators": "/js_ext/rxjs-operators.esm.mjs",
+            "rxjs/webSocket": "/js_ext/rxjs-webSocket.esm.mjs",
             "idb-keyval": "/js_ext/idb-keyval-6.2.2.mjs",
             "mitt": "/js_ext/mitt.mjs",
             "wavesurfer": "/js_ext/wavesurfer.esm.mjs",
@@ -62,25 +65,23 @@ import {api as apiMain} from 'GlobalStore';
 // Application Configuration
 import { createConfig } from './Config.mjs';
 // Islands
-// import ConfigAdmin from './ConfigAdmin.mjs'
-// import ConfigAnonymous from './ConfigAnonymous.mjs'
+import ConfigAdmin from './ConfigAdmin.mjs'
+import ConfigAnonymous from './ConfigAnonymous.mjs'
 // Create Application
 const config = createConfig();
 initLogger(config)
 await apiMain.init("app-default", config)
 // Create Islands
-// await apiMain.registerIsland( ConfigAdmin)
-// await apiMain.registerIsland(ConfigAnonymous)
+await apiMain.registerIsland( ConfigAdmin)
+await apiMain.registerIsland(ConfigAnonymous)
 </script>
 
 <script src="/js_ext/bootstrap.bundle.min.js"></script>
-
 <script src="/js_ext/highlight/highlight.min.js"></script>
 <script src="/js_ext/markdown/katex.min.js"></script>
 <script src="/js_ext/markdown/markdown-it.min.js"></script>
 <script src="/js_ext/markdown/markdownItAnchor.umd.js"></script>
-
-<script src="/js_ext/rxjs.umd.min.js"></script>
 <script src="/js_ext/moment.min.js"></script>
 <script src="/js_ext/ace-editor/ace.js" type="text/javascript" charset="utf-8"></script>
+
 </html>

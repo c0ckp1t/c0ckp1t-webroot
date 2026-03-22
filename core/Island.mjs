@@ -13,9 +13,8 @@ import Connection from "./ws-client/Connection.mjs";
 import {indexOfNonString} from "JsUtils";
 import {fromBinary, fromByteArray, Http} from "WsUtils";
 
-const {map, pipe, takeWhile, filter, take, distinctUntilChanged, tap} = rxjs.operators;
-const {throwError} = rxjs;
-
+import { map } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 // ________________________________________________________________________________
 // Default Island
 // ________________________________________________________________________________

@@ -221,6 +221,7 @@ async function delay() {
 
     <ComponentView name="x-upload"  :url="`${local.pathPrefix}/components/xupload.vue`" :defaultExpand="local.defaultExpand">
       <x-upload>Hello Title</x-upload>
+      <x-upload type="TEXT">Hello Title</x-upload>
     </ComponentView>
 
     <ComponentView name="x-tree"  :url="`${local.pathPrefix}/components/xtree.vue`" :defaultExpand="local.defaultExpand">

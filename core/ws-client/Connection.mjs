@@ -12,8 +12,7 @@ import WsClient, {ConnectionLookUp, ConnectionStates, getCodeDescription} from '
 // This is XState version 4 (specifically appears to be v4.x).
 import {actions, interpret, createMachine} from "xstate";
 import {AuthNState} from "./AuthNState.mjs"
-
-const {map, filter } = rxjs.operators;
+import {  map,  filter } from 'rxjs/operators';
 
 //________________________________________________________________________________
 // Logging

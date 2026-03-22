@@ -168,7 +168,10 @@ const options =  {
 //   the getter fires, triggers import(), caches the resolved module,
 //   and returns the promise.
 //________________________________________________________________________________
-const lazyModules = ['json-viewer', 'idb-keyval', 'mitt', 'wavesurfer', 'msgpack', 'xstate']
+const lazyModules = [
+    'json-viewer', 'idb-keyval', 'mitt', 'wavesurfer', 'msgpack', 'xstate',
+    'rxjs', 'rxjs/operators', 'rxjs/websocket'
+]
 for (const name of lazyModules) {
     Object.defineProperty(options.moduleCache, name, {
         get() {

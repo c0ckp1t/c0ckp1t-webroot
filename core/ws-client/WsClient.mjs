@@ -1,9 +1,6 @@
-
-const { BehaviorSubject } = rxjs;
-const { WebSocketSubject } = rxjs.webSocket;
-const { from } = rxjs;
-const { switchMapTo, tap } = rxjs.operators;
-const { map, takeWhile, filter, take, distinctUntilChanged } = rxjs.operators;
+import { BehaviorSubject, from } from 'rxjs';
+import { WebSocketSubject } from 'rxjs/webSocket';
+import { switchMapTo, tap, map, takeWhile, filter, take, distinctUntilChanged } from 'rxjs/operators';
 
 import { Code2, toBinary, fromBinary, eventBus } from 'WsUtils'
 

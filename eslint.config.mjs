@@ -28,7 +28,6 @@ export default [
         ...globals.browser,
 
         // UMD globals loaded via <script> tags in index.html
-        rxjs: 'readonly',
         moment: 'readonly',
         log: 'readonly',           // loglevel
         prefix: 'readonly',       // loglevel-plugin-prefix
