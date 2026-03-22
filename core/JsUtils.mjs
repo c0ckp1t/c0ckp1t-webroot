@@ -155,12 +155,12 @@ export function extractBasePath2(filePath) {
 // console.log(substrAfterFirstSlash("/client/cli/homepage")); // "client"
 // console.log(substrAfterFirstSlash("/user/profile"));        // "user"
 // console.log(substrAfterFirstSlash("/settings"));           // "settings"
-// console.log(substrAfterFirstSlash("no-slash"));           // "no-slash"
+// console.log(substrAfterFirstSlash("no-slash"));           // null
 // console.log(substrAfterFirstSlash("/"));                 // "" (No segment)
 export function substrAfterFirstSlash(str) {
-    if (!str.includes("/")) return str; // If no "/", return the whole string
+    if (!str.includes("/")) return null; // If no "/", return the whole string
     const parts = str.split('/'); // Split by "/"
-    return parts.length > 1 ? parts[1] : ''; // Return the second part or empty string if no "/"
+    return parts.length > 1 ? parts[1] : ""; // Return the second part or empty string if no "/"
 }
 
 export function substrWithoutLeadingSlash(str) {
@@ -481,4 +481,48 @@ export function cleanFileName(name) {
         .replace(/[^A-Za-z0-9 _-]/g, "")
         .replace(/ /g, "-")
         .slice(0, 24);
+}
+
+
+/**
+ * Normalize a path by resolving . and .. segments
+ * Won't allow .. to go above the base
+ * @param {string} remainingPath - The path to normalize (without base)
+ * @param {string} base - The base prefix that can't be traversed above (default: '/')
+ */
+export function normalizePath(remainingPath, base = '/') {
+    const segments = remainingPath.split('/');
+    const result = [];
+
+    for (const segment of segments) {
+        if (segment === '' || segment === '.') {
+            continue;
+        } else if (segment === '..') {
+            if (result.length > 0) {
+                result.pop();
+            }
+        } else {
+            result.push(segment);
+        }
+    }
+
+    return base + result.join('/');
+}
+
+/**
+ * WARNING - spacing is important here
+ * @param remotePathURL
+ * @param message
+ * @return {string}
+ */
+export function buildFailedMarkdown(remotePathURL, message) {
+    return `
+# fetch failed
+
+* remotePathURL=${remotePathURL}
+
+### result
+
+${message}
+`
 }

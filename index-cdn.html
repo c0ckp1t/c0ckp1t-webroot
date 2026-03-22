@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>C0ckp1t</title>
+  <title>C0ckp1t CDN</title>
   <link rel="icon" href="https://cdn.jsdelivr.net/npm/c0ckp1t@latest/favicon-32x32.png" sizes="32x32" type="image/png">
   <link rel="icon" href="https://cdn.jsdelivr.net/npm/c0ckp1t@latest/favicon-64x64.png" sizes="64x64" type="image/png">
   <link rel="icon" href="https://cdn.jsdelivr.net/npm/c0ckp1t@latest/favicon-192x192.png" sizes="192x192" type="image/png">
@@ -19,22 +19,25 @@
   <script type="importmap">
     {
         "imports": {
+            "vue": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/vue.esm-browser.prod.min.js",
+            "vue3-sfc-loader": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/vue3-sfc-loader.esm.js",
+            "vue-router": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/vue-router.esm-browser.prod.js",
+
             "Logging": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/Logging.mjs",
             "GlobalStore": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/GlobalStore.mjs",
             "NotifyUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/notify/NotifyUtils.mjs",
+            "CoreUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/CoreUtils.mjs",
             "VueUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/VueUtils.mjs",
             "JsUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/JsUtils.mjs",
             "WsUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/WsUtils.mjs",
-            "CoreUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/CoreUtils.mjs",
             "WsLogUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/WsLogUtils.mjs",
 
             "IslandDefault": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/IslandDefault.mjs",
             "Island": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/Island.mjs",
 
-            "vue3-sfc-loader": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/vue3-sfc-loader.esm.js",
-            "vue": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/vue.esm-browser.prod.min.js",
-            "vue-router": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/vue-router.esm-browser.prod.js",
-
+            "rxjs": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/rxjs.esm.mjs",
+            "rxjs/operators": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/rxjs-operators.esm.mjs",
+            "rxjs/webSocket": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/rxjs-webSocket.esm.mjs",
             "idb-keyval": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/idb-keyval-6.2.2.mjs",
             "wavesurfer": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/wavesurfer.esm.mjs",
             "mitt": "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/mitt.mjs",
@@ -67,9 +70,6 @@
     routePrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
     componentPrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
     appMainComponent: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/PageMain.vue",
-    defaultLoggerLevels: {
-      "VueUtils.mjs": "INFO"
-    }
   })
   initLogger(config)
   console.log(config)
@@ -82,6 +82,5 @@
 <script src="https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/markdown/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/markdown/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/markdown/markdownItAnchor.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/rxjs.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/moment.min.js"></script>
 </html>

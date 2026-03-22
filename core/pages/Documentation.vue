@@ -15,11 +15,13 @@ import { useRoute, useRouter } from 'vue-router'
 import {api as notifyApi} from 'NotifyUtils'
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import { getLogger } from "Logging";
+import {normalizePath, buildFailedMarkdown} from "JsUtils"
 
-import { DocUtils, extractBasePathFromURL } from '../DocUtils.mjs'
 import MdToc from "../sfc/md-toc.vue";
-import {substrAfterFirstSlash} from "JsUtils";
 
+// ________________________________________________________________________________
+// PROPERTIES
+// ________________________________________________________________________________
 const route = useRoute()
 const router = useRouter()
 
@@ -28,6 +30,28 @@ const props = defineProps({
     type: String,
     default: "/Introduction.md"
   },
+  /**
+   * Used to identify the registry
+   */
+  instanceId: {
+    type: String,
+    default: storeMain.defaultInstanceId ?? "default"
+  },
+  /**
+   * This is the base path for vue-router
+   * I.e, the documentation page will be at https://domain.com/default/docs/Introduction.md
+   *  where /default/docs is the routerPath
+   *  Note: includes instanceId
+   */
+  routerPath: {
+    type: String,
+    default: "/default/docs"
+  },
+  /**
+   * This is the base path for requesting documents on registry.
+   * I.e, on remote server the document might be at https://domain.com/docs/Introduction.md
+   *  where /docs is the remotePathMapping
+   */
   remotePathMapping: {
     type: String,
     default: "/docs"
@@ -38,11 +62,9 @@ const props = defineProps({
   }
 })
 
-const baseLocalURL = extractBasePathFromURL(route.fullPath)
-const docUtils = new DocUtils(baseLocalURL, props.remotePathMapping)
-
-const instanceId = substrAfterFirstSlash(baseLocalURL)
-const registry = storeMain.r[instanceId] ?? storeMain.r[storeMain.defaultInstanceId]
+const registry = computed(() => {
+  return storeMain.r[props.instanceId]
+})
 
 // ________________________________________________________________________________
 // LOGGING
@@ -63,10 +85,8 @@ const local = reactive({
   isHTMLVisible: true,
   isEditVisible: false,
 
-  baseLocalURL : baseLocalURL,
-  homepage : `${baseLocalURL}${props.homepage}`,
-  previousPath :  `${baseLocalURL}${props.homepage}`,
-  currentPath : `${baseLocalURL}${props.homepage}`,
+  currentPath : props.homepage,
+  previousPath : props.homepage,
 
   markdownText: "",
   snapshot: "",
@@ -77,10 +97,9 @@ const local = reactive({
 
 watch( () => route.fullPath, (fullPath) => {
   logger.debug("[WATCH] currentPath", fullPath)
-  if(local.currentPath !== fullPath) {
-    local.previousPath = local.currentPath
-    local.currentPath = fullPath
-    href(docUtils.browserPathToDocumentPath((local.currentPath)))
+  const documentPath = fullPath.replace(props.routerPath, "")
+  if(local.currentPath !== documentPath) {
+    href(documentPath)
   }
 }, { immediate: false, deep: true } )
 
@@ -100,55 +119,47 @@ watch(
 // MARKDOWN EVENTS
 // ________________________________________________________________________________
 function adjustHrefPath(documentPath) {
-  const remotePathURL = docUtils.documentPathToRemotePath(local.currentPath, documentPath)
-  const browserPath = `${local.baseLocalURL}?p=${remotePathURL}`
-  logger.debug(`[adjustHrefPath] - ${documentPath} -> ${browserPath}`)
-  return browserPath.replace("/documentation/", "/")
+  return `${props.remotePathMapping}${documentPath}`
 }
 
 async function reload() {
-  // await docUtils.removeFromCache(local.currentPath, documentURL)
-  const documentPath = docUtils.browserPathToDocumentPath(local.currentPath)
-  logger.debug("[reload] documentPath=", documentPath)
-  await href(documentPath)
+  logger.debug("[reload] local.currentPath=", local.currentPath)
+  await href(local.currentPath)
 }
 
 async function goToHomePage() {
-  await router.push(`${local.homepage}`)
+  await router.push(`${props.routerPath}${props.homepage}`)
 }
 
 async function href(documentPath) {
-  const browserPath = docUtils.documentPathToBrowserPath(local.currentPath, documentPath)
-  const remotePath = docUtils.browserPathToRemotePath(browserPath)
-  logger.info(`[href] \nbrowserPath=${browserPath}\ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
+  const remotePath = `${props.remotePathMapping}${normalizePath(documentPath)}`
+  logger.debug(`[href] \ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
   local.markdownText = ""
 
-  const resp = await docUtils.retrieveText(registry, remotePath)
+  const resp = await registry.value.getText(remotePath)
   logger.debug(resp)
   if (resp.isOk) {
     local.updated = new Date().getTime()
-    if(local.currentPath !== browserPath) {
-      local.previousPath = local.currentPath
-      local.currentPath = browserPath
-      await router.replace(browserPath)
-    }
+  } else {
+    resp.result = buildFailedMarkdown(remotePath, resp.result)
   }
-
+  if(local.currentPath !== documentPath) {
+    local.previousPath = local.currentPath
+    local.currentPath = normalizePath(documentPath)
+    await router.replace(`${props.routerPath}${local.currentPath}`)
+  }
   // window.scrollTo({ top: 0, behavior: 'smooth' });
   local.snapshot = resp.result
   local.markdownText = resp.result
-
-
 }
 
 function fetchImage(documentPath) {
-  const remotePathURL = docUtils.documentPathToRemotePath(instanceId, local.baseLocalURL, local.currentPath, documentPath);
-  logger.debug(`[fetchImage]  - documentPath=${documentPath} - remotePath=${remotePathURL}`);
+  const remotePath = `${props.remotePathMapping}${normalizePath(documentPath)}`
+  logger.debug(`[fetchImage]  - documentPath=${documentPath} - remotePath=${remotePath}`);
 
-  // default registry case: fetch bytes and convert to Blob URL
   return new Promise(async (resolve, reject) => {
     try {
-      const resp = await registry.getBinary(remotePathURL);
+      const resp = await registry.value.getBinary(remotePath);
       logger.debug(resp);
 
       if (!resp.isOk) {
@@ -164,14 +175,11 @@ function fetchImage(documentPath) {
 }
 
 async function saveMarkdown() {
+  const remotePath = `${props.remotePathMapping}${normalizePath(local.currentPath)}`
 
-  const documentPath = docUtils.browserPathToDocumentPath(local.currentPath)
-  const browserPath = docUtils.documentPathToBrowserPath(local.currentPath, documentPath)
-  const remotePath = docUtils.browserPathToRemotePath(browserPath)
-
-  logger.debug(`[saveMarkdown] \ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
+  logger.debug(`[saveMarkdown] currentPath=${local.currentPath}\nremotePath=${remotePath}`)
   const args = ["write", remotePath, local.markdownText]
-    const resp = await registry.exec("/sys/resolver", args)
+    const resp = await registry.value.exec("/sys/resolver", args)
     logger.info(resp)
     if (!resp.isOk) {
       notifyApi.badDetails(`${local.id} - saveMarkdown failed`, resp.result)
@@ -186,33 +194,19 @@ async function saveMarkdown() {
 // ________________________________________________________________________________
 async function init() {
   if (storeMain.isReady && local.updated === null) {
-
-    const documentPath = docUtils.browserPathToDocumentPath(route.fullPath)
-    await href(documentPath)
+    await href(props.homepage)
   } else {
     setTimeout(() => { init() }, 500)
   }
-
 }
 
 onMounted(() => {
   init()
 })
-
-
-
 </script>
 
 <template>
   <div class="container documentation mt-4">
-
-<!--        {{router}}-->
-    <!--    <hr>-->
-<!--    baseLocalURL {{ local.baseLocalURL }} <br>-->
-<!--        current {{ local.currentPath }} <br>-->
-<!--        previous {{ local.previousPath }} <br>-->
-<!--        home {{ local.homepage }} <br>-->
-
 
     <div class="row text-center mb-2" v-if="storeMain.showDocTrail">
       <span class="fw-bold m-1">Current: <span>{{ local.currentPath }}</span> </span>
@@ -228,7 +222,7 @@ onMounted(() => {
       <div class="col"></div>
 
       <div class="col-auto">
-        <ExecButton icon="fa-arrow-left me-1" :callback="() => router.push(`${local.previousPath}`)"
+        <ExecButton icon="fa-arrow-left me-1" :callback="() => router.push(`${props.routerPath}${local.previousPath}`)"
           v-if="local.currentPath !== local.previousPath">
           {{ local.previousPath }}
         </ExecButton>

@@ -192,7 +192,7 @@ test('substrAfterFirstSlash - extracts first segment', () => {
     expect(substrAfterFirstSlash('/client/cli/homepage')).toBe('client');
     expect(substrAfterFirstSlash('/user/profile')).toBe('user');
     expect(substrAfterFirstSlash('/settings')).toBe('settings');
-    expect(substrAfterFirstSlash('no-slash')).toBe('no-slash');
+    expect(substrAfterFirstSlash('no-slash')).toBe(null);
     expect(substrAfterFirstSlash('/')).toBe('');
 });
 

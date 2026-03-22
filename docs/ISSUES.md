@@ -4,8 +4,6 @@
 
 ## Lazy Loading
 
-Island should be lazy loaded. Right now it is pulling Connection. Which pulls rxjs
-
 Can WsUtils be lazy-loaded?
 
 WsUtils is used in moduleCache 
@@ -22,22 +20,6 @@ import * as WsUtils from "WsUtils";
 This could be future improvement, but right now WsUtils also has Http. Need to more cleanly separate before making changes. 
 
 WsUtils needs refactoring for sure.
-
-WsClient.mjs (lines 2-6):
-import { BehaviorSubject, from } from 'rxjs';
-import { switchMapTo, tap, map, takeWhile, filter, take, distinctUntilChanged } from 'rxjs';
-import { WebSocketSubject } from 'rxjs/webSocket';  // <-- sub-path import
-
-Connection.mjs (line 16):
-import { map, filter } from 'rxjs';
-
-Island.mjs (lines 16-17):
-import { throwError } from 'rxjs';
-import { map, pipe, takeWhile, filter, take, distinctUntilChanged, tap } from 'rxjs';
-
-Delete line 83: <script src="/js_ext/rxjs.umd.min.js"></script>
-In eslint.config.mjs:31, remove rxjs: 'readonly'.
-
 
 ## Theming 
 

@@ -23,16 +23,17 @@
             "vue-router": "/js_ext/vue-router.esm-browser.prod.js",
             "vue3-sfc-loader": "/js_ext/vue3-sfc-loader2.esm.js",
 
-            "GlobalStore": "/core/GlobalStore.mjs",
             "Logging": "/core/Logging.mjs",
+            "GlobalStore": "/core/GlobalStore.mjs",
             "NotifyUtils": "/core/notify/NotifyUtils.mjs",
             "CoreUtils": "/core/CoreUtils.mjs",
             "VueUtils": "/core/VueUtils.mjs",
             "JsUtils": "/core/JsUtils.mjs",
             "WsUtils": "/core/WsUtils.mjs",
-            "Island": "/core/Island.mjs",
             "WsLogUtils": "/core/WsLogUtils.mjs",
+
             "IslandDefault": "/core/IslandDefault.mjs",
+            "Island": "/core/Island.mjs",
 
             "rxjs": "/js_ext/rxjs.esm.mjs",
             "rxjs/operators": "/js_ext/rxjs-operators.esm.mjs",
@@ -72,7 +73,7 @@ const config = createConfig();
 initLogger(config)
 await apiMain.init("app-default", config)
 // Create Islands
-await apiMain.registerIsland( ConfigAdmin)
+await apiMain.registerIsland(ConfigAdmin)
 await apiMain.registerIsland(ConfigAnonymous)
 </script>
 
