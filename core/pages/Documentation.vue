@@ -23,8 +23,6 @@ import {substrAfterFirstSlash} from "JsUtils";
 const route = useRoute()
 const router = useRouter()
 
-
-
 const props = defineProps({
   homepage: {
     type: String,

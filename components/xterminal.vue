@@ -1,5 +1,6 @@
 <script setup>
 import {ref, reactive, markRaw, onMounted, onBeforeUnmount, watch, nextTick} from 'vue';
+import {loadAce} from './AceLoader.mjs';
 
 const root = ref(null);
 const inputRef = ref(null);
@@ -245,10 +246,12 @@ function focusInput(options = {}) {
 // LIFECYCLE
 // ________________________________________________________________________________
 
-onMounted(() => {
-  if (typeof ace === 'undefined') {
-    console.error('Ace editor not loaded');
-    return;
+onMounted(async () => {
+  try {
+    await loadAce()
+  } catch (err) {
+    console.error('Ace editor failed to load:', err)
+    return
   }
   
   ace.config.set('basePath', '/js_ext/ace-editor');

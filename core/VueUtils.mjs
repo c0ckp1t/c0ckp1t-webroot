@@ -170,7 +170,7 @@ const options =  {
 //________________________________________________________________________________
 const lazyModules = [
     'json-viewer', 'idb-keyval', 'mitt', 'wavesurfer', 'msgpack', 'xstate',
-    'rxjs', 'rxjs/operators', 'rxjs/websocket'
+    'rxjs', 'rxjs/operators', 'rxjs/webSocket'
 ]
 for (const name of lazyModules) {
     Object.defineProperty(options.moduleCache, name, {

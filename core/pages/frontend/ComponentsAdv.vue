@@ -19,7 +19,7 @@ import {store as storeMain} from "GlobalStore";
 // ________________________________________________________________________________
 // LOGGING
 // ________________________________________________________________________________
-const LOG_HEADER = "pages/page-components.vue"
+const LOG_HEADER = "frontend/ComponentsAdv.vue"
 const logger = getLogger(LOG_HEADER)
 logger.debug("[INIT]")
 
@@ -32,7 +32,7 @@ const local = reactive({
   isLoading: false,
   updated: Date.now(),
   pathPrefix: storeMain.config?.componentPrefix ?? "",
-  defaultExpand: false,
+  defaultExpand: storeMain.config?.componentsDefaultExpand ?? false,
 
   tree: [
     {
@@ -294,8 +294,6 @@ async function delay() {
       />
 
     </ComponentView>
-
-<!--    <ComponentView name="x-code"  :url="`${local.pathPrefix}/components/xcode.vue"> </ComponentView>-->
 
   </x-section>
   <!--  !# C0CKP1T_END template -->

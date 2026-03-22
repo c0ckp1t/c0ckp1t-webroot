@@ -13,12 +13,14 @@ import {reactive, computed, ref, onMounted, onUnmounted, defineAsyncComponent, w
 import {getLogger} from "Logging";
 // !# C0CKP1T_START imports
 import ComponentView from "./component-view-html.vue";
+import {store as storeMain} from "GlobalStore";
+import ExecButton from "../../../components/ExecButton.vue";
 // !# C0CKP1T_END imports
 
 // ________________________________________________________________________________
 // LOGGING
 // ________________________________________________________________________________
-const LOG_HEADER = "pages/page-bootstrap.vue"
+const LOG_HEADER = "frontend/Bootstrap.vue"
 const logger = getLogger(LOG_HEADER)
 logger.debug("[INIT]")
 
@@ -30,7 +32,7 @@ const local = reactive({
   id: LOG_HEADER,
   isLoading: false,
   updated: Date.now(),
-  defaultExpand: false,
+  defaultExpand: storeMain.config?.componentsDefaultExpand ?? false,
 
   toc: [
     {to: 'navbars', name: 'Navbars'},
@@ -46,29 +48,13 @@ const local = reactive({
   ]
 })
 
-
-async function delay() {
-  await new Promise(r => setTimeout(r, 1000))
-}
-
 // !# C0CKP1T_END script
 
-// ________________________________________________________________________________
-// INIT
-// ________________________________________________________________________________
-async function init() {
-
-}
-
-onMounted(async () => {
-  init()
-})
 </script>
 
 <template>
   <!--  !# C0CKP1T_START template -->
   <x-section :level="2" :visible="true" k="Bootstrap Components">
-
 
     <!-- Navbars -->
     <ComponentView name="navbars" :defaultExpand="local.defaultExpand">

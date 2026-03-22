@@ -9,9 +9,7 @@
 //________________________________________________________________________________
 import { defineAsyncComponent, reactive, watch, onMounted, computed } from 'vue'
 import { store as storeMain, api as apiMain} from 'GlobalStore'
-
 import { store as logStore, api as logApi } from 'WsLogUtils'
-import ExecButton from "../../components/ExecButton.vue";
 const LogWsExec = defineAsyncComponent(() => import("./traffic/log-ws-exec.vue"))
 const LogWsExec2 = defineAsyncComponent(() => import("./traffic/log-ws-exec2.vue"))
 

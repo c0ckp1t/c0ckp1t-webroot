@@ -19,7 +19,7 @@ import ComponentView from "./component-view.vue";
 // ________________________________________________________________________________
 // LOGGING
 // ________________________________________________________________________________
-const LOG_HEADER = "pages/page-components.vue"
+const LOG_HEADER = "frontend/ComponentsBasic.vue"
 const logger = getLogger(LOG_HEADER)
 logger.debug("[INIT]")
 
