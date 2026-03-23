@@ -21,7 +21,7 @@ export function loadAce() {
     // Reuse in-flight / resolved promise
     if (_promise) return _promise
 
-    const componentPrefix = storeMain.appConfig?.componentPrefix || ""
+    const componentPrefix = storeMain.config?.componentPrefix || ""
     const src = `${componentPrefix}${ACE_SCRIPT_LOCAL}`
 
     _promise = new Promise((resolve, reject) => {

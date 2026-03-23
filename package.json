@@ -1,6 +1,6 @@
 {
   "name": "c0ckp1t",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "A Vue 3 zero-build web dashboard framework with Islands architecture, WebSocket backends, and reusable UI components",
   "type": "module",
   "license": "Apache-2.0",
@@ -34,6 +34,8 @@
     "core/",
     "components/",
     "js_ext/",
+    "!js_ext/vue3-sfc-loader2.esm.js",
+    "!js_ext/vue3-sfc-loader2.esm.js.map",
     "css/"
   ],
   "scripts": {

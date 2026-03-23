@@ -194,7 +194,8 @@ async function saveMarkdown() {
 // ________________________________________________________________________________
 async function init() {
   if (storeMain.isReady && local.updated === null) {
-    await href(props.homepage)
+    const documentPath = route.fullPath.replace(props.routerPath, "")
+    await href(documentPath)
   } else {
     setTimeout(() => { init() }, 500)
   }
@@ -212,22 +213,23 @@ onMounted(() => {
       <span class="fw-bold m-1">Current: <span>{{ local.currentPath }}</span> </span>
     </div>
 
-    <div class="row markdown-header align-items-center" v-if="storeMain.showDocReload">
-      <div class="col-auto" v-if="local.currentPath !== local.homepage">
-        <button class="btn btn-primary" @click="goToHomePage()" :title="local.homepage">
-          <i class="fa-solid fa-house"></i> Home Page
-        </button>
+    <div class="row markdown-header align-items-center" v-if="storeMain.showDocNav">
+      <div class="col-auto" v-if="local.currentPath !== props.homepage">
+        <ExecButton icon="fa-house me-1" class="btn btn-primary btn-sm" :title="props.homepage" :callback="() => goToHomePage()"
+                    >
+          Home Page
+        </ExecButton>
       </div>
 
       <div class="col"></div>
 
       <div class="col-auto">
-        <ExecButton icon="fa-arrow-left me-1" :callback="() => router.push(`${props.routerPath}${local.previousPath}`)"
+        <ExecButton icon="fa-arrow-left me-1"  class="btn btn-primary btn-sm" :callback="() => router.push(`${props.routerPath}${local.previousPath}`)"
           v-if="local.currentPath !== local.previousPath">
           {{ local.previousPath }}
         </ExecButton>
       </div>
-      <div class="col-auto" >
+      <div class="col-auto" v-if="storeMain.allowDocWrite">
         <x-toggle k="HTML" v-model="local.isHTMLVisible"></x-toggle>
       </div>
       <div class="col-auto" v-if="storeMain.allowDocWrite">
@@ -248,7 +250,10 @@ onMounted(() => {
           </div>
           <div class="col" :class="{'is-dirty': local.isDirty}" v-if="local.isEditVisible">
 
-            <ExecButton class="btn btn-primary btn-sm mt-1" icon="fa-floppy-disk" :callback="() => saveMarkdown()" :disabled="!local.isDirty"  v-if="registry?.store?.context?.accessLevel <= 500">
+            <ExecButton class="btn btn-primary btn-sm mt-1" icon="fa-floppy-disk"
+                        :callback="() => saveMarkdown()"
+                        :disabled="!local.isDirty"
+                        v-if="registry?.store?.context?.accessLevel <= 500">
             </ExecButton>
 
             <v-ace-editor v-model="local.markdownText" lang="markdown" theme="twilight"

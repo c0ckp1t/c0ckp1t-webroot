@@ -66,15 +66,14 @@
   import { createConfig } from 'https://cdn.jsdelivr.net/npm/c0ckp1t@latest/Config.mjs'
 
   const config = createConfig({
+    vueRouterModeIsHash: true,
     appEndpoint: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
     routePrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
     componentPrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
     appMainComponent: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/PageMain.vue",
   })
   initLogger(config)
-  console.log(config)
   await apiMain.init("app-default", config)
-
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/c0ckp1t@latest/js_ext/bootstrap.bundle.min.js"></script>

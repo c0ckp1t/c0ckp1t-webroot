@@ -16,5 +16,8 @@ default:
 dev:
 	$(NVM) node ./c0ckp1t-server/src/c0ckp1t-server.mjs 
 
+check-publish:
+	$(NVM) npm pack --dry-run
+
 kitty:
 	cd ${PWD} && kitty --detach  --session ${PWD}/kitty.session

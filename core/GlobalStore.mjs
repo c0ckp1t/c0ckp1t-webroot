@@ -55,6 +55,7 @@ export const store = reactive({
     showDocReload: true,
     showDocTrail: true,
     allowDocWrite: true,
+    showDocNav: true,
     // FOOTER Configuration
     showFooter: true,
     // TOP NAVBAR Configuration
@@ -339,6 +340,7 @@ export const api = {
         store.showTopNavBar = config.showTopNavBar ?? true
         store.showFooter = config.showFooter ?? true
         store.showDocReload  = config.showDocReload ?? true
+        store.showDocNav = config.showDocNav ?? true
         store.showDocTrail = config.showDocTrail ?? true
         store.allowDocWrite = config.allowDocWrite ?? false
         store.allowDocReload = config.allowDocReload ?? false
