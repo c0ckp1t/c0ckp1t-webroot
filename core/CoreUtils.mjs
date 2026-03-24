@@ -1,43 +1,3 @@
-/**
- * Use window to extract the hostname, port, protocol, and whether the connection is secure.
- * @returns {{hostname: string, port: string, protocol: string, isSecure: boolean}}
- */
-export function findHostnamePortProtocol() {
-    const hostname = window.location.hostname
-    const protocol = window.location.protocol.toLowerCase()
-    const isSecure = protocol.toLowerCase() === 'https:'
-    const port = window.location.port || (isSecure ? "443" : "80")
-    const serverUrl = `${protocol}//${hostname}:${port}`
-    return {hostname, port, protocol, isSecure, serverUrl}
-}
-
-// ________________________________________________________________________________
-// Island Configuration
-// ________________________________________________________________________________
-/**
- * Validate and set defaults for the island config object.
- * @param config
- * @returns {*}
- */
-export function validateIslandConfig(config) {
-    if (!config) {
-        throw new Error("Island config is required")
-    }
-    if (typeof config !== 'object') {
-        throw new Error("Island config must be an object must was `" + typeof config + "`")
-    }
-    if (typeof config.instanceId !== `string` || config.instanceId.trim() === ``) {
-        throw new Error(`Island config requires non-empty instanceId property`)
-    }
-    config.type ??= "LOCAL"
-
-    if (!Array.isArray(config?.routes) || config.routes.length === 0) {
-        config.routes = []
-    }
-
-    return config
-}
-
 // ________________________________________________________________________________
 // Application Configuration
 // ________________________________________________________________________________
@@ -99,7 +59,6 @@ export const DEFAULTS = {
     bootswatchURL: "https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist",
 };
 
-
 /**
  * Validate and set defaults for the config object.
  * @param config
@@ -124,6 +83,46 @@ export function validateAppConfig(config) {
     }
     if (typeof config.type !== `string` || config.type.trim() === ``) {
         config.type = DEFAULTS.type
+    }
+
+    return config
+}
+
+/**
+ * Use window to extract the hostname, port, protocol, and whether the connection is secure.
+ * @returns {{hostname: string, port: string, protocol: string, isSecure: boolean}}
+ */
+export function findHostnamePortProtocol() {
+    const hostname = window.location.hostname
+    const protocol = window.location.protocol.toLowerCase()
+    const isSecure = protocol.toLowerCase() === 'https:'
+    const port = window.location.port || (isSecure ? "443" : "80")
+    const serverUrl = `${protocol}//${hostname}:${port}`
+    return {hostname, port, protocol, isSecure, serverUrl}
+}
+
+// ________________________________________________________________________________
+// Island Configuration
+// ________________________________________________________________________________
+/**
+ * Validate and set defaults for the island config object.
+ * @param config
+ * @returns {*}
+ */
+export function validateIslandConfig(config) {
+    if (!config) {
+        throw new Error("Island config is required")
+    }
+    if (typeof config !== 'object') {
+        throw new Error("Island config must be an object must was `" + typeof config + "`")
+    }
+    if (typeof config.instanceId !== `string` || config.instanceId.trim() === ``) {
+        throw new Error(`Island config requires non-empty instanceId property`)
+    }
+    config.type ??= "LOCAL"
+
+    if (!Array.isArray(config?.routes) || config.routes.length === 0) {
+        config.routes = []
     }
 
     return config

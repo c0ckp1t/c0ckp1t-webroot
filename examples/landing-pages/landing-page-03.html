@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychedelic Lava</title>
+    <style>
+        /* RESET & BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #110022; /* Deep purple background */
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden; /* Prevent scrollbars */
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        /* CANVAS STYLING */
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* This filter creates the 'gooey' effect by thresholding blurred elements */
+            filter: contrast(20);
+            z-index: 1;
+        }
+
+        /* CONTENT OVERLAY */
+        .content {
+            position: relative;
+            z-index: 10; /* Above the canvas */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            pointer-events: none; /* Let clicks pass through to canvas if needed */
+        }
+
+        h1 {
+            font-size: 5rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            mix-blend-mode: exclusion; /* Cool interaction with background colors */
+            margin-bottom: 2rem;
+            font-weight: 900;
+        }
+
+        p {
+            font-size: 1.5rem;
+            color: #fff;
+            mix-blend-mode: overlay;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            margin-top: 3rem;
+            padding: 1rem 3rem;
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            pointer-events: auto; /* Re-enable clicks for the button */
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .cta-button:hover {
+            background: white;
+            color: #110022;
+            letter-spacing: 2px;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- THE CANVAS FOR THE LAVA EFFECT -->
+<canvas id="lavaCanvas"></canvas>
+
+<!-- LANDING PAGE CONTENT -->
+<div class="content">
+    <h1>Groovy.</h1>
+    <p>Experience the flow. A psychedelic journey into the depths of digital goo. Sit back, relax, and watch the colors melt.</p>
+    <button class="cta-button">Enter the Vibe</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('lavaCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Configuration
+    let width, height;
+    const bubbleCount = 12; // Number of large bubbles
+    const bubbles = [];
+
+    // Psychedelic Color Palette (HSL angles)
+    // We will cycle through these to create gradients
+    let hueRotation = 0;
+
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    }
+
+    class Bubble {
+        constructor() {
+            this.init();
+        }
+
+        init() {
+            // Large blobs vary between 15% and 35% of screen shortest side
+            const minDim = Math.min(width, height);
+            this.radius = Math.random() * (minDim * 0.2) + (minDim * 0.15);
+
+            // Random position
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+
+            // Velocity
+            this.vx = (Math.random() - 0.5) * 2;
+            this.vy = (Math.random() - 0.5) * 2;
+
+            // Unique color offset for this bubble
+            this.colorOffset = Math.random() * 360;
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Bounce off walls
+            if (this.x - this.radius < 0 || this.x + this.radius > width) this.vx *= -1;
+            if (this.y - this.radius < 0 || this.y + this.radius > height) this.vy *= -1;
+
+            // Keep them somewhat within bounds to prevent getting stuck
+            if (this.x < -this.radius) this.x = width + this.radius;
+            if (this.x > width + this.radius) this.x = -this.radius;
+        }
+
+        draw() {
+            ctx.beginPath();
+
+            // We draw the blob with a strong blur and specific colors
+            // The CSS 'filter: contrast(20)' will sharpen the blur edges, making them look like liquid
+
+            // Create a gradient inside the bubble
+            const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+
+            // Dynamic Psychedelic Colors
+            const hue = (hueRotation + this.colorOffset) % 360;
+            const innerColor = `hsla(${hue}, 100%, 60%, 1)`; // Bright center
+            const outerColor = `hsla(${hue + 60}, 100%, 50%, 0)`; // Transparent edge for blending
+
+            gradient.addColorStop(0, innerColor);
+            gradient.addColorStop(1, outerColor);
+
+            ctx.fillStyle = gradient;
+
+            // Draw circle
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+
+    function initBubbles() {
+        bubbles.length = 0;
+        for (let i = 0; i < bubbleCount; i++) {
+            bubbles.push(new Bubble());
+        }
+    }
+
+    function animate() {
+        // Slight trails? No, clear mostly for crisp movement, but leave a tiny bit for hallucination effect
+        // Actually, for metaballs to work with contrast filter, we need a clean slate or black background.
+
+        // Fill background with a very dark color, but with slight opacity creates trails
+        // However, strictly flat bubbles work best with clearRect for the contrast trick
+        ctx.clearRect(0, 0, width, height);
+
+        // To make the metaball effect work (the gooiness), blobs need to overlap.
+        // We apply a blur to the CANVAS context, then the CSS Contrast tightens it up.
+        // But standard canvas blur is expensive.
+
+        // Instead, we paint soft gradients (in the Bubble class) and let CSS Contrast do the hard edge work.
+        // We need a dark background for the colors to pop against in the contrast filter.
+
+        // Fill background black (necessary for contrast filter to not turn whole screen white)
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0,0, width, height);
+
+        bubbles.forEach(bubble => {
+            bubble.update();
+            bubble.draw();
+        });
+
+        // Rotate global hue for shifting psychedelic background feel
+        hueRotation += 0.5;
+
+        requestAnimationFrame(animate);
+    }
+
+    // Setup
+    window.addEventListener('resize', () => {
+        resize();
+        initBubbles();
+    });
+
+    resize();
+    initBubbles();
+    animate();
+
+</script>
+</body>
+</html>

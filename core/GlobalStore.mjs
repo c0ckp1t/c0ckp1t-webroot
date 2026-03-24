@@ -9,7 +9,7 @@ import * as VueRouter from 'vue-router'
 import {getLogger} from 'Logging';
 import {transformRoutes, loadModule, options} from "VueUtils";
 import {validateIslandConfig, findHostnamePortProtocol, validateAppConfig} from 'CoreUtils'
-import {substrAfterFirstSlash, extractLastPath} from "JsUtils";
+import {substrAfterFirstSlash, extractLastPath, nok, ok} from "JsUtils";
 
 import IslandDefault from 'IslandDefault'
 
@@ -182,6 +182,15 @@ export const api = {
             throw new Error("Cannot unregister Island with defaultInstanceId")
         }
         throw new Error("NOT_IMPLEMENTED - unregisterIsland")
+    },
+
+    saveIslandConfig: async (instanceId) => {
+        logger.debug(`[saveIslandConfig] - instanceId=${instanceId}`)
+        return nok(`[saveIslandConfig] - NOT SUPPORTED`, [store.id])
+    },
+    deleteIslandConfig: async (instanceId) => {
+        logger.debug(`[deleteIslandConfig] - instanceId=${instanceId}`)
+        return nok(`[deleteIslandConfig] - NOT SUPPORTED`, [store.id])
     },
 
     // ________________________________________________________________________________

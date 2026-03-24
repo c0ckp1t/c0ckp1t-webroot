@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Crash Menu</title>
+    <style>
+        :root {
+            /* Palette extracted and cleaned from the image */
+            --bg-color: #C19A6B; /* Warm tan/brown background */
+            --bomb-black: #0F0F0F; /* Sharp black */
+            --icon-circle-bg: #87CEEB; /* Light sky blue */
+            --spark-color: #B2D88C; /* Pale lime green */
+            --folder-orange: #E88C30;
+            --text-color: #FFFFFF;
+            --text-stroke: #000000;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Verdana', 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            /* To help visualize the canvas area, remove in production if preferred */
+            /* border: 1px dashed rgba(0,0,0,0.1); */
+        }
+
+        /* SVG Base Styles */
+        svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        /* Menu Item Interaction */
+        .menu-group {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .menu-group:hover {
+            transform: scale(1.05);
+        }
+
+        .menu-text {
+            fill: var(--text-color);
+            font-size: 14px;
+            font-weight: 900;
+            stroke: var(--text-stroke);
+            stroke-width: 3px;
+            paint-order: stroke fill;
+            text-anchor: middle;
+            font-family: sans-serif;
+        }
+
+        .icon-circle {
+            fill: var(--icon-circle-bg);
+            stroke: var(--bomb-black);
+            stroke-width: 8;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- DEFINITIONS FOR REUSABLE ICONS -->
+        <defs>
+            <!-- 1. Hard Disk Icon (Bomb with fuse) -->
+            <g id="icon-harddisk">
+                <circle cx="0" cy="0" r="15" fill="#C16B40" stroke="black" stroke-width="2"/>
+                <path d="M 0,-15 Q 5,-25 10,-20" fill="none" stroke="black" stroke-width="2"/>
+                <!-- Little sparks -->
+                <path d="M 10,-22 L 12,-25 M 14,-20 L 17,-18" stroke="black" stroke-width="1"/>
+            </g>
+
+            <!-- 2. System Icon (Folder) -->
+            <g id="icon-system">
+                <path d="M -15,-10 L -5,-10 L 0,-15 L 15,-15 L 15,15 L -15,15 Z" fill="#E88C30" stroke="black" stroke-width="2"/>
+                <rect x="-10" y="-5" width="20" height="15" fill="#DDA060" stroke="black" stroke-width="1"/>
+            </g>
+
+            <!-- 3. Trash Icon -->
+            <g id="icon-trash">
+                <rect x="-10" y="-12" width="20" height="24" fill="#C0C040" stroke="black" stroke-width="2"/>
+                <line x1="-5" y1="-8" x2="-5" y2="8" stroke="black" stroke-width="2"/>
+                <line x1="0" y1="-8" x2="0" y2="8" stroke="black" stroke-width="2"/>
+                <line x1="5" y1="-8" x2="5" y2="8" stroke="black" stroke-width="2"/>
+            </g>
+
+            <!-- 4. Phone/Modem Icon -->
+            <g id="icon-modem">
+                <path d="M -10,10 Q -5,5 -10,-5 L -5,-10 L 5,-5 L 0,10 Z" fill="#E8A050" stroke="black" stroke-width="2" transform="rotate(-45)"/>
+                <circle cx="10" cy="-10" r="1.5" fill="black"/>
+                <circle cx="15" cy="-15" r="1.5" fill="black"/>
+            </g>
+
+            <!-- 5. Applications Icon (Box of stuff) -->
+            <g id="icon-apps">
+                <rect x="-15" y="-10" width="30" height="20" fill="#E8A050" stroke="black" stroke-width="2"/>
+                <rect x="-10" y="-15" width="10" height="10" fill="#88C060" stroke="black" stroke-width="1"/>
+                <rect x="2" y="-18" width="8" height="15" fill="#4080C0" stroke="black" stroke-width="1"/>
+            </g>
+
+            <!-- 6. Files Icon (Document) -->
+            <g id="icon-files">
+                <path d="M -10,-15 L 5,-15 L 10,-10 L 10,15 L -10,15 Z" fill="#E0D060" stroke="black" stroke-width="2"/>
+                <polyline points="5,-15 5,-10 10,-10" fill="none" stroke="black" stroke-width="1"/>
+                <line x1="-6" y1="-8" x2="2" y2="-8" stroke="black" stroke-width="1"/>
+                <line x1="-6" y1="-2" x2="6" y2="-2" stroke="black" stroke-width="1"/>
+                <line x1="-6" y1="4" x2="6" y2="4" stroke="black" stroke-width="1"/>
+            </g>
+
+            <!-- 7. Fan/Printer Icon -->
+            <g id="icon-fan">
+                <rect x="-15" y="-10" width="30" height="20" fill="#E8A050" stroke="black" stroke-width="2"/>
+                <path d="M -10,-5 Q 0,-15 10,-5" fill="white" stroke="black" stroke-width="1"/>
+                <rect x="-8" y="2" width="16" height="6" fill="#A0A0A0" stroke="black" stroke-width="1"/>
+            </g>
+
+        </defs>
+
+
+
+        <!-- Main Bomb Body -->
+        <!-- The large C-shape -->
+        <path d="M 280,470
+                 A 140,140 0 1,1 420,280
+                 L 460,320
+                 L 380,380
+                 A 100,100 0 1,0 260,490
+                 Z"
+              fill="var(--bomb-black)" />
+
+        <!-- The fuse -->
+        <path d="M 440,300
+                 Q 480,260 460,240
+                 T 480,200
+                 T 520,190"
+              fill="none" stroke="var(--bomb-black)" stroke-width="14" stroke-linecap="round"/>
+
+        <!-- The Sparks (Lime Green) -->
+        <g transform="translate(520, 190)">
+            <polygon points="0,-10 10,-60 20,-10" fill="var(--spark-color)" transform="rotate(0)"/>
+            <polygon points="0,-10 10,-60 20,-10" fill="var(--spark-color)" transform="rotate(45)"/>
+            <polygon points="0,-10 10,-60 20,-10" fill="var(--spark-color)" transform="rotate(90)"/>
+            <polygon points="0,-10 10,-60 20,-10" fill="var(--spark-color)" transform="rotate(135)"/>
+            <polygon points="0,-10 10,-60 20,-10" fill="var(--spark-color)" transform="rotate(-45)"/>
+        </g>
+
+        <!-- LEFT SIDE MENU ITEMS -->
+
+        <!-- Modem -->
+        <g class="menu-group" transform="translate(180, 340)">
+            <!-- Connection line (faked by overlapping stroke) -->
+            <circle cx="0" cy="0" r="32" class="icon-circle" />
+            <use href="#icon-modem" transform="scale(1.2)" />
+            <text x="0" y="55" class="menu-text" transform="rotate(-90 0 55)">Modem</text>
+        </g>
+
+        <!-- Files -->
+        <g class="menu-group" transform="translate(180, 460)">
+            <circle cx="0" cy="0" r="32" class="icon-circle" />
+            <use href="#icon-files" transform="scale(1.2)"/>
+            <text x="0" y="55" class="menu-text" transform="rotate(-90 0 55)">Files</text>
+        </g>
+
+        <!-- Applications -->
+        <g class="menu-group" transform="translate(230, 400)">
+            <circle cx="0" cy="0" r="32" class="icon-circle" />
+            <use href="#icon-apps" transform="scale(1.1)"/>
+            <text x="0" y="60" class="menu-text" transform="rotate(-90 0 60)">Applications</text>
+        </g>
+
+        <!-- Fan/Printer -->
+        <g class="menu-group" transform="translate(280, 480)">
+            <circle cx="0" cy="0" r="32" class="icon-circle" />
+            <use href="#icon-fan" transform="scale(1.1)"/>
+            <text x="0" y="55" class="menu-text" transform="rotate(-90 0 55)">Fax</text>
+        </g>
+
+
+        <!-- RIGHT SIDE MENU ITEMS -->
+
+        <!-- Hard Disk -->
+        <g class="menu-group" transform="translate(680, 260)">
+            <!-- Connector Stub -->
+            <path d="M -35,10 Q -50,30 -60,50" fill="none" stroke="var(--bomb-black)" stroke-width="10" />
+            <circle cx="0" cy="0" r="38" class="icon-circle" />
+            <use href="#icon-harddisk" transform="scale(1.5)"/>
+            <rect x="35" y="-10" rx="5" ry="5" width="80" height="20" fill="var(--bomb-black)"/>
+            <text x="75" y="4" class="menu-text" style="stroke:none; fill:#87CEEB; font-size:12px;">Hard Disk</text>
+        </g>
+
+        <!-- System -->
+        <g class="menu-group" transform="translate(600, 330)">
+            <circle cx="0" cy="0" r="38" class="icon-circle" />
+            <use href="#icon-system" transform="scale(1.3)"/>
+            <rect x="35" y="-10" rx="5" ry="5" width="70" height="20" fill="var(--bomb-black)"/>
+            <text x="70" y="4" class="menu-text" style="stroke:none; fill:#87CEEB; font-size:12px;">System</text>
+        </g>
+
+        <!-- Trash -->
+        <g class="menu-group" transform="translate(670, 410)">
+            <circle cx="0" cy="0" r="38" class="icon-circle" />
+            <use href="#icon-trash" transform="scale(1.3)"/>
+            <rect x="35" y="-10" rx="5" ry="5" width="60" height="20" fill="var(--bomb-black)"/>
+            <text x="65" y="4" class="menu-text" style="stroke:none; fill:#87CEEB; font-size:12px;">Trash</text>
+        </g>
+
+    </svg>
+</div>
+
+</body>
+</html>

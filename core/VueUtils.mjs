@@ -162,6 +162,51 @@ const options =  {
 }
 
 //________________________________________________________________________________
+// LOAD MODULE FROM TEXT
+//________________________________________________________________________________
+/**
+ * Compiles a raw Vue SFC string into a Vue component object.
+ * Uses vue3-sfc-loader under the hood but bypasses URL fetching entirely.
+ *
+ * @param {string} sfcText - Raw Vue SFC source (e.g. "<template>...</template><script>...")
+ * @param {string} [name='anonymous'] - Optional name for the virtual module (used in errors/devtools)
+ * @returns {Promise<object>} - Compiled Vue component options object
+ *
+ * @example
+ *   const comp = await loadModuleFromText('<template><div>hi</div></template>', 'greeting')
+ *   app.component('greeting', comp)
+ */
+export async function loadModuleFromText(sfcText, name = 'anonymous') {
+    const virtualPath = `virtual://${name}.vue`
+    logger.debug(`[loadModuleFromText] - compiling "${name}" (${sfcText.length} chars)`)
+    validateVueSFC(sfcText)
+    // Shallow-copy the moduleCache so the virtual path doesn't pollute the shared cache
+    const isolatedCache = Object.create(options.moduleCache)
+    const textOptions = {
+        ...options,
+        moduleCache: isolatedCache,
+        // Override getFile: return the raw text for the virtual path,
+        // delegate everything else to the original resolver
+        async getFile(path) {
+            if (path === virtualPath) {
+                logger.debug(`[loadModuleFromText:getFile] - serving virtual path "${virtualPath}"`)
+                return {
+                    getContentData: (asBinary) => {
+                        if (asBinary) {
+                            return Promise.resolve(new TextEncoder().encode(sfcText).buffer)
+                        }
+                        return Promise.resolve(sfcText)
+                    }
+                }
+            }
+            // Fall back to normal resolution for imports within the SFC
+            return options.getFile(path)
+        },
+    }
+    return await loadModule(virtualPath, textOptions)
+}
+
+//________________________________________________________________________________
 // LAZY-LOADED MODULE CACHE ENTRIES
 //   Uses dynamic import() which resolves via the browser's import map.
 //   vue3-sfc-loader handles promises in moduleCache, so on first access

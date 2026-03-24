@@ -1,6 +1,8 @@
 <script setup>
 /**
- * Displays and manages the connections to server instances
+ * Displays and manages the connections to server instances.
+ *  TODO: Uses conditional statements but in future
+ *   can be refactored to use dynamic component loading based on registry type
  */
 //________________________________________________________________________________
 // IMPORTS
@@ -9,6 +11,7 @@ import {ref, markRaw, reactive, watch, onMounted, computed, defineAsyncComponent
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
 import {useRouter} from "vue-router";
+import {api as notifyApi} from 'NotifyUtils'
 
 const ConfigDefaultIsland = defineAsyncComponent(() => import("./connections/ConfigDefaultIsland.vue"))
 const ConfigIsland = defineAsyncComponent(() => import("./connections/ConfigIsland.vue"))
@@ -48,26 +51,25 @@ const connection = computed(() => {
   return registry.value?.connection ?? null
 })
 
-const connectText = computed(() => {
-  if (connection.value.state.isConnected) {
-    return "Authenticate"
-  } else {
-    return "Connect"
-  }
-})
 //________________________________________________________________________________
 // PRIVATE METHODS
 //________________________________________________________________________________
-async function refreshRegistry() {
-  await storeMain.r[instanceId.value].rootNode()
-}
-
 async function saveConnection() {
-  await apiMain.saveConnection(instanceId.value, connection.value.store)
+  const res = await apiMain.saveIslandConfig(instanceId)
+  if(!res.isOk) {
+    await notifyApi.badDetails(`saveIslandConfig`, res.result)
+  } else {
+    await notifyApi.goodDetails(`saveIslandConfig`, res.result)
+  }
 }
 
 async function deleteConnection() {
-  await apiMain.deleteConnection(instanceId.value)
+  const res = await apiMain.deleteIslandConfig(instanceId)
+  if(!res.isOk) {
+    await notifyApi.badDetails(`deleteConnection`, res.result)
+  } else {
+    await notifyApi.goodDetails(`deleteConnection`, res.result)
+  }
 }
 
 </script>

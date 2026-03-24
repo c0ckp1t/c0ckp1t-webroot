@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIRAL MENU // PHREAK // V2.0</title>
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --retro-red: #D30000;
+            --retro-yellow: #FFEA00;
+            --retro-blue: #0044FF;
+            --retro-white: #FFFFFF;
+            --hacker-font: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--retro-white);
+            font-family: var(--hacker-font);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- 1. Lava Lamp Background --- */
+        #lava-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(135deg, #001f3f, #003366, #ff4136, #ffdc00);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* SVG Distortion Layer on top of the gradient */
+        #distortion-svg {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            opacity: 0.6;
+            mix-blend-mode: overlay;
+        }
+
+        /* --- 2. Main Container --- */
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- 3. Circular Menu Layout --- */
+        .orbit-system {
+            position: absolute;
+            width: 650px;
+            height: 650px;
+            border-radius: 50%;
+            /* Removed the border line for a cleaner look */
+            animation: rotate 25s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Wrapper counter-rotates to keep images upright */
+        .planet-wrapper {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            top: 50%;
+            left: 50%;
+            margin-top: -90px;
+            margin-left: -90px;
+            filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.5));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .planet-wrapper:hover {
+            z-index: 100;
+            cursor: pointer;
+        }
+
+        /* Calculating positions on the circle radius ~280px */
+        .pos-1 { animation: counter-rotate-1 25s linear infinite; }
+        .pos-2 { animation: counter-rotate-2 25s linear infinite; }
+        .pos-3 { animation: counter-rotate-3 25s linear infinite; }
+        .pos-4 { animation: counter-rotate-4 25s linear infinite; }
+        .pos-5 { animation: counter-rotate-5 25s linear infinite; }
+
+        /* Animation definitions to move the item around the circle AND counter-rotate it */
+        @keyframes counter-rotate-1 {
+            0% { transform: rotate(0deg) translate(300px) rotate(0deg) scale(1); }
+            100% { transform: rotate(360deg) translate(300px) rotate(-360deg) scale(1); }
+        }
+        @keyframes counter-rotate-2 {
+            0% { transform: rotate(72deg) translate(300px) rotate(-72deg) scale(1); }
+            100% { transform: rotate(432deg) translate(300px) rotate(-432deg) scale(1); }
+        }
+        @keyframes counter-rotate-3 {
+            0% { transform: rotate(144deg) translate(300px) rotate(-144deg) scale(1); }
+            100% { transform: rotate(504deg) translate(300px) rotate(-504deg) scale(1); }
+        }
+        @keyframes counter-rotate-4 {
+            0% { transform: rotate(216deg) translate(300px) rotate(-216deg) scale(1); }
+            100% { transform: rotate(576deg) translate(300px) rotate(-576deg) scale(1); }
+        }
+        @keyframes counter-rotate-5 {
+            0% { transform: rotate(288deg) translate(300px) rotate(-288deg) scale(1); }
+            100% { transform: rotate(648deg) translate(300px) rotate(-648deg) scale(1); }
+        }
+
+        /* Hover Zoom Effect (Tricky with complex animations, so we target inner content) */
+        .planet-wrapper:hover .planet-content {
+            transform: scale(1.15);
+            border-color: var(--retro-white);
+        }
+
+        .planet-content {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.2s ease, border-color 0.2s;
+        }
+
+        .planet-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* --- 4. The Viral Menu (Sharp Edges) --- */
+        .menu-bar-container {
+            position: absolute;
+            bottom: 12%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            border: 3px solid #333;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.6); /* Hard shadow */
+            transform: skewX(-10deg);
+        }
+
+        .menu-header {
+            background-color: var(--retro-red);
+            color: var(--retro-white);
+            padding: 8px 15px;
+            font-weight: 900;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .syringe-icon {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            stroke-width: 2.5;
+            fill: none;
+            margin-left: 10px;
+        }
+
+        .menu-items {
+            display: flex;
+            background-color: #000;
+        }
+
+        .menu-item {
+            padding: 10px 20px;
+            border-right: 2px solid #333;
+            border-top: 2px solid #333;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.1s;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .menu-item:last-child {
+            border-right: none;
+        }
+
+        .menu-item:hover {
+            background-color: var(--retro-white);
+            color: #000;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* --- 5. "Phreak" Label --- */
+        .phreak-label {
+            position: absolute;
+            bottom: 20%;
+            left: 5%;
+            background-color: var(--retro-red);
+            color: white;
+            padding: 8px 25px;
+            font-weight: 900;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            transform: rotate(-5deg);
+            box-shadow: 6px 6px 0 #000;
+            z-index: 5;
+        }
+
+        /* --- SVG STYLES --- */
+        /* Cookie Monster */
+        .cookie-skin { fill: #0055DD; } /* Brighter Blue */
+        .cookie-mouth { stroke: #000; stroke-width: 8; stroke-linecap: round; fill: none;}
+        .eye-ball { fill: #fff; }
+        .eye-pupil { fill: #000; }
+
+        /* Hacker Smiley */
+        .smiley-yellow { fill: var(--retro-yellow); stroke: #000; stroke-width: 2; }
+        .smiley-red { fill: var(--retro-red); stroke: #000; stroke-width: 2; }
+        .connector-line { stroke: #fff; stroke-width: 2; stroke-dasharray: 4,4; }
+
+        /* Wireframe Cube */
+        .cube-stroke { stroke: var(--retro-red); stroke-width: 2; fill: none; }
+        .cube-inner { stroke: #FF5555; stroke-width: 1; stroke-dasharray: 3,3; fill: none;}
+
+        /* Pacman */
+        .pac-yellow { fill: var(--retro-yellow); }
+
+    </style>
+</head>
+<body>
+
+<!-- 1. Animated Lava Lamp Background -->
+<div id="lava-container">
+    <svg id="distortion-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <defs>
+            <!-- Liquid Filter -->
+            <filter id="liquid">
+                <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves="2" result="warp" />
+                <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="60" in="SourceGraphic" in2="warp" />
+            </filter>
+        </defs>
+        <!-- Large Blobs that get distorted -->
+        <g filter="url(#liquid)" opacity="0.5">
+            <circle cx="50" cy="50" r="40" fill="#ff0000">
+                <animate attributeName="cy" values="50;150;50" dur="20s" repeatCount="indefinite" />
+                <animate attributeName="cx" values="50;80;50" dur="23s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="150" cy="150" r="50" fill="#FFFF00">
+                <animate attributeName="cy" values="150;50;150" dur="18s" repeatCount="indefinite" />
+                <animate attributeName="cx" values="150;120;150" dur="25s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="100" cy="100" r="60" fill="#0000FF" style="mix-blend-mode: screen;">
+                <animate attributeName="r" values="60;80;60" dur="10s" repeatCount="indefinite" />
+            </circle>
+        </g>
+    </svg>
+</div>
+
+<!-- 2. Main Content -->
+<div class="container">
+
+    <div class="orbit-system">
+
+        <!-- Item 1: Cookie Monster -->
+        <!-- Sharp graphics, no fuzzy filter, clean vectors -->
+        <div class="planet-wrapper pos-1">
+            <div class="planet-content">
+                <svg class="planet-svg" viewBox="0 0 100 100">
+                    <!-- Blue Face -->
+                    <circle cx="50" cy="50" r="48" class="cookie-skin"/>
+                    <!-- Mouth -->
+                    <path d="M 20 60 Q 50 90 80 60" class="cookie-mouth" />
+                    <!-- Eyes (Right eye looks slightly up/crazy) -->
+                    <g transform="translate(0,-15)">
+                        <circle cx="35" cy="40" r="14" class="eye-ball"/>
+                        <circle cx="37" cy="38" r="5" class="eye-pupil"/>
+                        <circle cx="65" cy="35" r="14" class="eye-ball"/>
+                        <circle cx="62" cy="30" r="5" class="eye-pupil"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Item 2: Connected Smileys -->
+        <div class="planet-wrapper pos-2">
+            <div class="planet-content">
+                <svg class="planet-svg" viewBox="0 0 100 100" style="background:#000;">
+                    <!-- Lines -->
+                    <line x1="50" y1="50" x2="20" y2="20" class="connector-line" />
+                    <line x1="50" y1="50" x2="80" y2="20" class="connector-line" />
+                    <line x1="50" y1="50" x2="20" y2="80" class="connector-line" />
+
+                    <!-- Center Smiley -->
+                    <circle cx="50" cy="50" r="18" class="smiley-yellow" />
+                    <path d="M 40 45 L 60 45 L 60 55 A 10 10 0 0 1 40 55 Z" fill="black" />
+                    <!-- Sharp Zigzag smile -->
+                    <polyline points="40,60 43,63 46,60 49,63 52,60" fill="none" stroke="red" stroke-width="2" />
+
+                    <!-- Peripherals -->
+                    <circle cx="20" cy="20" r="12" class="smiley-yellow" />
+                    <circle cx="20" cy="20" r="3" fill="black" />
+
+                    <circle cx="80" cy="20" r="12" class="smiley-yellow" />
+                    <!-- Eyepatch small -->
+                    <path d="M 75 18 L 85 18 L 85 23 A 5 5 0 0 1 75 23 Z" fill="black" />
+
+                    <circle cx="20" cy="80" r="12" class="smiley-red" />
+                    <polyline points="15,85 17,88 20,85 22,88 25,85" fill="none" stroke="black" stroke-width="2" />
+
+                    <circle cx="80" cy="80" r="12" class="smiley-red" />
+                    <path d="M 75 78 L 85 78 L 85 83 A 5 5 0 0 1 75 83 Z" fill="black" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Item 3: Wireframe Cube -->
+        <div class="planet-wrapper pos-3">
+            <div class="planet-content">
+                <svg class="planet-svg" viewBox="0 0 100 100" style="background:black;">
+                    <g transform="translate(50,50) rotate(10)">
+                        <!-- Back -->
+                        <rect x="-20" y="-20" width="40" height="40" class="cube-inner"/>
+                        <!-- Connectors -->
+                        <line x1="-20" y1="-20" x2="-35" y2="-35" class="cube-stroke" />
+                        <line x1="20" y1="-20" x2="35" y2="-35" class="cube-stroke" />
+                        <line x1="20" y1="20" x2="35" y2="35" class="cube-stroke" />
+                        <line x1="-20" y1="20" x2="-35" y2="35" class="cube-stroke" />
+                        <!-- Front -->
+                        <rect x="-35" y="-35" width="70" height="70" class="cube-stroke" />
+                        <!-- Virus shape inside -->
+                        <path d="M 0,-15 L 0,15 M -15,0 L 15,0 M -10,-10 L 10,10 M 10,-10 L -10,10" stroke="#ff0000" stroke-width="3" />
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Item 4: Angry Smiley -->
+        <div class="planet-wrapper pos-4">
+            <div class="planet-content">
+                <svg class="planet-svg" viewBox="0 0 100 100" style="background:#cba92d;">
+                    <g transform="translate(0, 5)">
+                        <!-- Eyepatch -->
+                        <circle cx="65" cy="35" r="18" fill="black" />
+                        <circle cx="30" cy="40" r="6" fill="black"/>
+                        <!-- Strap -->
+                        <line x1="65" y1="20" x2="85" y2="10" stroke="black" stroke-width="3" />
+
+                        <!-- Sharp Zigzag Mouth -->
+                        <polyline points="20,70 30,85 40,70 50,85 60,70 70,85 80,70" fill="none" stroke="black" stroke-width="4" stroke-linejoin="round"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Item 5: Pacman -->
+        <div class="planet-wrapper pos-5">
+            <div class="planet-content">
+                <svg class="planet-svg" viewBox="0 0 100 100" style="background:#000;">
+                    <circle cx="50" cy="50" r="40" class="pac-yellow" />
+                    <path d="M 50 50 L 95 25 L 95 75 Z" fill="black" />
+                </svg>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Static Decoration -->
+    <div class="phreak-label">PHREAK</div>
+
+    <!-- Bottom Menu -->
+    <div class="menu-bar-container">
+        <div class="menu-header">
+            <div>VIRAL MENU</div>
+            <svg class="syringe-icon" viewBox="0 0 24 24">
+                <path d="M20 4L17 7M15 9L18 6M13 11L10 14M7 17L4 20M3 21L6 18M18 3L21 6" stroke-linecap="round"/>
+                <rect x="9" y="8" width="8" height="8" transform="rotate(45 13 12)" stroke="white" fill="none"/>
+                <line x1="7" y1="17" x2="5" y2="19" />
+            </svg>
+        </div>
+        <div class="menu-items">
+            <div class="menu-item">Tweetie</div>
+            <div class="menu-item">Bugs</div>
+            <div class="menu-item">Cookie</div>
+            <div class="menu-item">Bart</div>
+            <div class="menu-item">PacMan</div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

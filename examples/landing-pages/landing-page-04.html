@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM ACCESS</title>
+    <style>
+        :root {
+            /* The Palette derived from the source image */
+            --bg-deep: #2a0000;
+            --bg-main: #580000;
+            --main-red: #c50000;
+            --highlight: #ff3333;
+            --pupil-black: #0c0000;
+            --scan-line: rgba(255, 0, 0, 0.1);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-deep);
+            color: var(--main-red);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CRT/VCR Overlay Effects */
+        .crt-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            background:
+                    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            animation: flicker 0.15s infinite;
+        }
+
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 40%, black 100%);
+            z-index: 9;
+            pointer-events: none;
+        }
+
+        /* Container Layout */
+        .container {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Input Form Styles */
+        .login-box {
+            position: absolute;
+            bottom: 20%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 250px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .login-box:hover {
+            opacity: 1;
+        }
+
+        input {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--main-red);
+            color: var(--highlight);
+            padding: 10px 15px;
+            font-family: 'Courier New', Courier, monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            outline: none;
+            box-shadow: 0 0 5px var(--bg-main);
+            transition: box-shadow 0.3s, background 0.3s;
+        }
+
+        input::placeholder {
+            color: var(--bg-main);
+        }
+
+        input:focus {
+            background: rgba(40, 0, 0, 0.8);
+            box-shadow: 0 0 15px var(--main-red);
+        }
+
+        /* The SVG Eye Container */
+        .eye-container {
+            width: 80vmin;
+            height: 50vmin;
+            position: relative;
+            filter: drop-shadow(0 0 20px var(--main-red));
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        /* Animations */
+        @keyframes dilate {
+            0%, 100% { r: 15; }
+            50% { r: 20; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { flood-opacity: 0.4; }
+            50% { flood-opacity: 0.8; }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.92; }
+            10% { opacity: 0.98; }
+            15% { opacity: 0.94; }
+            20% { opacity: 0.98; }
+            100% { opacity: 0.96; }
+        }
+
+        /* Specific SVG Parts */
+        #pupil {
+            fill: var(--pupil-black);
+            opacity: 0.95;
+            /* Base animation for breathing effect */
+            animation: dilate 4s ease-in-out infinite;
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+
+        #iris-texture {
+            opacity: 0.6;
+            mix-blend-mode: multiply;
+        }
+
+        #sclera {
+            fill: url(#scleraGradient);
+        }
+
+        .eyelid-mask {
+            fill: var(--bg-deep);
+        }
+    </style>
+</head>
+<body>
+
+<div class="crt-overlay"></div>
+<div class="vignette"></div>
+
+<div class="container">
+
+    <div class="eye-container">
+        <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- Gradient for the white part of the eye, tinted red -->
+                <radialGradient id="scleraGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="30%" style="stop-color:#b34d4d;stop-opacity:1" />
+                    <stop offset="90%" style="stop-color:#580000;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#2a0000;stop-opacity:1" />
+                </radialGradient>
+
+                <!-- Gradient for the Iris -->
+                <radialGradient id="irisGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="40%" style="stop-color:#4a0000;stop-opacity:1" />
+                    <stop offset="85%" style="stop-color:#800000;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#200000;stop-opacity:1" />
+                </radialGradient>
+
+                <!-- Noise filter for skin/organic texture -->
+                <filter id="organicNoise">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+                    <feColorMatrix type="matrix" values="1 0 0 0 0  0 0.2 0 0 0  0 0 0.2 0 0  0 0 0 1 0"/>
+                    <feBlend mode="multiply" in2="SourceGraphic" />
+                </filter>
+
+                <!-- Blur filter for depth -->
+                <filter id="blurEdges">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
+                </filter>
+            </defs>
+
+            <!-- 1. The Sclera (White part) -->
+            <path id="sclera" d="M10,65 Q50,20 100,20 Q150,20 190,65 Q150,110 100,110 Q50,110 10,65 Z" />
+
+            <!-- 2. The Iris -->
+            <g transform="translate(100, 65)">
+                <circle r="32" fill="url(#irisGradient)" />
+
+                <!-- Iris Striations (Lines) -->
+                <g id="iris-texture" stroke="#000" stroke-width="0.5">
+                    <circle r="30" fill="none" class="iris-rings" stroke-dasharray="2,3" stroke-opacity="0.5"/>
+                    <circle r="25" fill="none" class="iris-rings" stroke-dasharray="4,2" stroke-opacity="0.6"/>
+                </g>
+            </g>
+
+            <!-- 3. The Pupil (Animated via CSS + JS) -->
+            <circle id="pupil" cx="100" cy="65" r="14" />
+
+            <!-- 4. The Reflection (The white square/rectangle seen in the original) -->
+            <rect x="94" y="62" width="5" height="4" fill="#ffcccc" opacity="0.6" filter="url(#blurEdges)" transform="rotate(10 94 62)"/>
+
+            <!-- 5. Eyelashes / Eyelids (Silhouette) -->
+            <path class="eyelid-mask" d="M0,0 L200,0 L200,130 L0,130 Z M10,65 Q50,25 100,25 Q150,25 190,65 Q150,105 100,105 Q50,105 10,65 Z" fill-rule="evenodd" filter="url(#organicNoise)"/>
+
+            <!-- Individual Lashes Top -->
+            <path d="M40,35 Q35,10 25,5" stroke="var(--bg-deep)" stroke-width="1.5" fill="none" opacity="0.8"/>
+            <path d="M60,28 Q55,5 45,0" stroke="var(--bg-deep)" stroke-width="1.5" fill="none" opacity="0.8"/>
+            <path d="M80,24 Q78,2 70,-2" stroke="var(--bg-deep)" stroke-width="1.5" fill="none" opacity="0.8"/>
+            <path d="M120,24 Q122,2 130,-2" stroke="var(--bg-deep)" stroke-width="1.5" fill="none" opacity="0.8"/>
+            <path d="M150,30 Q160,10 170,5" stroke="var(--bg-deep)" stroke-width="1.5" fill="none" opacity="0.8"/>
+
+            <!-- Blood vessels in corners -->
+            <path d="M15,65 Q25,60 35,62" stroke="#580000" stroke-width="0.5" fill="none" opacity="0.5"/>
+            <path d="M185,65 Q175,70 165,68" stroke="#580000" stroke-width="0.5" fill="none" opacity="0.5"/>
+        </svg>
+    </div>
+
+    <div class="login-box">
+        <input type="text" placeholder="USERNAME" autocomplete="off" spellcheck="false">
+        <input type="password" placeholder="PASSWORD">
+    </div>
+
+</div>
+
+<script>
+    const pupil = document.getElementById('pupil');
+    const eyeContainer = document.querySelector('.eye-container');
+    const inputs = document.querySelectorAll('input');
+
+    // Simple paralax effect on the pupil based on mouse movement
+    document.addEventListener('mousemove', (e) => {
+        const x = (window.innerWidth / 2 - e.pageX) / 20;
+        const y = (window.innerHeight / 2 - e.pageY) / 20;
+
+        // Limit movement so it stays in eye
+        const constrainedX = Math.max(-10, Math.min(10, x * -1));
+        const constrainedY = Math.max(-5, Math.min(5, y * -1));
+
+        // We use transform directly, combining translation with the scale (dilation)
+        pupil.style.transform = `translate(${constrainedX}px, ${constrainedY}px)`;
+    });
+
+    // Dilate pupil massively when focusing on inputs (Focus effect)
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            pupil.style.animation = 'none'; // Stop the breathing animation
+            pupil.style.transition = 'r 0.5s ease-out';
+            pupil.setAttribute('r', '25'); // Big dilation
+        });
+
+        input.addEventListener('blur', () => {
+            pupil.style.transition = 'r 0.5s ease-in';
+            pupil.setAttribute('r', '14'); // Return to normal
+            setTimeout(() => {
+                pupil.style.animation = 'dilate 4s ease-in-out infinite'; // Restart breathing
+            }, 500);
+        });
+    });
+</script>
+</body>
+</html>
