@@ -8,10 +8,10 @@ import {reactive, ref, onMounted, onUnmounted, watch, computed, onErrorCaptured}
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
 
-import {api as apiTheme, store as storeTheme} from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.17/core/Theme.mjs"
-import BootstrapComponents from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.17/core/pages/frontend/Bootstrap.vue"
-import BasicComponents from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.17/core/pages/frontend/ComponentsBasic.vue"
-import AdvComponents from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.17/core/pages/frontend/ComponentsAdv.vue"
+import {api as apiTheme, store as storeTheme} from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/Theme.mjs"
+import BootstrapComponents from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/pages/frontend/Bootstrap.vue"
+import BasicComponents from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/pages/frontend/ComponentsBasic.vue"
+import AdvComponents from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/pages/frontend/ComponentsAdv.vue"
 
 // ________________________________________________________________________________
 // LOGGING

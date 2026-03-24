@@ -39,6 +39,7 @@ export const DEFAULTS = {
     // ________________________________________________________________________________
     appName: "C0ckp1t Application",
     showTopNavBar: true,
+    navAutoCollapse: false,
     navItems: [],
     navHasSearch: false,
     navHasThemeSel: false,

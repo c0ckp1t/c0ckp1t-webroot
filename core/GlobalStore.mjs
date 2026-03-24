@@ -10,9 +10,7 @@ import {getLogger} from 'Logging';
 import {transformRoutes, loadModule, options} from "VueUtils";
 import {findHostnamePortProtocol, validateAppConfig} from 'ConfigUtils'
 import {substrAfterFirstSlash, extractLastPath, nok, ok} from "JsUtils";
-
 import IslandDefault, {validate as validateIslandDefault} from 'IslandDefault'
-import {validate} from "Island";
 
 // ________________________________________________________________________________
 // LOGGING

@@ -5,6 +5,11 @@
   font-size: 1em; /*browser's default of 16 px*/
 }
 
+.router-link-active {
+  font-weight: bold;
+  color: var(--primary-color, #007bff);
+}
+
 /* x-components */
 .x-button {
   margin: 3px;

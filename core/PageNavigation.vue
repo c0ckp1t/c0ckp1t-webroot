@@ -22,7 +22,9 @@ logger.debug("[INIT]")
 const local = reactive({
   id: LOG_HEADER,
 })
-
+const navbarExpandClass = computed(() => {
+  return storeMain.config?.navAutoCollapse === false ? 'navbar-expand' : 'navbar-expand-lg'
+})
 const navbarClass = computed(() => ({
   'bg-body-tertiary': storeMain.config?.showTopNavBar ?? true,
   'border-bottom': storeMain.config?.showTopNavBar ?? true,
@@ -32,7 +34,7 @@ const navbarClass = computed(() => ({
 
 
 <template>
-    <nav :class="navbarClass" class="navbar navbar-expand-lg fixed-top">
+    <nav :class="[navbarClass, navbarExpandClass]" class="navbar fixed-top">
       <div class="container">
 
         <a class="navbar-brand" @click.prevent="apiMain.selectLogo()">
