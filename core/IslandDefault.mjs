@@ -206,3 +206,28 @@ function adjustNode(node) {
     });
 }
 
+// ________________________________________________________________________________
+// CONFIGURATION
+// ________________________________________________________________________________
+/**
+ * Validate and set defaults for the island config object.
+ * @param config
+ * @returns {*}
+ */
+export function validate(config) {
+    if (!config) {
+        throw new Error("config is required")
+    }
+    if (typeof config !== 'object') {
+        throw new Error("IslandDefault config must be an object must was `" + typeof config + "`")
+    }
+    if (typeof config.instanceId !== `string` || config.instanceId.trim() === ``) {
+        throw new Error(`IslandDefault config requires non-empty instanceId property`)
+    }
+    config.type = "IslandDefault"
+    if (!Array.isArray(config?.routes) || config.routes.length === 0) {
+        config.routes = []
+    }
+
+    return config
+}

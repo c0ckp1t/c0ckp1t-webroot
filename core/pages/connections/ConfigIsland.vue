@@ -38,6 +38,13 @@ const registry = computed(() => {
   return storeMain.r[props.instanceId] ?? null
 })
 
+watch(registry, (val) => {
+  console.log('registry value:', val)
+  console.log('registry type:', typeof val)
+  console.log('registry keys:', val ? Object.keys(val) : 'null')
+}, { immediate: true })
+
+
 const connection = computed(() => {
   return registry.value?.connection ?? null
 })
@@ -115,6 +122,7 @@ async function refreshRootNode() {
             Refresh Root Node
           </ExecButton>
         </template>
+
         <x-json :obj="registry"></x-json>
       </x-section>
 

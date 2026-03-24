@@ -9,7 +9,7 @@ import {reactive, onMounted, defineAsyncComponent, computed} from 'vue'
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
 import {api as notify} from "NotifyUtils"
-import {DEFAULTS, deepMerge, findHostnamePortProtocol} from "../CoreUtils.mjs"
+import {DEFAULTS, deepMerge, findHostnamePortProtocol} from "ConfigUtils"
 
 const ConnectionHeader = defineAsyncComponent(() => import("./connections/connection-header.vue"))
 

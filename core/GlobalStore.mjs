@@ -8,10 +8,11 @@ import {markRaw, reactive, watch, defineAsyncComponent, createApp} from 'vue'
 import * as VueRouter from 'vue-router'
 import {getLogger} from 'Logging';
 import {transformRoutes, loadModule, options} from "VueUtils";
-import {validateIslandConfig, findHostnamePortProtocol, validateAppConfig} from 'CoreUtils'
+import {findHostnamePortProtocol, validateAppConfig} from 'ConfigUtils'
 import {substrAfterFirstSlash, extractLastPath, nok, ok} from "JsUtils";
 
-import IslandDefault from 'IslandDefault'
+import IslandDefault, {validate as validateIslandDefault} from 'IslandDefault'
+import {validate} from "Island";
 
 // ________________________________________________________________________________
 // LOGGING
@@ -56,8 +57,6 @@ export const store = reactive({
     showDocTrail: true,
     allowDocWrite: true,
     showDocNav: true,
-    // FOOTER Configuration
-    showFooter: true,
     // TOP NAVBAR Configuration
     showTopNavBar: true,
 
@@ -78,7 +77,6 @@ export const store = reactive({
     // ________________________________________________________________________________
     isAuthenticated: false,
     username: null,
-
 
     // ________________________________________________________________________________
     // Vue App Instance - gets created in App.vue
@@ -144,29 +142,27 @@ export const api = {
             throw new Error("Cannot register island with defaultInstanceId")
         }
 
-        validateIslandConfig(config)
-        const decoratedIslandConfig = {
-            ...config,
-            SERVER_API_URL: store.serverInfo.serverUrl,
-        }
-
         let island= null
-        switch (decoratedIslandConfig.type) {
+        switch (config.type) {
             case "LOCAL":
             case "DEFAULT":
             case "default":
             case "IslandDefault":
-                island = new IslandDefault(api, decoratedIslandConfig)
+                config = validateIslandDefault(config)
+                island = new IslandDefault(api, config)
                 await api.insertRoutes(`/${island.instanceId}`, config.routes)
                 break
             default:
                 try {
-                    const { default: Island } = await import(decoratedIslandConfig.type)
-                    island = new Island(api, decoratedIslandConfig)
+                    const { default: Island, validate: validateIsland } = await import(config.type)
+                    config = validateIsland(config)
+                    island = new Island(api, config)
                 } catch(e) {
-                    throw new Error(`Unknown island type: ${decoratedIslandConfig.type}`)
+                    throw new Error(`Unknown island type: ${config.type}`)
                 }
         }
+
+        // register island in store and initialize it
         store.r[island.instanceId] = island
         await island.init()
 
@@ -319,6 +315,10 @@ export const api = {
         }
 
         validateAppConfig(config)
+        store.config = config
+        store.appName = config.appName
+        store.showSidebar = config.showSidebar
+
         //________________________________________________________________________________
         // Create Vue Application
         //________________________________________________________________________________
@@ -339,22 +339,6 @@ export const api = {
         //________________________________________________________________________________
         // Create Default Island
         //________________________________________________________________________________
-        config.routes ??= []
-        if(config.routes.length === 0) {
-            logger.warn(`config.routes is empty`)
-        }
-        store.appEndpoint = config.appEndpoint ?? ""
-        store.defaultInstanceId = config.instanceId ?? "default"
-        store.name = config.appName ?? "C0ckp1t"
-        store.showTopNavBar = config.showTopNavBar ?? true
-        store.showFooter = config.showFooter ?? true
-        store.showDocReload  = config.showDocReload ?? true
-        store.showDocNav = config.showDocNav ?? true
-        store.showDocTrail = config.showDocTrail ?? true
-        store.allowDocWrite = config.allowDocWrite ?? false
-        store.allowDocReload = config.allowDocReload ?? false
-        store.config = config
-
         // Load default island
         const decoratedIslandConfig = {
             ...config,

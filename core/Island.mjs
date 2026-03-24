@@ -10,11 +10,13 @@ import {ok, nok, sha1} from "JsUtils"
 import {getLogger} from 'Logging';
 import Connection from "./ws-client/Connection.mjs";
 
+import {findHostnamePortProtocol} from 'ConfigUtils';
 import {indexOfNonString} from "JsUtils";
 import {fromBinary, fromByteArray, Http} from "WsUtils";
 
 import { map } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import {store} from "GlobalStore";
 // ________________________________________________________________________________
 // Default Island
 // ________________________________________________________________________________
@@ -476,4 +478,28 @@ function adjustConfig(children, instanceId) {
             adjustConfig(node.children, instanceId);
         }
     });
+}
+
+// ________________________________________________________________________________
+// CONFIGURATION
+// ________________________________________________________________________________
+/**
+ * Validate and set defaults for the island config object.
+ * @param config
+ * @returns {*}
+ */
+export function validate(config) {
+    if (!config) {
+        throw new Error("config is required")
+    }
+    if (typeof config !== 'object') {
+        throw new Error("Island config must be an object must was `" + typeof config + "`")
+    }
+    if (typeof config.instanceId !== `string` || config.instanceId.trim() === ``) {
+        throw new Error(`Island config requires non-empty instanceId property`)
+    }
+    config.type = "Island"
+    const {serverUrl} = findHostnamePortProtocol()
+    config.SERVER_API_URL = serverUrl
+    return config
 }

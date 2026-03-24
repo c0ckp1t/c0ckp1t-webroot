@@ -1,9 +1,9 @@
-import { findHostnamePortProtocol} from 'CoreUtils'
+import { findHostnamePortProtocol} from 'ConfigUtils'
 // ________________________________________________________________________________
 // Properties
 // ________________________________________________________________________________
 const WITH_CREDENTIALS = false
-const instanceId =  "admin";
+const instanceId =  "anonymous";
 const appEndpoint = "";
 const {hostname, port, protocol, isSecure} = findHostnamePortProtocol()
 
@@ -24,10 +24,9 @@ export default {
         port: 1995,
         protocol: protocol,
         endpoint: "socket",
-        username: "root",
-        password: "root",
+        username: "anonymous",
+        password: "anonymous",
         isSecure: isSecure,
     }
 
 } // end of Constants
-

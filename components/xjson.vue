@@ -21,6 +21,32 @@ const emit = defineEmits(['select'])
 const id  = `json${Math.floor(Math.random() * 100000000)}`
 
 // ________________________________________________________________________________
+// SANITIZE - deep-clean objects for json-viewer (handles undefined, functions,
+// circular refs, symbols, and Vue reactive proxies)
+// ________________________________________________________________________________
+function sanitize(obj, seen = new WeakSet()) {
+  if (obj === undefined) return null
+  if (obj === null) return null
+  if (typeof obj === 'function') return `[Function: ${obj.name || 'anonymous'}]`
+  if (typeof obj === 'symbol') return obj.toString()
+  if (typeof obj !== 'object') return obj
+
+  // Handle circular references
+  if (seen.has(obj)) return '[Circular]'
+  seen.add(obj)
+
+  if (Array.isArray(obj)) {
+    return obj.map(item => sanitize(item, seen))
+  }
+
+  const result = {}
+  for (const [key, value] of Object.entries(obj)) {
+    result[key] = sanitize(value, seen)
+  }
+  return result
+}
+
+// ________________________________________________________________________________
 // LOCAL STATE
 // ________________________________________________________________________________
 const local = reactive({
@@ -33,7 +59,7 @@ watch(
   () => props.obj,
   (curr, prev) => {
     // console.log(`json watch triggered`)
-    local.el.data =  {... curr }
+    local.el.data = sanitize(curr)
   },
   { deep: true }
 )
@@ -66,7 +92,7 @@ function toggleExpand() {
 async function init() {
     // document.querySelector('#json').data = { prop1: true, prop2: 'test' };
     local.el = markRaw(document.querySelector(`#${id}`))
-    local.el.data = props.obj
+    local.el.data = sanitize(props.obj)
   if (local.isExpanded) {
     setTimeout(() => {
       expandAll()

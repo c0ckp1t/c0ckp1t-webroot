@@ -21,16 +21,11 @@ logger.debug("[INIT]")
 // ________________________________________________________________________________
 const local = reactive({
   id: LOG_HEADER,
-  items: [ ],
-  navCloseLogo: storeMain.config?.navCloseLogo ?? "./img/logo_v1.svg",
-  navOpenLogo: storeMain.config?.navOpenLogo ?? "./img/logo_v2.svg",
-  navHasSearch: storeMain.config?.navHasSearch ?? true,
-  navHasThemeSel: storeMain.config?.navHasThemeSel ?? true,
 })
 
 const navbarClass = computed(() => ({
-  'bg-body-tertiary': storeMain.showTopNavBar,
-  'border-bottom': storeMain.showTopNavBar,
+  'bg-body-tertiary': storeMain.config?.showTopNavBar ?? true,
+  'border-bottom': storeMain.config?.showTopNavBar ?? true,
 }))
 
 </script>
@@ -44,7 +39,7 @@ const navbarClass = computed(() => ({
           <span   class="nav-select">
             <LogoAnimated :isOpen="storeMain.showSidebar" />
           </span>
-          <span class="text-warning fw-bold ms-2">{{ storeMain.name }}</span>
+          <span class="text-warning fw-bold ms-2">{{ storeMain.appName }}</span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
@@ -54,7 +49,7 @@ const navbarClass = computed(() => ({
 
         <div class="collapse navbar-collapse" id="navbarText">
           <ul class="navbar-nav flex-grow-1 justify-content-center">
-            <li class="nav-item" v-for="item in local.items" :key="item.path">
+            <li class="nav-item" v-for="item in storeMain.config.navItems" :key="item.path">
               <RouterLink :to="item.path" class="nav-link">
                 {{ item.name }}
               </RouterLink>
@@ -62,11 +57,11 @@ const navbarClass = computed(() => ({
           </ul>
 
           <form class="d-flex">
-            <input v-if="local.navHasSearch" class="form-control me-2" type="search" placeholder="Search" v-model="local.searchQuery">
-            <button v-if="local.navHasSearch" class="btn btn-outline-secondary" type="submit">
+            <input v-if="storeMain.config?.navHasSearch ?? true" class="form-control me-2" type="search" placeholder="Search" v-model="local.searchQuery">
+            <button v-if="storeMain.config?.navHasSearch ?? true" class="btn btn-outline-secondary" type="submit">
               <i class="fa-solid fa-search"></i>
             </button>
-            <button v-if="local.navHasThemeSel" class="btn btn-outline-secondary me-2" type="button" @click="storeTheme.theme = storeTheme.theme === 'dark' ? 'light' : 'dark'" title="Toggle theme">
+            <button v-if="storeMain.config?.navHasThemeSel ?? true" class="btn btn-outline-secondary me-2" type="button" @click="storeTheme.theme = storeTheme.theme === 'dark' ? 'light' : 'dark'" title="Toggle theme">
               <i class="fa-solid" :class="storeTheme.theme === 'dark' ? 'fa-sun' : 'fa-moon'"></i>
             </button>
           </form>
