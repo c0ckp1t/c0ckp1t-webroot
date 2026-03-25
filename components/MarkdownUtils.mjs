@@ -10,8 +10,6 @@ const LOG_HEADER = 'MarkdownUtils.mjs'
 const logger = getLogger(LOG_HEADER)
 logger.debug("[INIT]")
 
-const remotePathPrefix = '/docs/';
-
 // ________________________________________________________________________________
 // EXPORTED UTILITY FUNCTIONS
 // ________________________________________________________________________________
@@ -100,25 +98,33 @@ export function extractSizeFromAlt(alt) {
  * Converts relative paths to absolute paths for documentation
  * 
  * @param {string} inputString - HTML string with img tags
+ * @param {Object} images
  * @returns {string} Modified HTML string
  */
-export function replaceImgLinks(inputString) {
-  return inputString.replace(
-    /img src="([^"]*)" alt="([^"]*)"/g,
-    (match, src, alt) => {
-      logger.debug(`[REGEX_IMG] match=${match} src=${src} alt=${alt}`)
-      const size = extractSizeFromAlt(alt);
-      let sizeAttrs = '';
-      if (size) {
-        sizeAttrs = `width="${size.width}" `;
-        alt = alt.replace(/=(\d+)x(\d+)$/, ''); // Remove size from alt
-      }
-      const adjustedSrc = "" + src.replace(/^\.\//, remotePathPrefix);
-      logger.debug(`[IMG] - ${src} -> ${adjustedSrc}`)
-      return `img src="${adjustedSrc}" class="mk-img" ${sizeAttrs} alt="${alt.trim()}"`
-    }
-  );
+export function replaceImgLinks(inputString, images = {}) {
+    return inputString.replace(
+        /img src="([^"]*)" alt="([^"]*)"/g,
+        (match, src, alt) => {
+            logger.debug(`[REGEX_IMG] match=${match} src=${src} alt=${alt}`)
+            const size = extractSizeFromAlt(alt);
+            let sizeAttrs = '';
+            if (size) {
+                sizeAttrs = `width="${size.width}" `;
+                // sizeAttrs = `width="${size.width}" height="${size.height}"`;
+                alt = alt.replace(/=(\d+)x(\d+)$/, ''); // Remove size from alt
+            }
+            if (match.toLowerCase().includes("http") || match.toLowerCase().includes("class")) {
+                // do nothing
+                return `${match} class="mk-img"`
+            } else {
+                images[src] = null
+                // return `${match} class="mk-img"`
+                return `img :src="images['${src}']" alt="${alt.trim()}" class="mk-img" ${sizeAttrs}`
+            }
+        }
+    );
 }
+
 
 /**
  * Replace Vue template syntax to prevent interpretation

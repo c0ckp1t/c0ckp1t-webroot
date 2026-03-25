@@ -76,10 +76,8 @@ const navbarClass = computed(() => ({
 /* !# C0CKP1T_START style */
 .navbar-brand:hover {
   cursor: pointer;
-  background-color: rgba(var(--bs-warning-rgb), 0.1);
   border-radius: 4px;
   transform: scale(1.05);
-  transition: background-color 0.2s ease;
 }
 
 /* Fixed navbar height compensation */

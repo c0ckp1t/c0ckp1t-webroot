@@ -25,7 +25,7 @@ import {
   replaceVueSpecial,
   removeMarkdownHeader,
   slugify,
-  extractSizeFromAlt, decorateTableHTML
+  decorateTableHTML
 } from "./MarkdownUtils.mjs";
 
 const props = defineProps({
@@ -48,91 +48,25 @@ const emit = defineEmits(['href'])
 // ________________________________________________________________________________
 const LOG_HEADER = 'xmarkdown.vue'
 const logger = getLogger(LOG_HEADER)
-logger.debug("init")
+logger.debug("INIT")
 
 // ________________________________________________________________________________
 // LOCAL STATE
 // ________________________________________________________________________________
 const local = reactive({
+  id: LOG_HEADER,
   isLoading: false,
-
   markdownComponent: null,
-
   images: null,
-  text: null,
 })
 
 // ______________________________________________________________________________________
 // RENDING VUE COMPONENT
 // ______________________________________________________________________________________
-// Note: Helper functions have been extracted to MarkdownUtils.mjs for testability
-
-
-// We do not support recursive injection
-async function injectText(text) {
-  logger.debug(`Scanning for markdown injection`)
-
-  // Fetch all
-  const promises = [];
-  text.replace(/{%\s*include\s+(.*?)\s*%}/g, (match, param) => {
-    logger.debug(`[REGEX_INJECT] match=${match} param=${param}`)
-    const promise = props.fetchText(param)
-    promises.push(promise);
-  });
-
-  // Replace all
-  const results = await Promise.all(promises)
-
-  let currentIndex = 0;
-  return text.replace(/{%\s*include\s+(.*?)\s*%}/g, () => results[currentIndex++]);
-}
-
-async function injectTextV2(text) {
-  logger.debug(`[INJECT_TEXT] - Version 2`)
-
-  // Fetch all
-  const promises = [];
-  text.replace(/<div data-ref="([^"]+)".*?><\/div>/g, (match, param) => {
-    logger.debug(`match=${match} param=${param}`)
-
-    const refRegex = /data-(id|lines)="([^"]+)"/g;
-    const refMatch = refRegex.exec(match)
-    if(refMatch !== null) {
-      logger.debug(`type=${refMatch[1]} refId=${refMatch[2]}`)
-      const promise = props.fetchText(param, refMatch[2])
-      promises.push(promise);
-    } else {
-      const promise = props.fetchText(param)
-      promises.push(promise);
-    }
-
-  });
-
-  // Replace all
-  const results = await Promise.all(promises);
-  logger.trace("received injection text:")
-  logger.trace(results)
-  let currentIndex = 0;
-  return text.replace(/<div data-ref="([^"]+)".*?><\/div>/g, () => results[currentIndex++]);
-}
-
-
-async function fetchAllText() {
-  const fetchPromises = Object.keys(local.text).map(relativeURL => {
-    logger.debug(`fetchText - ${relativeURL}`)
-    return props.fetchText(relativeURL).then(text => {
-      logger.debug(text)
-      local.text[relativeURL] = text
-    });
-  });
-  await Promise.all(fetchPromises);
-}
-
 async function fetchAllImages() {
   const fetchPromises = Object.keys(local.images).map(relativeURL => {
     logger.debug(`fetchImage - ${relativeURL}`)
     return props.fetchImage(relativeURL).then(blobUrl => {
-      console.log(blobUrl)
       local.images[relativeURL] = blobUrl
     });
   });
@@ -154,7 +88,6 @@ function renderMarkdown(html) {
     data: () => {
       return {
         images: local.images,
-        text: local.text
       }
     },
     methods: {
@@ -217,8 +150,6 @@ async function buildComponent(markdownText) {
   logger.trace(markdownText)
 
   let markdown =  removeMarkdownHeader(markdownText)
-  // markdown = await injectText(markdown)
-  markdown = await injectTextV2(markdown)
   logger.trace("markdown after injection")
   logger.trace(markdown)
 
@@ -227,10 +158,10 @@ async function buildComponent(markdownText) {
   html = replaceVueSpecial(html)
   html = replaceHrefLinks(html, props.adjustHrefPath)
   html = decorateTableHTML(html)
-
-  // Initialize images object before replacing img links
   local.images = {}
-  html = replaceImgLinks(html)
+  html = replaceImgLinks(html, local.images)
+  console.log("images")
+  console.log(local.images)
 
   local.markdownComponent = markRaw(renderMarkdown(html))
 }

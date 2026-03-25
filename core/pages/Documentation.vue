@@ -10,11 +10,11 @@
 //________________________________________________________________________________
 // IMPORTS
 //________________________________________________________________________________
-import { reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import {reactive, computed, watch, onMounted, onBeforeUnmount} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
 import {api as notifyApi} from 'NotifyUtils'
 import {store as storeMain, api as apiMain} from 'GlobalStore'
-import { getLogger } from "Logging";
+import {getLogger} from "Logging";
 import {normalizePath, buildFailedMarkdown} from "JsUtils"
 
 import MdToc from "../sfc/md-toc.vue";
@@ -85,8 +85,8 @@ const local = reactive({
   isHTMLVisible: true,
   isEditVisible: false,
 
-  currentPath : props.homepage,
-  previousPath : props.homepage,
+  currentPath: props.homepage,
+  previousPath: props.homepage,
 
   markdownText: "",
   snapshot: "",
@@ -94,25 +94,24 @@ const local = reactive({
 });
 
 
-
-watch( () => route.fullPath, (fullPath) => {
+watch(() => route.fullPath, (fullPath) => {
   logger.debug("[WATCH] currentPath", fullPath)
   const documentPath = fullPath.replace(props.routerPath, "")
-  if(local.currentPath !== documentPath) {
+  if (local.currentPath !== documentPath) {
     href(documentPath)
   }
-}, { immediate: false, deep: true } )
+}, {immediate: false, deep: true})
 
 
 watch(
-  () => local.markdownText,
-  (curr, prev) => {
-    if (local.snapshot === curr) {
-      local.isDirty = false
-    } else {
-      local.isDirty = true
-    }
-  },
+    () => local.markdownText,
+    (curr, prev) => {
+      if (local.snapshot === curr) {
+        local.isDirty = false
+      } else {
+        local.isDirty = true
+      }
+    },
 )
 
 // ________________________________________________________________________________
@@ -136,6 +135,11 @@ async function href(documentPath) {
   logger.debug(`[href] \ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
   local.markdownText = ""
 
+  if (!documentPath.endsWith(".md")) {
+    local.markdownText = "Only .md files are supported currently. Please check the path and try again."
+    return
+  }
+
   const resp = await registry.value.getText(remotePath)
   logger.debug(resp)
   if (resp.isOk) {
@@ -143,7 +147,7 @@ async function href(documentPath) {
   } else {
     resp.result = buildFailedMarkdown(remotePath, resp.result)
   }
-  if(local.currentPath !== documentPath) {
+  if (local.currentPath !== documentPath) {
     local.previousPath = local.currentPath
     local.currentPath = normalizePath(documentPath)
     await router.replace(`${props.routerPath}${local.currentPath}`)
@@ -153,25 +157,18 @@ async function href(documentPath) {
   local.markdownText = resp.result
 }
 
-function fetchImage(documentPath) {
+async function fetchImage(documentPath) {
   const remotePath = `${props.remotePathMapping}${normalizePath(documentPath)}`
-  logger.debug(`[fetchImage]  - documentPath=${documentPath} - remotePath=${remotePath}`);
-
-  return new Promise(async (resolve, reject) => {
-    try {
-      const resp = await registry.value.getBinary(remotePath);
-      logger.debug(resp);
-
-      if (!resp.isOk) {
-        reject(resp.result);
-        return;
-      }
-
-      resolve(URL.createObjectURL(new Blob([resp.result])));
-    } catch (e) {
-      reject(e);
-    }
-  });
+  logger.info(`[fetchImage]  - documentPath=${documentPath} - remotePath=${remotePath}`);
+  if (registry.value.type === "IslandDefault") {
+      return remotePath
+  }
+  const resp = await registry.value.getBinary(remotePath);
+  logger.info(resp);
+  if (!resp.isOk) {
+    return;
+  }
+  return URL.createObjectURL(new Blob([resp.result]))
 }
 
 async function saveMarkdown() {
@@ -179,14 +176,14 @@ async function saveMarkdown() {
 
   logger.debug(`[saveMarkdown] currentPath=${local.currentPath}\nremotePath=${remotePath}`)
   const args = ["write", remotePath, local.markdownText]
-    const resp = await registry.value.exec("/sys/resolver", args)
-    logger.info(resp)
-    if (!resp.isOk) {
-      notifyApi.badDetails(`${local.id} - saveMarkdown failed`, resp.result)
-      return
-    }
-    local.snapshot = local.markdownText
-    local.isDirty = false
+  const resp = await registry.value.exec("/sys/resolver", args)
+  logger.info(resp)
+  if (!resp.isOk) {
+    notifyApi.badDetails(`${local.id} - saveMarkdown failed`, resp.result)
+    return
+  }
+  local.snapshot = local.markdownText
+  local.isDirty = false
 }
 
 // ________________________________________________________________________________
@@ -197,7 +194,9 @@ async function init() {
     const documentPath = route.fullPath.replace(props.routerPath, "")
     await href(documentPath)
   } else {
-    setTimeout(() => { init() }, 500)
+    setTimeout(() => {
+      init()
+    }, 500)
   }
 }
 
@@ -209,14 +208,15 @@ onMounted(() => {
 <template>
   <div class="container documentation mt-4">
 
-    <div class="row text-center mb-2" v-if="storeMain.showDocTrail">
+    <div class="row text-center mb-2" v-if="storeMain.config?.showDocTrail">
       <span class="fw-bold m-1">Current: <span>{{ local.currentPath }}</span> </span>
     </div>
 
-    <div class="row markdown-header align-items-center" v-if="storeMain.showDocNav">
+    <div class="row markdown-header align-items-center" v-if="storeMain.config?.showDocNav">
       <div class="col-auto" v-if="local.currentPath !== props.homepage">
-        <ExecButton icon="fa-house me-1" class="btn btn-primary btn-sm" :title="props.homepage" :callback="() => goToHomePage()"
-                    >
+        <ExecButton icon="fa-house me-1" class="btn btn-primary btn-sm" :title="props.homepage"
+                    :callback="() => goToHomePage()"
+        >
           Home Page
         </ExecButton>
       </div>
@@ -224,18 +224,19 @@ onMounted(() => {
       <div class="col"></div>
 
       <div class="col-auto">
-        <ExecButton icon="fa-arrow-left me-1"  class="btn btn-primary btn-sm" :callback="() => router.push(`${props.routerPath}${local.previousPath}`)"
-          v-if="local.currentPath !== local.previousPath">
+        <ExecButton icon="fa-arrow-left me-1" class="btn btn-primary btn-sm"
+                    :callback="() => router.push(`${props.routerPath}${local.previousPath}`)"
+                    v-if="local.currentPath !== local.previousPath">
           {{ local.previousPath }}
         </ExecButton>
       </div>
-      <div class="col-auto" v-if="storeMain.allowDocWrite">
+      <div class="col-auto" v-if="storeMain.config?.allowDocWrite">
         <x-toggle k="HTML" v-model="local.isHTMLVisible"></x-toggle>
       </div>
-      <div class="col-auto" v-if="storeMain.allowDocWrite">
-        <x-toggle k="Markdown" v-model="local.isEditVisible" ></x-toggle>
+      <div class="col-auto" v-if="storeMain.config?.allowDocWrite">
+        <x-toggle k="Markdown" v-model="local.isEditVisible"></x-toggle>
       </div>
-      <div class="col-auto" v-if="storeMain.allowDocReload">
+      <div class="col-auto" v-if="storeMain.config?.allowDocReload">
         <ExecButton class="btn btn-primary btn-sm" icon="fa-rotate-right" :callback="() => reload()">Reload</ExecButton>
       </div>
     </div>
@@ -245,8 +246,12 @@ onMounted(() => {
         <div class="row markdown-body mb-4">
 
           <div class="col" v-if="local.isHTMLVisible">
-            <x-markdown :fetchImage="fetchImage" @href="href" :adjustHrefPath="adjustHrefPath"
-              :v="local.markdownText"></x-markdown>
+            <x-markdown
+                :fetchImage="fetchImage"
+                @href="href"
+                :adjustHrefPath="adjustHrefPath"
+                :v="local.markdownText"
+            />
           </div>
           <div class="col" :class="{'is-dirty': local.isDirty}" v-if="local.isEditVisible">
 
@@ -263,7 +268,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="col-auto order-first order-lg-last" v-if="props.enableToc">
-        <MdToc :v="local.markdownText" :maxLevel="2" />
+        <MdToc :v="local.markdownText" :maxLevel="2"/>
       </div>
 
     </div>

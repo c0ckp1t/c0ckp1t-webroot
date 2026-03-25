@@ -334,7 +334,7 @@ export default class Island {
     // HTTP
     // ________________________________________________________________________________
     resolver = async (endpoint, type) => {
-        this.logger.debug(`[resolver] -  endpoint=${endpoint}`)
+        this.logger.info(`[resolver] -  endpoint=${endpoint}`)
 
         if (endpoint.startsWith('/c0ckp1t/')) {
             const endpointAdjusted = endpoint.replace("/c0ckp1t/", `/`)
@@ -358,7 +358,7 @@ export default class Island {
     }
 
     getText = async (endpoint) => {
-        this.logger.debug(`[getText] -  endpoint=${endpoint}`)
+        this.logger.info(`[getText] -  endpoint=${endpoint}`)
         if (endpoint.startsWith("http") || endpoint.startsWith("HTTP")) {
             return await Http.getText(endpoint, "omit")
         }
@@ -376,10 +376,40 @@ export default class Island {
     }
 
     async getBinary(endpoint) {
-        const path = `${this.config.SERVER_API_URL}${endpoint}`;
-        this.logger.debug(`[getBinary] - ${path}`);
-        return await Http.getBinary(path)
+        this.logger.info(`[getBinary] -  endpoint=${endpoint}`)
+        if (endpoint.startsWith("http") || endpoint.startsWith("HTTP")) {
+            return await Http.getBinary(endpoint, "omit")
+        }
+        if (endpoint.startsWith('/c0ckp1t/')) {
+            const path = `${this.config.SERVER_API_URL}${endpoint}`;
+            return await Http.getBinary(path)
+        }
+
+        const args = ["read", endpoint]
+        return new Promise((resolve, reject) => {
+            const chunks = [];
+            this.exec2("/sys/resolver", args).subscribe({
+                next: (pkt) => { chunks.push(pkt) },
+                error: (err) => {
+                    this.logger.error(`[getBinary] - error - endpoint=${endpoint}`, err);
+                    resolve({ isOk: false, result: err.toString() });
+                },
+                complete: () => {
+                    // Concatenate all chunks into a single Uint8Array
+                    const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+                    const merged = new Uint8Array(totalLength);
+                    let offset = 0;
+                    for (const chunk of chunks) {
+                        merged.set(chunk, offset);
+                        offset += chunk.length;
+                    }
+                    this.logger.debug(`[getBinary] - complete - totalBytes=${totalLength}`);
+                    resolve({ isOk: true, result: merged });
+                }
+            });
+        });
     }
+
 
     async getJson(endpoint) {
         const path = `${this.config.SERVER_API_URL}${endpoint}`;

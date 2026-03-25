@@ -10,10 +10,10 @@ import {reactive, ref, onMounted, onUnmounted, watch, computed, onErrorCaptured}
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
 
-import {api as apiTheme, store as storeTheme} from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/Theme.mjs"
-import PageFallback from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/PageFallback.vue"
-import MainOffcanvas from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/main-offcanvas.vue";
-import NotifyToast from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/notify/toast.vue";
+import {api as apiTheme, store as storeTheme} from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/Theme.mjs"
+import PageFallback from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/PageFallback.vue"
+import MainOffcanvas from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/main-offcanvas.vue";
+import NotifyToast from "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/notify/toast.vue";
 
 // ________________________________________________________________________________
 // LOGGING

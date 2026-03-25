@@ -4,27 +4,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>C0ckp1t - Landing Page Example</title>
+  <title>C0ckp1t - Minimum Example</title>
   <link rel="icon" href="logo_v1.svg" type="image/svg+xml">
   <link href="https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/css/bootstrap.min.css"  type="text/css" rel="stylesheet">
   <script type="importmap">
     {
         "imports": {
-            "Logging": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/Logging.mjs",
-            "GlobalStore": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/GlobalStore.mjs",
-            "NotifyUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/notify/NotifyUtils.mjs",
-            "VueUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/VueUtils.mjs",
-            "JsUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/JsUtils.mjs",
-            "WsUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/WsUtils.mjs",
-            "ConfigUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/ConfigUtils.mjs",
-            "WsLogUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/WsLogUtils.mjs",
-
-            "IslandDefault": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/IslandDefault.mjs",
-            "Island": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/core/Island.mjs",
-
-            "vue3-sfc-loader": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/js_ext/vue3-sfc-loader.esm.js",
-            "vue": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/js_ext/vue.esm-browser.prod.min.js",
-            "vue-router": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/js_ext/vue-router.esm-browser.prod.js",
+            "Logging": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/Logging.mjs",
+            "GlobalStore": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/GlobalStore.mjs",
+            "NotifyUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/notify/NotifyUtils.mjs",
+            "VueUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/VueUtils.mjs",
+            "JsUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/JsUtils.mjs",
+            "WsUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/WsUtils.mjs",
+            "ConfigUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/ConfigUtils.mjs",
+            "WsLogUtils": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/WsLogUtils.mjs",
+            "IslandDefault": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/IslandDefault.mjs",
+            "vue3-sfc-loader": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/js_ext/vue3-sfc-loader.esm.js",
+            "vue": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/js_ext/vue.esm-browser.prod.min.js",
+            "vue-router": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/js_ext/vue-router.esm-browser.prod.js",
 
             "idb-keyval": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/js_ext/idb-keyval-6.2.2.mjs",
             "wavesurfer": "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/js_ext/wavesurfer.esm.mjs",
@@ -35,29 +32,25 @@
         }
     }
   </script>
-
 </head>
 
 <body class="main-body">
-
-<div id="app-default" >
-  <app-main></app-main>
-</div>
+  <div id="app-default" >
+    <app-main></app-main>
+  </div>
 </body>
 
 <!-- =================== SCRIPTS ===================  -->
-<script src="https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/js_ext/loglevel.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/js_ext/loglevel-plugin-prefix.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/js_ext/loglevel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/js_ext/loglevel-plugin-prefix.min.js"></script>
 <script type="module">
   import {init as initLogger} from 'Logging';
   import {api as apiMain} from 'GlobalStore'
-  import {createConfig} from 'https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18/Config.mjs'
-
+  import {createConfig} from 'https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/Config.mjs'
   const config = createConfig({
-    appEndpoint: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18",
-    routePrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18",
-    componentPrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.18",
+    appEndpoint: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19",
+    routePrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19",
+    componentPrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19",
     appMainComponent: "./PageMain.vue",
     appName: "Landing Page Example",
     vueRouterModeIsHash: true,
