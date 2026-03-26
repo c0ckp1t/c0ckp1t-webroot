@@ -15,7 +15,7 @@ import {useRoute, useRouter} from 'vue-router'
 import {api as notifyApi} from 'NotifyUtils'
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
-import {normalizePath, buildFailedMarkdown} from "JsUtils"
+import {normalizePath, resolvePath, buildFailedMarkdown} from "JsUtils"
 
 import MdToc from "../sfc/md-toc.vue";
 
@@ -118,7 +118,7 @@ watch(
 // MARKDOWN EVENTS
 // ________________________________________________________________________________
 function adjustHrefPath(documentPath) {
-  return `${props.remotePathMapping}${documentPath}`
+  return `${props.remotePathMapping}${resolvePath(documentPath, local.currentPath)}`
 }
 
 async function reload() {
@@ -131,11 +131,12 @@ async function goToHomePage() {
 }
 
 async function href(documentPath) {
-  const remotePath = `${props.remotePathMapping}${normalizePath(documentPath)}`
-  logger.debug(`[href] \ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nremotePath=${remotePath}`)
+  const resolvedPath = resolvePath(documentPath, local.currentPath)
+  const remotePath = `${props.remotePathMapping}${resolvedPath}`
+  logger.debug(`[href] \ndocumentPath=${documentPath}\ncurrentPath=${local.currentPath}\nresolvedPath=${resolvedPath}\nremotePath=${remotePath}`)
   local.markdownText = ""
 
-  if (!documentPath.endsWith(".md")) {
+  if (!resolvedPath.endsWith(".md")) {
     local.markdownText = "Only .md files are supported currently. Please check the path and try again."
     return
   }
@@ -147,9 +148,9 @@ async function href(documentPath) {
   } else {
     resp.result = buildFailedMarkdown(remotePath, resp.result)
   }
-  if (local.currentPath !== documentPath) {
+  if (local.currentPath !== resolvedPath) {
     local.previousPath = local.currentPath
-    local.currentPath = normalizePath(documentPath)
+    local.currentPath = resolvedPath
     await router.replace(`${props.routerPath}${local.currentPath}`)
   }
   // window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -158,7 +159,7 @@ async function href(documentPath) {
 }
 
 async function fetchImage(documentPath) {
-  const remotePath = `${props.remotePathMapping}${normalizePath(documentPath)}`
+  const remotePath = `${props.remotePathMapping}${resolvePath(documentPath, local.currentPath)}`
   logger.info(`[fetchImage]  - documentPath=${documentPath} - remotePath=${remotePath}`);
   if (registry.value.type === "IslandDefault") {
       return remotePath

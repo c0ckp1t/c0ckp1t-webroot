@@ -510,6 +510,34 @@ export function normalizePath(remainingPath, base = '/') {
 }
 
 /**
+ * Resolve a potentially relative path against a current file path.
+ *
+ * If `relativePath` is absolute (starts with '/'), it is normalized as-is.
+ * Otherwise, it is resolved relative to the directory of `currentFilePath`.
+ *
+ * @param {string} relativePath   - The path to resolve (e.g. "../other.md", "./img.png", "sibling.md")
+ * @param {string} currentFilePath - The file path that serves as context (e.g. "/guides/subdir/page.md")
+ * @returns {string} The resolved absolute path (e.g. "/guides/other.md")
+ *
+ * @example
+ *   resolvePath("../other.md",  "/guides/subdir/page.md")  // => "/guides/other.md"
+ *   resolvePath("./img.png",    "/guides/subdir/page.md")  // => "/guides/subdir/img.png"
+ *   resolvePath("sibling.md",   "/guides/subdir/page.md")  // => "/guides/subdir/sibling.md"
+ *   resolvePath("/abs/path.md", "/guides/subdir/page.md")  // => "/abs/path.md"
+ */
+export function resolvePath(relativePath, currentFilePath = '/') {
+    // Absolute paths don't need resolution against the current file
+    if (relativePath.startsWith('/')) {
+        return normalizePath(relativePath);
+    }
+    // Extract directory from currentFilePath (everything up to the last '/')
+    const lastSlash = currentFilePath.lastIndexOf('/');
+    const currentDir = lastSlash >= 0 ? currentFilePath.substring(0, lastSlash + 1) : '/';
+    // Combine current directory with relative path, then normalize
+    return normalizePath(currentDir + relativePath);
+}
+
+/**
  * WARNING - spacing is important here
  * @param remotePathURL
  * @param message

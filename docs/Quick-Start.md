@@ -1,6 +1,7 @@
 
 # Quick Start
 
+[Articles Getting Started](./Articles/Getting-Started.md)
 
 To get started look at the [examples](https://github.com/c0ckp1t/c0ckp1t-webroot/tree/main/examples) folder of the git repository. The simplest example is in the minimum folder.
 
