@@ -55,20 +55,20 @@ const connection = computed(() => {
 // PRIVATE METHODS
 //________________________________________________________________________________
 async function saveConnection() {
-  const res = await apiMain.saveIslandConfig(instanceId)
-  if(!res.isOk) {
-    await notifyApi.badDetails(`saveIslandConfig`, res.result)
-  } else {
-    await notifyApi.goodDetails(`saveIslandConfig`, res.result)
+  try {
+    await apiMain.saveIslandConfig(instanceId)
+    await notifyApi.goodDetails(`saveIslandConfig`, instanceId)
+  } catch(e) {
+    await notifyApi.badDetails(`saveIslandConfig`, e)
   }
 }
 
-async function deleteConnection() {
-  const res = await apiMain.deleteIslandConfig(instanceId)
-  if(!res.isOk) {
-    await notifyApi.badDetails(`deleteConnection`, res.result)
-  } else {
-    await notifyApi.goodDetails(`deleteConnection`, res.result)
+async function deleteConnection(instanceId) {
+  try {
+    await apiMain.deleteIslandConfig(instanceId)
+    await notifyApi.goodDetails(`deleteConnection`, instanceId)
+  } catch(e) {
+    await notifyApi.badDetails(`deleteIslandConfig`, e)
   }
 }
 

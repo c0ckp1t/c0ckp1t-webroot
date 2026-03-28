@@ -7,10 +7,13 @@
 import {markRaw, reactive, watch, defineAsyncComponent, createApp} from 'vue'
 import * as VueRouter from 'vue-router'
 import {getLogger} from 'Logging';
-import {transformRoutes, loadModule, options} from "VueUtils";
+import {Stash} from 'Stash'
+import {transformRoutes, loadModule, options, loadModuleFromText} from "VueUtils";
 import {findHostnamePortProtocol, validateAppConfig} from 'ConfigUtils'
 import {substrAfterFirstSlash, extractLastPath, nok, ok} from "JsUtils";
 import IslandDefault, {validate as validateIslandDefault} from 'IslandDefault'
+
+const stashConnections = new Stash('connections')
 
 // ________________________________________________________________________________
 // LOGGING
@@ -179,12 +182,21 @@ export const api = {
     },
 
     saveIslandConfig: async (instanceId) => {
-        logger.debug(`[saveIslandConfig] - instanceId=${instanceId}`)
-        return nok(`[saveIslandConfig] - NOT SUPPORTED`, [store.id])
+        logger.info(`[saved island config] - instanceId=${instanceId}`)
+        const registry = store.r[instanceId]
+        if(!registry) {
+            throw new Error(`No registry found for instanceId=${instanceId}`)
+        }
+        const config = registry.getConnectionConfig()
+        await stashConnections.set(instanceId, config)
     },
+
     deleteIslandConfig: async (instanceId) => {
-        logger.debug(`[deleteIslandConfig] - instanceId=${instanceId}`)
-        return nok(`[deleteIslandConfig] - NOT SUPPORTED`, [store.id])
+        logger.info(`[deleted island config] - instanceId=${instanceId}`)
+        if(!store.r[instanceId]) {
+            throw new Error(`No registry found for instanceId=${instanceId}`)
+        }
+        await stashConnections.del(instanceId)
     },
 
     // ________________________________________________________________________________
@@ -198,6 +210,10 @@ export const api = {
             logger.error(`[loadModule] - ERROR - path=${path} - ${e}`);
             throw e // Rethrow the error so Vue can handle it
         }
+    },
+
+    loadModuleFromText: async (text, name) => {
+        return loadModuleFromText(text, name)
     },
 
     options: () => {

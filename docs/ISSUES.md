@@ -141,3 +141,27 @@ transformedRoute.redirect = route.redirect;
 }
 
  ```
+
+
+
+
+
+
+
+
+
+
+
+[root] [connect] - start ... loglevel-plugin-prefix.min.js:1:1183
+XHRPOST
+http://sorsha.com:443/cookie?connectionId=root
+
+XHROPTIONS
+http://sorsha.com:443/cookie?connectionId=root
+CORS Missing Allow Origin
+
+Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://sorsha.com:443/cookie?connectionId=root. (Reason: CORS header ‘Access-Control-Allow-Origin’ missing). Status code: 400.
+Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://sorsha.com:443/cookie?connectionId=root. (Reason: CORS request did not succeed). Status code: (null).
+authenticationFailed - fetchCookie
+TypeError: NetworkError when attempting to fetch resource. vue3-sfc-loader.esm.js line 113 > Function:3:1397
+Scroll anchoring was disabled in a scroll container because of too many consecutive adjustments (10) with too little total distance (-0.156666672229767 px average, -1.56667 px total). reflow.js:199:27

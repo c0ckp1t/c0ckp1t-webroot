@@ -16,7 +16,6 @@ import {fromBinary, fromByteArray, Http} from "WsUtils";
 
 import { map } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import {store} from "GlobalStore";
 // ________________________________________________________________________________
 // Default Island
 // ________________________________________________________________________________
@@ -133,6 +132,10 @@ export default class Island {
     async disconnect() {
         this.logger.info("[disconnect]");
         return this.connection.disconnect();
+    }
+
+    getConnectionConfig = () => {
+        return this.config
     }
 
     // ________________________________________________________________________________

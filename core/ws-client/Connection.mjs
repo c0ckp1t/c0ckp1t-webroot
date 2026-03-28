@@ -279,7 +279,6 @@ export default class Connection {
     // ________________________________________________________________________________
     saveConnection = () => {
         this.state.connectionSnapshot = JSON.stringify(this.store)
-        this.state.connectionDirty = false
     }
 
     /**
@@ -294,7 +293,7 @@ export default class Connection {
         }
 
         logger.debug(`this.isReadyPromise=`)
-        // console.log(this.isReadyPromise)
+        logger.debug(this.isReadyPromise)
         if (this.isReadyPromise !== null) {
             return this.isReadyPromise
         }

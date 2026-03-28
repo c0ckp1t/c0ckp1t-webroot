@@ -25,6 +25,7 @@ import * as NotifyUtils from "NotifyUtils";
 import * as WsUtils from "WsUtils";
 import * as WsLogUtils from "WsLogUtils";
 import * as ConfigUtils from "ConfigUtils";
+import * as Stash from "Stash";
 
 const katexTags = ['mn', 'mfrac', 'mrow', 'annotation', 'semantics', 'math',
     'mi', 'mo', "mtext", "msub", "mspace", "msup", "mover", "munder", "msqrt",
@@ -69,6 +70,7 @@ const options =  {
     // vue3-sfc-loader's cache
     moduleCache: {
         vue: Vue,
+        Stash: Stash,
         "vue-router": VueRouter,
         ConfigUtils: ConfigUtils,
         WsLogUtils: WsLogUtils,
