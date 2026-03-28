@@ -38,3 +38,9 @@ rxjs:
 	wget -O rxjs.esm.mjs "https://esm.sh/rxjs@7.8.1/es2022/rxjs.bundle.mjs"
 	wget -O rxjs-webSocket.esm.mjs "https://esm.sh/rxjs@7.8.1/es2022/webSocket.bundle.mjs"
 	wget -O rxjs-operators.esm.mjs "https://esm.sh/rxjs@7.8.1/es2022/operators.bundle.mjs"
+
+# https://unpkg.com/xstate@4.38.3/dist
+# CURRENT
+# https://unpkg.com/xstate@4.38.3/dist/xstate.web.js
+xstate:
+	wget -O xstate-5.29.0.esm.mjs https://cdn.jsdelivr.net/npm/xstate@5.29.0/+esm

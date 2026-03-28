@@ -36,7 +36,7 @@ const registry = storeMain.r[props.id]
   <div class="connection-header">
     <div class="press " @click="apiMain.routeByEndpoint(`/${storeMain.defaultInstanceId}/connections/${props.id}`)">
       <i class="text-success fa-solid fa-globe me-1"
-         :class="{ 'text-success': registry.state.isReady, 'text-warning': !registry.state.isReady}">
+         :class="{ 'text-success': registry.state.isReady, 'text-danger': !registry.state.isReady}">
       </i>
       <span class="instance-id text-primary fw-bold ">{{ registry?.instanceId ?? 'Invalid Registry'}}</span>
     </div>

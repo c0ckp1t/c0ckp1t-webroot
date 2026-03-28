@@ -56,7 +56,13 @@ export default class Island {
             isReady: false,
             workflowTable: { }
         })
-
+        // isReady is tied to connection state
+        watch(
+            () => this.connection.state.isConnected,
+            (connected) => {
+                this.state.isReady = connected;
+            }
+        )
         // ________________________________________________________________________________
         // STORE - saved in browser storage
         // ________________________________________________________________________________
@@ -486,7 +492,6 @@ export default class Island {
     // ________________________________________________________________________________
     init = async () => {
         await this.connect()
-        this.state.isReady = true
     }
 
 } // end of IslandDefault class

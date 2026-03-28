@@ -46,13 +46,6 @@ watch(registry, (val) => {
 
 
 
-const connectText = computed(() => {
-  if (registry.value?.connection?.state.isConnected) {
-    return "Authenticate"
-  } else {
-    return "Connect"
-  }
-})
 //________________________________________________________________________________
 // PRIVATE METHODS
 //________________________________________________________________________________
@@ -81,7 +74,7 @@ async function disconnect() {
 
 
 <template>
-  <x-section :level="3" :visible="true" k="Island Connection" v-if="registry.connection">
+  <x-section :level="3" :visible="true" :k="`Island Connection (${registry?.connection?.state?.currentState ?? 'N/A'})`" v-if="registry.connection">
 
       <div class="mt-2 mb-2" :class="{ 'is-dirty': registry.connection?.state.connectionDirty}">
         <!--      <x-label k="URL">{{ connection.url }}</x-label>-->
@@ -94,20 +87,18 @@ async function disconnect() {
 
       </div>
 
-      <div class="connection-errors" v-if="registry.connection.state?.errorMessages?.length > 0">
-        <div class="fw-bold text-danger">Errors:</div>
-        <div v-for="errorMsg in registry.connection.state?.errorMessages">
-          {{ errorMsg }}
-        </div>
+      <div class="connection-errors" v-if="registry.connection.state?.error">
+        <div class="fw-bold text-danger">Error ({{ registry.connection.state.error.step }}):</div>
+        <div>{{ registry.connection.state.error.message }}</div>
       </div>
 
       <x-label k="URL">{{registry?.connection?.url}}</x-label>
 
       <div class="row mb-4 ">
         <div class="col"></div>
-        <div class="col-auto">
+        <div class="col-auto" v-if="!registry.connection.state?.isConnected">
           <ExecButton icon="" class="btn btn-primary" :callback="() => connect()">
-            {{ connectText }}
+            Connect
           </ExecButton>
         </div>
         <div class="col-auto" v-if="registry.connection.state?.isConnected">
@@ -119,14 +110,13 @@ async function disconnect() {
 
 
       <x-section :level="4" :visible="false" k="Connection Details">
-          <x-label k="Connection State:">{{ registry.connection.state?.connStateString }}</x-label>
+          <x-label k="State:">{{ registry.connection.state?.currentState }}</x-label>
           <x-label k="Subscription Count:">{{ registry.connection.state?.subscriptionCount }}</x-label>
-          <x-label k="Session State:">{{ registry.connection.state?.sessionStateString }}</x-label>
           <x-label k="isConnected:">{{ registry.connection.state?.isConnected }}</x-label>
           <x-label k="isAuthenticated:">{{ registry.connection.state?.isAuthenticated }}</x-label>
-          <x-label k="HasErrors:">{{ registry.connection.state?.errorMessages?.length > 0 }}</x-label>
-
-          <x-label k="Retry Enabled:">{{ registry.connection.state?.retryEnable }}</x-label>
+          <x-label k="HasError:">{{ registry.connection.state?.error != null }}</x-label>
+          <x-label k="Error Step:" v-if="registry.connection.state?.error">{{ registry.connection.state?.error?.step }}</x-label>
+          <x-label k="Error Message:" v-if="registry.connection.state?.error">{{ registry.connection.state?.error?.message }}</x-label>
           <x-label k="Retries:">{{ registry.connection.state?.retries }}</x-label>
       </x-section>
 
