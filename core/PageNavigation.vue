@@ -67,6 +67,8 @@ const navbarClass = computed(() => ({
               <i class="fa-solid" :class="storeTheme.theme === 'dark' ? 'fa-sun' : 'fa-moon'"></i>
             </button>
           </form>
+
+          <ExecButton  :class="storeMain.OffCanvasClass" icon="fa-bell me-1" :callback="() => apiMain.toggleOffCanvas()">{{storeMain.offCanvasText}}</ExecButton>
         </div>
       </div>
     </nav>

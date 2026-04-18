@@ -17,6 +17,7 @@ import PageNavigation from "./PageNavigation.vue";
 
 import MainOffCanvas from "./main-offcanvas.vue";
 import NotifyToast from "./notify/toast.vue";
+import AlertOffCanvas from "./alert-offcanvas.vue";
 
 // ________________________________________________________________________________
 // LOGGING
@@ -77,6 +78,7 @@ const mainContentStyle = computed(() => ({
   <div class="page-main">
     <!-- ========== FIXED SIDEBAR ========== -->
     <MainOffCanvas/>
+    <AlertOffCanvas/>
     <!-- ==========  NAVIGATION ========== -->
     <PageNavigation />
     <!-- ==========  MAIN CONTENT ========== -->

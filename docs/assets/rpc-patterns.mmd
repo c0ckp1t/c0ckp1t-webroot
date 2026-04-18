@@ -1,0 +1,26 @@
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+
+    Note over C,S: exec() — Request/Response
+    C->>S: EXEC_REQ { id, endpoint, args }
+    S->>C: EXEC_RESP { id, bytes }
+
+    Note over C,S: exec2() — Server Streaming
+    C->>S: EXEC2_REQ { id, endpoint, args }
+    S->>C: ACCEPT { id }
+    loop Stream
+        S->>C: EXEC2_RESP { id, bytes }
+    end
+    S->>C: COMPLETE { id }
+
+    Note over C,S: exec3() — Bidirectional Streaming
+    C->>S: EXEC3_REQ { id, endpoint, args }
+    S->>C: ACCEPT { id }
+    par Client pushes
+        C->>S: EXEC3_PUSH { id, bytes }
+    and Server responds
+        S->>C: EXEC3_RESP { id, bytes }
+    end
+    C->>S: EXEC3_CLOSE { id }
+    S->>C: COMPLETE { id }

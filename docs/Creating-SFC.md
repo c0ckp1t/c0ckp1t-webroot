@@ -11,14 +11,6 @@ When creating websites with **C0ckp1t** you generally create Vue Single File Com
 // IMPORTS
 // ________________________________________________________________________________
 import {reactive, computed, ref, onMounted, watch} from 'vue'
-import {getLogger} from "Logging";
-
-// ________________________________________________________________________________
-// LOGGING
-// ________________________________________________________________________________
-const LOG_HEADER = "pages/mypage.vue"
-const logger = getLogger(LOG_HEADER)
-logger.debug("[INIT]")
 
 // ________________________________________________________________________________
 // INIT
@@ -42,7 +34,7 @@ onMounted(async () => {  })
 
 For more complex applications it is recommended create a `store.mjs` module and import it in the SFC. This way you can keep the logic of the page organized and separate from the component itself. This also allows you keep data and share data across components. For example when a component is unmounted and remounted you might not want to clear data retrieved.
 
-### SFC 
+### SFC  (MyPage.vue)
 ```js
 <script setup>
 // ________________________________________________________________________________
@@ -155,4 +147,30 @@ async function init() {
   }
 }
 init()
+```
+
+
+## Vue Router
+
+* route = where you are
+* router = how you move.
+
+```js
+
+import {useRoute, useRouter} from 'vue-router'
+const route = useRoute()
+console.log(route.path)       // "/users/42"
+console.log(route.params.id)  // "42"
+console.log(route.query.tab)  // "settings"
+
+const router = useRouter()
+router.push('/home')          // navigate to /home
+router.replace('/login')      // replace current history entry
+router.back()                 // go back one step
+
+watch(() => route.fullPath, (fullPath) => {
+    logger.debug("[WATCH] currentPath", fullPath)
+}, {immediate: false, deep: true})
+
+
 ```

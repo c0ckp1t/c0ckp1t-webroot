@@ -1,0 +1,40 @@
+block-beta
+  columns 1
+
+  block:browser["Browser"]
+    columns 3
+    A["index.html\nImport Map\nConfig.mjs"]
+    B["GlobalStore\n(Orchestrator)"]
+    C["Vue 3 App\nVue Router\nPageMain.vue"]
+
+    block:islands["Islands"]
+      columns 3
+      D["IslandDefault\n(HTTP)"]
+      E["Island\n(WebSocket)"]
+      F["Island N\n(WebSocket)"]
+    end
+
+    block:services["Services"]
+      columns 5
+      G["VueUtils\nSFC Loader"]
+      H["Theme\nStyling"]
+      I["NotifyUtils\nToasts"]
+      J["Stash\nIndexedDB"]
+      K["Content\nArticles"]
+    end
+
+    block:wsstack["WebSocket Stack"]
+      columns 3
+      L["Connection\nXState FSM"]
+      M["WsClient\nRxJS Subject"]
+      N["AuthNState\nState Machine"]
+    end
+  end
+
+  browser -- "HTTP / WebSocket (msgpack)" --> server
+
+  block:server["Server"]
+    columns 2
+    O["Express\nStatic Files"]
+    P["WsServer\nRPC Endpoints"]
+  end

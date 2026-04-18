@@ -1,0 +1,17 @@
+flowchart LR
+    subgraph Stores["Reactive Stores (Vue.reactive)"]
+        GS["GlobalStore.store\napp, router, config\nr (island registry)\nselectedInstId, isReady"]
+        IS["Island.store\nroot (nav tree)\nselectedNode\ncontext"]
+        ISS["Island.state\nisReady, isLoading\nworkflowTable"]
+        CS["Connection.state\ncurrentState\nisConnected\nerror, retries"]
+        TS["Theme.store\ntheme, mode\ncolors"]
+        NS["NotifyUtils.store\nnotifications[]"]
+    end
+
+    subgraph Components["Vue Components"]
+        PM["PageMain.vue"]
+        PN["PageNavigation.vue"]
+        USR["User Pages"]
+    end
+
+    Components -->|"import { store }"| Stores

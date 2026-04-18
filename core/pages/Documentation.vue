@@ -158,14 +158,26 @@ async function href(documentPath) {
   local.markdownText = resp.result
 }
 
+async function fetchText(documentPath) {
+  let remotePath = null
+  if(documentPath.startsWith("http://") || documentPath.startsWith("https://")) {
+    remotePath = documentPath
+  } else if(documentPath.startsWith("/v4")) {
+    remotePath = documentPath
+  } else {
+    remotePath = `${props.remotePathMapping}${resolvePath(documentPath, local.currentPath)}`
+  }
+  return await registry.value.getText(remotePath);
+}
+
 async function fetchImage(documentPath) {
   const remotePath = `${props.remotePathMapping}${resolvePath(documentPath, local.currentPath)}`
-  logger.info(`[fetchImage]  - documentPath=${documentPath} - remotePath=${remotePath}`);
+  logger.debug(`[fetchImage]  - documentPath=${documentPath} - remotePath=${remotePath}`);
   if (registry.value.type === "IslandDefault") {
       return remotePath
   }
   const resp = await registry.value.getBinary(remotePath);
-  logger.info(resp);
+  logger.debug(resp);
   if (!resp.isOk) {
     return;
   }
@@ -250,6 +262,7 @@ onMounted(() => {
             <x-markdown
                 :fetchImage="fetchImage"
                 @href="href"
+                :fetchText="fetchText"
                 :adjustHrefPath="adjustHrefPath"
                 :v="local.markdownText"
             />

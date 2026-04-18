@@ -2,11 +2,9 @@
 // IMPORT
 // ________________________________________________________________________________
 /*
-    NotifyUtils.js
+    NotifyUtils.mjs
     Note: Reactive Component
-
     Usage:
-
     import {api as notify } from "NotifyUtils"
 
     function notifyGood() {
@@ -24,8 +22,15 @@
 
 */
 import { reactive } from 'vue'
+import { eventBus } from 'WsUtils'
+import {getLogger} from "Logging";
 
-// import { eventBus } from '../ws/WsUtils.mjs'
+// ________________________________________________________________________________
+// LOGGING
+// ________________________________________________________________________________
+const LOG_HEADER = 'NotifyUtils.mjs'
+const logger = getLogger(LOG_HEADER)
+logger.debug("[INIT]")
 
 // eventBus.on('/alert', (endpoint, pkt) => {
 //     api.infoDetails(`endpoint="${endpoint}"`, pkt)
@@ -35,6 +40,7 @@ export const NotifyType = {
     GOOD: "GOOD",
     BAD: "BAD",
     INFO: "INFO",
+    EVENT: "EVENT",
 }
 
 const MAX_LOG_COUNT = 50
@@ -42,9 +48,19 @@ const MAX_LOG_COUNT = 50
 // const REST_TIME_MS = 550 // time between messsages if there are multiple
 let notifyTimer = null
 
-
-// Really confusion but the machinary is in toast.vue
+// Really confusion but the machinery is in toast.vue
 // so wrong. It manipulates this data structure a
+
+// ________________________________________________________________________________
+// PRIVATE METHODS
+// ________________________________________________________________________________
+function buildNotifyDTO(type, message = "N/A", title = "N/A") {
+    return {
+        message: message,
+        type: type,
+        title: title
+    }
+}
 
 // ________________________________________________________________________________
 // NOTIFY STORE
@@ -52,7 +68,6 @@ let notifyTimer = null
 //  THis is part of the store, shouldn't be here.
 // ________________________________________________________________________________
 export const store = reactive({
-
     message: "default message",
     title: "default title",
     subtitle: "default title",
@@ -67,17 +82,6 @@ export const store = reactive({
 })
 
 // ________________________________________________________________________________
-// PRIVATE METHODS
-// ________________________________________________________________________________
-function buildNotifyDTO(type, message = "N/A", title = "N/A") {
-    return {
-        message: message,
-        type: type,
-        title: title
-    }
-}
-
-// ________________________________________________________________________________
 // NOTIFY API
 // ________________________________________________________________________________
 export const api = {
@@ -86,6 +90,9 @@ export const api = {
         store.notifyLog = []
     },
 
+    // ________________________________________________________________________________
+    // MESSAGE QUEUE
+    // ________________________________________________________________________________
     async good(message) {
         const dto = buildNotifyDTO(NotifyType.GOOD, message, "Good")
         store.notifyQueue.push(dto)
@@ -103,6 +110,27 @@ export const api = {
         store.notifyQueue.push(dto)
     },
 
+    async info(message) {
+        const dto = buildNotifyDTO(NotifyType.INFO, message, "Info")
+        store.notifyQueue.push(dto)
+    },
+
+    async infoDetails(title, message) {
+        const dto = buildNotifyDTO(NotifyType.INFO, message, title)
+        store.notifyQueue.push(dto)
+    },
+
+    // ________________________________________________________________________________
+    // EVENTS
+    // ________________________________________________________________________________
+    async event(endpoint, message) {
+        const dto = buildNotifyDTO(NotifyType.EVENT, message, endpoint)
+        store.notifyQueue.push(dto)
+    },
+
+    // ________________________________________________________________________________
+    // ??
+    // ________________________________________________________________________________
     async exec2Error(error, local) {
         const stdoutText = (error.stack?.toString() ?? "") + "\n" + (error.data?.stack?.toString() ?? "") + "\n"
         const dto = buildNotifyDTO(NotifyType.BAD, `${error.message} ${stdoutText}`, `exec2Error ${error.endpoint}`)
@@ -123,15 +151,7 @@ export const api = {
         local.isLoading = false
     },
 
-    async info(message) {
-        const dto = buildNotifyDTO(NotifyType.INFO, message, "Info")
-        store.notifyQueue.push(dto)
-    },
 
-    async infoDetails(title, message) {
-        const dto = buildNotifyDTO(NotifyType.INFO, message, title)
-        store.notifyQueue.push(dto)
-    },
 
     async lastMessage() {
         store.visible = true
@@ -143,8 +163,20 @@ export const api = {
         if (store.notifyLog.length > MAX_LOG_COUNT) {
             store.notifyLog.shift()
         }
-    }
+    },
 
+    // ________________________________________________________________________________
+    // TEST HELPERS
+    // ________________________________________________________________________________
+    generateNotify: () => {
+        logger.info("generateNotify()")
+        api.good("good notify test")
+        api.bad("bad notify test")
+        api.info("info notify test")
+    },
+    generateClientEvent: () => {
+        eventBus.emit('foo', { a: 'b' })
+    }
 }
 
 

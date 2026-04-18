@@ -149,7 +149,9 @@ export default class WsClient {
                 }
             ) // end of subscribe
 
+            // ________________________________________________________________________________
             // eventBus
+            // ________________________________________________________________________________
             // /alert : Object     ( display and alert: {title, message})
             // /invalidate : String (cache has been invalidated for the given endpoint)
             // /refresh : Empty  (registry changed need to refresh)
@@ -158,7 +160,12 @@ export default class WsClient {
                     return pkt.code === Code2.EVENT
                 })
             ).subscribe((pkt) => {
-                eventBus.emit(pkt.endpoint, pkt)
+                try {
+                    const notify = fromBinary(pkt.bytes)
+                    eventBus.emit(notify.endpoint, notify)
+                } catch(e) {
+                    console.log(`[INVALID NOTIFY] - endpoint=${pkt.endpoint} id=${pkt.id}`)
+                }
             })
         }); // end of promise
     }

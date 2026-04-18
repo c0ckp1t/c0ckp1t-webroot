@@ -1,0 +1,29 @@
+flowchart TB
+    subgraph Registry["GlobalStore.store.r (Island Registry)"]
+        DEFAULT["default\n(IslandDefault)\nHTTP file resolution\nNo server RPC"]
+        ADMIN["admin\n(Island)\nWebSocket to :1995\nFull RPC + streaming"]
+        ANON["anonymous\n(Island)\nWebSocket to :1995\nPublic endpoints"]
+    end
+
+    subgraph Router["Vue Router"]
+        R1["/default/docs/*"]
+        R2["/default/components/*"]
+        R3["/admin/connections"]
+        R4["/admin/traffic"]
+        R5["/anonymous/..."]
+    end
+
+    DEFAULT --> R1
+    DEFAULT --> R2
+    ADMIN --> R3
+    ADMIN --> R4
+    ANON --> R5
+
+    subgraph Resolvers["File Resolution"]
+        HR["HTTP fetch()"]
+        WR["WebSocket RPC\n/sys/resolver"]
+    end
+
+    DEFAULT -.-> HR
+    ADMIN -.-> WR
+    ANON -.-> WR

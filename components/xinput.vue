@@ -34,6 +34,10 @@ const props = defineProps({
   inputStyle: {
     type: String,
     default: ""
+  },
+  readonly: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -61,13 +65,13 @@ const typeCheck = computed (() => {
   <span v-if="showLabel" :style="props.styleObject" class=" input-group-text label fw-bold"  > {{ k }} </span>
 
   <input :type="type" aria-label="message" class="form-control"
-         :style="props.inputStyle" v-model.number="message" v-if="type.toUpperCase() === 'NUMBER'">
+         :style="props.inputStyle" v-model.number="message" :readonly="props.readonly" v-if="type.toUpperCase() === 'NUMBER'">
 
   <input :type="isPasswordVisible ? 'text' : 'password'"  aria-label="message" class="form-control"
-         :style="props.inputStyle" v-model="message" v-else-if="type.toUpperCase() === 'PASSWORD'">
+         :style="props.inputStyle" v-model="message" :readonly="props.readonly" v-else-if="type.toUpperCase() === 'PASSWORD'">
 
   <input :type="type" aria-label="message" class="form-control"
-         :style="props.inputStyle" v-model="message" v-else>
+         :style="props.inputStyle" v-model="message" :readonly="props.readonly" v-else>
 
   <div class="input-group-text text-primary icon-container" @click="isPasswordVisible = !isPasswordVisible" v-if="type.toUpperCase() === 'PASSWORD'">
     <i class="fa-solid fa-eye" v-if="isPasswordVisible"></i>

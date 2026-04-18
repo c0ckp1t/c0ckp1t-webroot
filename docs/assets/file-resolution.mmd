@@ -1,0 +1,13 @@
+flowchart TD
+    REQ["SFC Loader requests file"]
+    REQ --> CACHE{"In sourceCode\ncache?"}
+    CACHE -->|Yes| RET_CACHE["Return cached source"]
+    CACHE -->|No| HTTP{"Starts with\nhttp:// ?"}
+    HTTP -->|Yes| FETCH["Default island\nfetch(path)"]
+    HTTP -->|No| INST{"Starts with\n/instanceId/ ?"}
+    INST -->|Yes| ISLAND["Island resolver()\n(HTTP or WebSocket RPC)"]
+    INST -->|No| DEFAULT["Default island\nresolver(path)"]
+
+    FETCH --> RESULT["Return file content"]
+    ISLAND --> RESULT
+    DEFAULT --> RESULT

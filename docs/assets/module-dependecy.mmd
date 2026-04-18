@@ -1,0 +1,52 @@
+graph TD
+    HTML["index.html"]
+    CONFIG["Config.mjs"]
+    CA["ConfigAdmin.mjs"]
+    CANON["ConfigAnonymous.mjs"]
+
+    HTML --> CONFIG
+    HTML --> CA
+    HTML --> CANON
+    HTML --> LOG["Logging.mjs"]
+    HTML --> GS["GlobalStore.mjs"]
+
+    CONFIG --> CU["ConfigUtils.mjs"]
+    CA --> CU
+    CANON --> CU
+
+    GS --> VU["VueUtils.mjs"]
+    GS --> CU
+    GS --> ID["IslandDefault.mjs"]
+    GS --> STASH["Stash.mjs"]
+    GS --> JU["JsUtils.mjs"]
+
+    VU --> SFC["vue3-sfc-loader"]
+    VU --> GS
+
+    ID --> WU["WsUtils.mjs"]
+    ID --> JU
+
+    IS["Island.mjs"] --> CONN["Connection.mjs"]
+    IS --> WU
+    IS --> CU
+    IS --> JU
+    IS --> WLOG["WsLogUtils.mjs"]
+
+    CONN --> WC["WsClient.mjs"]
+    CONN --> AUTH["AuthNState.mjs"]
+    CONN --> WU
+    CONN --> RXJS["RxJS"]
+    CONN --> XST["XState"]
+
+    WC --> RXJS
+    AUTH --> XST
+
+    WU --> MSGPACK["msgpack"]
+    WU --> MITT["mitt"]
+    WU --> NU["NotifyUtils.mjs"]
+
+    STASH --> IDB["idb-keyval"]
+
+    PM["PageMain.vue"] --> GS
+    PM --> TH["Theme.mjs"]
+    PM --> NU

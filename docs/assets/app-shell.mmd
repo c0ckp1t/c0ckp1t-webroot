@@ -1,0 +1,19 @@
+flowchart TB
+    subgraph PageMain["PageMain.vue"]
+        direction TB
+        OC["MainOffCanvas\n(Sidebar navigation)"]
+        NAV["PageNavigation\n(Top navbar)"]
+
+        subgraph Main["main.container-fluid"]
+            FB["PageFallback\n(Error display)"]
+            RV["RouterView\n(Page content)"]
+        end
+
+        TOAST["NotifyToast\n(Toast notifications)"]
+        FOOT["PageFooter"]
+    end
+
+    OC --- NAV
+    NAV --- Main
+    Main --- TOAST
+    TOAST --- FOOT

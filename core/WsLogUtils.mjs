@@ -60,6 +60,10 @@ export const api = {
 
     async logInbound(id, wsPacket) {
         if (!store.enabled) return
+        if(wsPacket.code === Code2.EVENT ) {
+            await api.addHistoryObj(id, wsPacket)
+            return
+        }
         const idx = idToIndex(wsPacket.id)
         if(idx === undefined || idx === null) {
             logger.warn("id is empty or undefined. Unable to log inbound packet. wsPacket:", wsPacket)
@@ -70,36 +74,29 @@ export const api = {
 
     async logOutbound(id, wsPacket) {
         if (!store.enabled) return
-
         if (wsPacket.code === Code2.EXEC_REQ || wsPacket.code === Code2.EXEC2_REQ || wsPacket.code === Code2.EXEC3_REQ) {
-            let idx = store.historyIdx
-            store.history[idx] = buildHistObj(idx, id, wsPacket)
-            store.idToIdxMap[wsPacket.id] = idx
-            if (store.historyIdx > MSG_HISTORY) {
-                store.historyIdx = 0
-                const oldPktId = store.history[0]
-                delete store.idToIdxMap[oldPktId]
-            } else {
-                store.historyIdx += 1
-            }
+            await api.addHistoryObj(id, wsPacket)
         } else {
             logger.warn(`[LOG_OUTBOUND_ERROR] - unexpected wsPacket - ${wsPacket}`)
         }
     },
-    async clearHistory() {
-        for (var i = 0; i < MSG_HISTORY; ++i) {
-            store.history[i] = buildHistObj(i)
+
+    async addHistoryObj(id, wsPacket) {
+        let idx = store.historyIdx
+        store.history[idx] = buildHistObj(idx, id, wsPacket)
+        store.idToIdxMap[wsPacket.id] = idx
+        if (store.historyIdx > MSG_HISTORY) {
+            store.historyIdx = 0
+            const oldPktId = store.history[0]
+            delete store.idToIdxMap[oldPktId]
+        } else {
+            store.historyIdx += 1
         }
     },
 
-    async addTestPkt() {
-        await api.logOutbound("test-instance", {
-            code: Code2.EXEC_REQ,
-            id: `test-pkt-${Date.now()}`,
-            endpoint: "/test/endpoint",
-            bytes: null,
-            args: ["test-arg1", "test-arg2"]
-        })
+    async clearHistory() {
+        store.history = []
+        store.historyIdx = 0
     }
 
 }

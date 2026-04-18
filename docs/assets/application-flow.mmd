@@ -1,0 +1,42 @@
+sequenceDiagram
+    participant HTML as index.html
+    participant Config as Config.mjs
+    participant Log as Logging.mjs
+    participant GS as GlobalStore
+    participant CU as ConfigUtils
+    participant VU as VueUtils
+    participant ID as IslandDefault
+    participant IS as Island
+
+    HTML->>Config: import { createConfig }
+    Config->>CU: deepMerge(DEFAULTS, overrides)
+    Config-->>HTML: config object
+
+    HTML->>Log: initLogger(config)
+    HTML->>GS: api.init("app-default", config)
+
+    activate GS
+    GS->>CU: validateAppConfig(config)
+    GS->>GS: createApp() + createRouter()
+    GS->>ID: new IslandDefault(config)
+    GS->>CU: defaultVueComponents(prefix)
+    GS->>GS: Register 35+ async components
+    GS->>VU: transformRoutes(routes)
+    GS->>GS: app.mount("#app-default")
+    deactivate GS
+
+    HTML->>GS: api.registerIsland(ConfigAdmin)
+    activate GS
+    GS->>IS: import("Island") → new Island(config)
+    GS->>IS: island.init() → connect()
+    IS-->>GS: Routes + nav tree
+    GS->>GS: router.addRoute(islandRoutes)
+    deactivate GS
+
+    HTML->>GS: api.registerIsland(ConfigAnonymous)
+    activate GS
+    GS->>IS: new Island(config)
+    GS->>IS: island.init() → connect()
+    IS-->>GS: Routes + nav tree
+    GS->>GS: router.addRoute(islandRoutes)
+    deactivate GS

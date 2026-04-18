@@ -18,6 +18,7 @@ import {getLogger} from "Logging"
 import {md} from "./Markdown.mjs"
 
 import CodeItem from "../core/sfc/code-item.vue"
+import CodeItem2 from "../core/sfc/code-item2.vue"
 
 import {
   replaceHrefLinks,
@@ -84,6 +85,12 @@ function renderMarkdown(html) {
     template: html,
     components: {
       CodeItem,
+      CodeItem2,
+    },
+    provide() {
+      return {
+        fetchText: props.fetchText,
+      }
     },
     data: () => {
       return {

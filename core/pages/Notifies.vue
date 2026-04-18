@@ -10,7 +10,6 @@ import {reactive, markRaw, watch, watchEffect, onMounted, computed, ref, version
 import {api as apiMain} from 'GlobalStore'
 import {store as notifyStore, api as notifyApi} from 'NotifyUtils'
 import {getLogger, listLoggers, setLogger, clearLocalStorage} from "Logging";
-import { eventBus } from 'WsUtils'
 
 // ________________________________________________________________________________
 // LOGGING
@@ -46,17 +45,6 @@ const loggersSorted = computed(() => {
 // ________________________________________________________________________________
 // EVENTS
 // ________________________________________________________________________________
-function generateNotify() {
-  logger.info("generateNotify()")
-  notifyApi.good("good notify test")
-  notifyApi.bad("bad notify test")
-  notifyApi.info("info notify test")
-}
-
-function generateClientEvent() {
-  eventBus.emit('foo', { a: 'b' })
-}
-
 function updateLoggers() {
   loggers.value = {...listLoggers()}
 }
@@ -93,8 +81,8 @@ onMounted(() => {
     </template>
 
     <x-section :level="3" :visible="true" k="Queued">
-      <ExecButton :callback="() => generateNotify()" >Generate Notify</ExecButton>
-      <ExecButton :callback="() => generateClientEvent()" >Generate Client Event</ExecButton>
+      <ExecButton :callback="() => notifyApi.generateNotify()" >Generate Notify</ExecButton>
+      <ExecButton :callback="() => notifyApi.generateClientEvent()" >Generate Client Event</ExecButton>
 
       <x-table-open :exclude="['']" :arr="notifyStore.notifyQueue" v-slot="slotProps">
       </x-table-open>
@@ -105,6 +93,7 @@ onMounted(() => {
       </ExecButton>
 
       <x-table-open :exclude="['']" :arr="notifyStore.notifyLog" v-slot="slotProps">
+        <x-json :obj="notifyStore.notifyLog[slotProps.v]" />
       </x-table-open>
     </x-section>
 

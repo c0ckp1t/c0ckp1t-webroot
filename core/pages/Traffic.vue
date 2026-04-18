@@ -7,17 +7,29 @@
 //________________________________________________________________________________
 // IMPORTS
 //________________________________________________________________________________
-import { defineAsyncComponent, reactive, watch, onMounted, computed } from 'vue'
-import { store as storeMain, api as apiMain} from 'GlobalStore'
-import { store as logStore, api as logApi } from 'WsLogUtils'
+import {defineAsyncComponent, reactive, watch, onMounted, computed} from 'vue'
+import {store as storeMain, api as apiMain} from 'GlobalStore'
+import {store as logStore, api as logApi} from 'WsLogUtils'
+import {Code2} from "WsUtils";
+import {getLogger} from "Logging";
+
 const LogWsExec = defineAsyncComponent(() => import("./traffic/log-ws-exec.vue"))
 const LogWsExec2 = defineAsyncComponent(() => import("./traffic/log-ws-exec2.vue"))
+const LogWsEvent = defineAsyncComponent(() => import("./traffic/log-ws-event.vue"))
+
+// ________________________________________________________________________________
+// LOGGING
+// ________________________________________________________________________________
+const LOG_HEADER = 'Traffic.mjs'
+const logger = getLogger(LOG_HEADER)
+logger.debug("[INIT]")
 
 // ________________________________________________________________________________
 // LOCAL STATE
 // ________________________________________________________________________________
 const local = reactive({
-  id: `Traffic.mjs`,
+  id: LOG_HEADER,
+  instanceId: "admin"
 })
 
 //________________________________________________________________________________
@@ -30,7 +42,30 @@ function clickTable(idx) {
 function jumpTo(index) {
   const el = document.getElementById(`jump-${index}`)
   if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    el.scrollIntoView({behavior: 'smooth', block: 'center'})
+  }
+}
+
+//________________________________________________________________________________
+// TESTING
+//________________________________________________________________________________
+async function addTestPkt() {
+  await logApi.logOutbound("test-instance", {
+    code: Code2.EXEC_REQ,
+    id: `test-pkt-${Date.now()}`,
+    endpoint: "/test/endpoint",
+    bytes: null,
+    args: ["test-arg1", "test-arg2"]
+  })
+}
+
+async function requestEvent() {
+  const registry = storeMain.r[local.instanceId]
+  const args = ["testConnectionEvent"]
+  const resp = await registry.exec("/sys", args)
+  logger.debug(resp)
+  if (!resp.isOk) {
+    logger.error(resp)
   }
 }
 </script>
@@ -39,68 +74,84 @@ function jumpTo(index) {
 <template>
   <x-section :level="2" :visible="true" k="Websocket Logs">
 
-
     <template v-slot:header>
       <ExecButton icon="fa-info" :callback="() => apiMain.routeByEndpoint(logStore.documentation)"></ExecButton>
-      <ExecButton icon="fa-flask" :callback="() => logApi.addTestPkt()">Test</ExecButton>
     </template>
 
-      <x-collapse k="logStore">
-        <x-json :obj="logStore"></x-json>
-      </x-collapse>
+    <div class="row mt-2 mb-3 align-items-center">
+      <div class="col-auto">
+        <x-toggle k="Logging Enabled" v-model="logStore.enabled"></x-toggle>
+      </div>
+      <div class="col-auto">
+        <x-label k="Index"><a href="#" @click.prevent="jumpTo(logStore.historyIdx - 1)">{{
+            logStore.historyIdx - 1
+          }}</a></x-label>
+      </div>
+      <div class="col-auto">
+        <ExecButton icon="fa-trash me-1" :callback=" () => logApi.clearHistory()">Clear Logs</ExecButton>
+      </div>
+    </div>
 
-      <div class="row mt-2 mb-3 align-items-center">
-        <div class="col-auto">
-          <x-toggle k="Logging Enabled" v-model="logStore.enabled"></x-toggle>
+    <x-table-open :exclude="[]" :arr="logStore.history" @select="clickTable">
+
+      <template v-slot:default="slotProps">
+        <div v-if="logStore.history[slotProps.v].type === 'EXEC_REQ'">
+          <LogWsExec :v="logStore.history[slotProps.v]" />
         </div>
-        <div class="col-auto">
-          <x-label k="Index"><a href="#" @click.prevent="jumpTo(logStore.historyIdx - 1)">{{ logStore.historyIdx - 1 }}</a></x-label>
+        <div v-else-if="logStore.history[slotProps.v].type === 'EXEC2_REQ'">
+          <LogWsExec2 :v="logStore.history[slotProps.v]" />
         </div>
+        <div v-else-if="logStore.history[slotProps.v].type === 'EVENT'">
+          <LogWsEvent :v="logStore.history[slotProps.v]" />
+        </div>
+        <div v-else>
+          {{ logStore.history[slotProps.v] }}
+        </div>
+      </template>
+
+      <template v-slot:index="props0">
+        <span :id="`jump-${props0.v}`" :class="{'active' : props0.v == logStore.historyIdx - 1 }"> {{ props0.v }}</span>
+      </template>
+
+      <template v-slot:in="props1">
+        {{ props1.v.length }}
+      </template>
+
+      <template v-slot:out="props2">
+        {{ props2.v.length }}
+      </template>
+
+    </x-table-open>
+    <div v-if="logStore.history.length === 0">
+      <h3>No Items</h3>
+    </div>
+
+    <x-section :level="3" :visible="false" k="Log Store">
+      <x-json :obj="logStore"/>
+    </x-section>
+
+    <x-section :level="3" :visible="false" k="Tests">
+      <ExecButton icon="fa-flask" :callback="() => addTestPkt()">addTestPkt</ExecButton>
+
+      <div class="row mt-2 mb-2">
         <div class="col-auto">
-          <ExecButton icon="fa-trash me-1" :callback=" () => logApi.clearLogs()">Clear Logs</ExecButton>
+          <ExecButton icon="fa-flask" :callback="() => requestEvent()">Request Event</ExecButton>
+        </div>
+        <div class="col">
+          <x-input k="instanceId" v-model="local.instanceId"/>
         </div>
       </div>
-
-      <x-table-open :exclude="[]" :arr="logStore.history"  @select="clickTable">
-
-        <template v-slot:default="slotProps">
-          <div v-if="logStore.history[slotProps.v].type === 'EXEC_REQ'">
-            <LogWsExec :v="logStore.history[slotProps.v]"></LogWsExec>
-          </div>
-          <div v-else-if="logStore.history[slotProps.v].type === 'EXEC2_REQ'">
-            <LogWsExec2 :v="logStore.history[slotProps.v]"></LogWsExec2>
-          </div>
-          <div v-else>
-            {{logStore.history[slotProps.v]}}
-          </div>
-        </template>
-
-        <template v-slot:index="props0">
-          <span :id="`jump-${props0.v}`" :class="{'active' : props0.v == logStore.historyIdx - 1 }"> {{props0.v}}</span>
-        </template>
-
-        <template v-slot:in="props1">
-          {{props1.v.length}}
-        </template>
-
-        <template v-slot:out="props2">
-          {{props2.v.length}}
-        </template>
-
-      </x-table-open>
-      <div v-if="logStore.history.length === 0">
-        <h3>No Items</h3>
-      </div>
+    </x-section>
 
   </x-section>
 </template>
 
 
-  <!-- ________________________________________________________________________________ -->
-  <!-- STYLE -->
-  <!-- ________________________________________________________________________________ -->
+<!-- ________________________________________________________________________________ -->
+<!-- STYLE -->
+<!-- ________________________________________________________________________________ -->
 <style scoped>
-.active{
+.active {
   background-color: var(--bs-warning);
   color: var(--bs-dark);
   padding: 2px;

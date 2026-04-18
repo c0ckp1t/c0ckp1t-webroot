@@ -294,7 +294,7 @@ export default class Island {
             const errorMsg = `[EXCEPTION] - endpointId=${endpointId} - args=${args}`;
             this.logger.info(errorMsg);
             this.logger.info(e);
-            return nok(e.toLocaleString(), ['exec', errorMsg]);
+            return nok(e instanceof Error ? e.message : String(e), ['exec', errorMsg]);
         }
     }
 
@@ -367,7 +367,7 @@ export default class Island {
     }
 
     getText = async (endpoint) => {
-        this.logger.info(`[getText] -  endpoint=${endpoint}`)
+        this.logger.debug(`[getText] -  endpoint=${endpoint}`)
         if (endpoint.startsWith("http") || endpoint.startsWith("HTTP")) {
             return await Http.getText(endpoint, "omit")
         }
@@ -485,6 +485,38 @@ export default class Island {
                 this.createWorkflowTable(child);
             });
         }
+    }
+
+    findNodeByWfId = (wfId) => {
+        const rootNode = this.store.root
+        if (!rootNode) return null
+        const search = (node) => {
+            if (node.kv && node.kv.wfId === wfId) return node
+            if (node.children) {
+                for (const child of node.children) {
+                    const found = search(child)
+                    if (found) return found
+                }
+            }
+            return null
+        }
+        return search(rootNode)
+    }
+
+    findNodeByEndpoint = (endpoint) => {
+        const rootNode = this.store.root
+        if (!rootNode) return null
+        const search = (node) => {
+            if (node.endpoint === endpoint) return node
+            if (node.children) {
+                for (const child of node.children) {
+                    const found = search(child)
+                    if (found) return found
+                }
+            }
+            return null
+        }
+        return search(rootNode)
     }
 
     // ________________________________________________________________________________

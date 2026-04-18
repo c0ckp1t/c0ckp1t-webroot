@@ -97,6 +97,20 @@ export const store = reactive({
     mainOffCanvasWidth: 0,
 
     // ________________________________________________________________________________
+    // OFFCANVAS
+    // ________________________________________________________________________________
+    offCanvasText: "",
+    OffCanvasClass: "btn btn-dark",
+    offCanvas: null,
+    OffCanvasOpen: false,
+    offCanvasArr: [
+        {id: 'connection', label: 'Connection'},
+        {id: 'wspackets', label: 'WsPacket Logs'},
+        {id: 'alerts', label: 'Alert Logs'},
+        {id: 'help', label: 'Help'},
+    ],
+
+    // ________________________________________________________________________________
     // P1t Modal
     // ________________________________________________________________________________
     modal: null,
@@ -113,18 +127,6 @@ export const store = reactive({
     mdURL: "/c0ckp1t/docs/Introduction.md",
     mdDefaultURL: "/c0ckp1t/docs/Introduction.md",
 
-    // ________________________________________________________________________________
-    // OFFCANVAS
-    // ________________________________________________________________________________
-    offcanvas: null,
-    offCanvasSel: null,
-    offCanvasArr: [
-        {id: 'connection', label: 'Connection'},
-        {id: 'wspackets', label: 'WsPacket Logs'},
-        {id: 'alerts', label: 'Alert Logs'},
-        {id: 'help', label: 'Help'},
-    ],
-    offcanvasOpen: false,
 
 })
 
@@ -311,6 +313,7 @@ export const api = {
     // OFFCANVAS
     // ________________________________________________________________________________
     toggleOffCanvas() {
+        store.offCanvas?.toggle()
         store.offcanvasOpen = !store.offcanvasOpen;
     },
 

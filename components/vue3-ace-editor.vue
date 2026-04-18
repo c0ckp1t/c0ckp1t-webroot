@@ -6,6 +6,7 @@
 
 import {ref, reactive, markRaw, onMounted, onBeforeUnmount, watch} from 'vue';
 import {loadAce} from './AceLoader.mjs';
+import {store as storeMain, api as apiMain} from 'GlobalStore'
 
 const root = ref("");
 
@@ -101,7 +102,8 @@ let _editor = undefined
 let _ro = undefined
 let _contentBackup = undefined;
 let _isSettingContent = false;
-
+const currentHeight = ref(props.height);
+const container = ref(null)
 
 watch(() => props.modelValue, (first, second) => {
   value(first)
@@ -139,7 +141,7 @@ onMounted(async () => {
     console.error('Ace editor failed to load:', err)
     return
   }
-  ace.config.set('basePath', '/js_ext/ace-editor');
+  ace.config.set('basePath', `${storeMain.appEndpoint}/js_ext/ace-editor`);
   _editor = markRaw(ace.edit(root.value, {
     mode: 'ace/mode/' + props.lang,
     theme: 'ace/theme/' + props.theme,
@@ -171,8 +173,12 @@ onMounted(async () => {
   local.currentRelativeLineNumbers = false;
 
   value(props.modelValue)
-  _ro = new ResizeObserver(() => _editor.resize());
-  _ro.observe(root.value);
+  _ro = new ResizeObserver(() => {
+    if (container.value) {
+      currentHeight.value = container.value.style.height || container.value.offsetHeight + 'px';
+    }
+    _editor.resize();
+  });
   emit('init', _editor);
 })
 
@@ -246,7 +252,7 @@ function maxLines(val) {
 </script>
 
 <template>
-  <div class="ace-editor" style="display: flex; flex-direction: column;" :style="{ height: props.height }">
+  <div ref="container" class="ace-editor" style="display: flex; flex-direction: column;" :style="{ height: currentHeight }">
     <div class="debug-toolbar" v-if="props.debug">
       <label>
         Theme:
@@ -286,8 +292,7 @@ function maxLines(val) {
 
 .ace-editor {
   resize: vertical;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .debug-toolbar {

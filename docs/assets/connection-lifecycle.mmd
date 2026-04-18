@@ -1,0 +1,18 @@
+stateDiagram-v2
+    [*] --> IDLE
+
+    IDLE --> FETCHING_COOKIE : connect
+
+    FETCHING_COOKIE --> CONNECTING_WS : onDone
+    FETCHING_COOKIE --> FAILED : onError
+
+    CONNECTING_WS --> CONNECTED : onDone
+    CONNECTING_WS --> FAILED : ws.error / ws.closed / onError
+
+    CONNECTED --> READY : always (transient)
+
+    READY --> DISCONNECTED : disconnect / ws.closed / ws.error
+
+    DISCONNECTED --> FETCHING_COOKIE : connect
+
+    FAILED --> FETCHING_COOKIE : connect (retry)

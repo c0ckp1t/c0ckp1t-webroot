@@ -1,7 +1,10 @@
 
 # Contributing 
 
-Thank you for your interest in contributing to this project! 
+Please report bugs, suggest features, or submit pull requests to help improve the project. 
+
+* Project Repository: 
+   * https://github.com/c0ckp1t/c0ckp1t-webroot
 
 ---
 
@@ -10,9 +13,11 @@ Thank you for your interest in contributing to this project!
 1. **Fork** this repository
 2. **Clone** your fork locally:
    ```bash
-   git clone https://github.com/your-username/project-name.git
+   git clone git@github.com:c0ckp1t/c0ckp1t-webroot.git
+   # or 
+   git clone https://github.com/c0ckp1t/c0ckp1t-webroot.git
    ```
 ---
 
 
-_Thank you for helping make this project better!_ 
+Thank you for your interest in contributing to this project!

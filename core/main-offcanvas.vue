@@ -1,8 +1,8 @@
 <script setup>
 /*
-    offcanvas.vue
+    main-offcanvas.vue
     https://getbootstrap.com/docs/5.0/components/offcanvas/
-
+     storeMain.mainOffCanvas.hide()
 */
 // ________________________________________________________________________________
 // IMPORTS
@@ -22,24 +22,16 @@ const logger = getLogger(LOG_HEADER)
 // LOCAL STATE
 // ________________________________________________________________________________
 const local = reactive({
+  id: LOG_HEADER,
   isLoading: false,
 })
-
 const itemRef = ref(null)
-
-// ________________________________________________________________________________
-// API
-// ________________________________________________________________________________
-function close() {
-  storeMain.mainOffCanvas.hide()
-}
 
 // ________________________________________________________________________________
 // INIT
 // ________________________________________________________________________________
 async function init() {
   storeMain.mainOffCanvas = markRaw(new bootstrap.Offcanvas(itemRef.value))
-  // storeMain.mainOffCanvas.show()
 }
 
 onMounted(async () => {
