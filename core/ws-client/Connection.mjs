@@ -163,6 +163,11 @@ function calculateSessionMetadata(uniqueId, password) {
     };
 }
 
+function authenticator() {
+    // return ""
+    return "&authenticator=defaultAuthN"
+}
+
 // ________________________________________________________________________________
 // Connection
 // ________________________________________________________________________________

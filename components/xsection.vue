@@ -124,19 +124,22 @@ function titleClick() {
 <template>
   <div class="x-section">
 
-    <div class="row no-select" :class="bgClass">
-      <div class="col" @click="titleClick">
+    <div class="d-flex justify-content-between align-items-center no-select py-1" :class="bgClass">
+
+      <div class="ms-2 col" @click="titleClick">
         <span :class="[fontSizeClass, textClass]" class="title"> {{ props.k }} </span>
       </div>
+
       <div class="col-auto d-flex align-items-center">
         <slot name="header"></slot>
-        <button class="btn is-small ms-2" :class="btnClass" @click="titleClick">
+        <button class="btn btn-sm ms-2 me-2" :class="btnClass" @click="titleClick">
           <span class="icon is-small">
             <i class="fa-solid fa-eye" v-if="local.visible"></i>
             <i class="fa-solid fa-eye-slash" v-else></i>
           </span>
         </button>
       </div>
+
     </div>
 
     <div class="mt-2" v-if="local.visible">

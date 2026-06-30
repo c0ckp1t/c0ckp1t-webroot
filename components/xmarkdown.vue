@@ -167,8 +167,6 @@ async function buildComponent(markdownText) {
   html = decorateTableHTML(html)
   local.images = {}
   html = replaceImgLinks(html, local.images)
-  console.log("images")
-  console.log(local.images)
 
   local.markdownComponent = markRaw(renderMarkdown(html))
 }

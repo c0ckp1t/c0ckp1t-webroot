@@ -338,12 +338,24 @@ export default class Island {
             map(this._createExecResultMapper(true))
         );
     }
+    /**
+     * Execute and return structured result with STDOUT BINARY
+     * @param {string} endpointId
+     * @param {string[]} args
+     * @param {*} bytes
+     * @returns {Observable}
+     */
+    exec2ResultBinary(endpointId, args = [], bytes = null) {
+        return this.exec2(endpointId, args, bytes).pipe(
+            map(this._createExecResultMapper(false))
+        );
+    }
 
     // ________________________________________________________________________________
     // HTTP
     // ________________________________________________________________________________
     resolver = async (endpoint, type) => {
-        this.logger.info(`[resolver] -  endpoint=${endpoint}`)
+        this.logger.debug(`[resolver] -  endpoint=${endpoint}`)
 
         if (endpoint.startsWith('/c0ckp1t/')) {
             const endpointAdjusted = endpoint.replace("/c0ckp1t/", `/`)
@@ -418,7 +430,6 @@ export default class Island {
             });
         });
     }
-
 
     async getJson(endpoint) {
         const path = `${this.config.SERVER_API_URL}${endpoint}`;

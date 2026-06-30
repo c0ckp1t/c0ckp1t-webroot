@@ -14,6 +14,10 @@ const props = defineProps({
   expanded: {
     type: Boolean,
     default:  false
+  },
+  copyButton: {
+    type: Boolean,
+    default:  true
   }
 })
 const emit = defineEmits(['select'])
@@ -30,7 +34,9 @@ function sanitize(obj, seen = new WeakSet()) {
   if (typeof obj === 'function') return `[Function: ${obj.name || 'anonymous'}]`
   if (typeof obj === 'symbol') return obj.toString()
   if (typeof obj !== 'object') return obj
-
+  if (obj instanceof Set) {
+    return Array.from(obj).map(item => sanitize(item, seen))
+  }
   // Handle circular references
   if (seen.has(obj)) return '[Circular]'
   seen.add(obj)
@@ -53,6 +59,7 @@ const local = reactive({
     id: id,
     el: null,
     isExpanded: props.expanded,
+    copied: false,
 })
 
 watch(
@@ -73,6 +80,14 @@ function expandAll() {
 }
 function collapseAll() {
     local.el.collapse('**');
+}
+
+function copyToClipboard() {
+    const text = JSON.stringify(sanitize(props.obj), null, 2)
+    navigator.clipboard.writeText(text).then(() => {
+        local.copied = true
+        setTimeout(() => { local.copied = false }, 1500)
+    })
 }
 
 function toggleExpand() {
@@ -110,11 +125,21 @@ onMounted(async () => { init() })
 
 <template>
   <div class="x-json">
-<!--     <button @click="toggleExpand">Toggle Expand</button>-->
+    <button v-if="props.copyButton" class="btn btn-sm btn-outline-secondary copy-btn" @click="copyToClipboard">
+      <i class="fa-solid" :class="local.copied ? 'fa-check' : 'fa-copy'"></i>
+    </button>
     <json-viewer class="p-1" :id="local.id"> </json-viewer>
   </div>
 </template>
 
 <style scoped>
-
+.x-json {
+  position: relative;
+}
+.copy-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 1;
+}
 </style>

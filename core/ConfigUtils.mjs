@@ -267,6 +267,7 @@ export function defaultVueComponents(prefix = "") {
         XColor: { path: `${prefix}/components/xcolor.vue`, hash: `9bf9497ff66e213277f17af290c21c0a35752510` },
         "v-ace-editor": { path: `${prefix}/components/vue3-ace-editor.vue`, hash: `70ce4a39152af5cf0f7cb6b1d4fdafc8b6225edc` },
         XMarkdown: { path: `${prefix}/components/xmarkdown.vue`, hash: `15f835547fab8a8c8aad47d72640c8e918a7b9da` },
+        XMd : { path: `${prefix}/components/xmd.vue`, hash: `` },
         XSound: { path: `${prefix}/components/xsound.vue`, hash: `3e8ad4aa3c767f757dd49b99aa6f961547caf970` },
         XUpload: { path: `${prefix}/components/xupload.vue`, hash: `7a872277e0047fca11e950efe08f2bffa670abdb` },
         XTree: { path: `${prefix}/components/xtree.vue`, hash: `3b6534e86996c48ab05072a9b793ecc78d83a0eb` },

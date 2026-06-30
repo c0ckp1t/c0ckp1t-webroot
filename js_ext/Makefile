@@ -44,3 +44,14 @@ rxjs:
 # https://unpkg.com/xstate@4.38.3/dist/xstate.web.js
 xstate:
 	wget -O xstate-5.29.0.esm.mjs https://cdn.jsdelivr.net/npm/xstate@5.29.0/+esm
+
+# https://momentjs.com/timezone/docs/
+moment:
+	wget -O moment.min.js https://cdn.jsdelivr.net/npm/xstate@5.29.0/+esm
+
+
+# https://www.chartjs.org/chartjs-plugin-zoom/latest/guide/#installation
+chart-js:
+	#wget -O chart.umd.min.js https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js
+	#wget -O chartjs-plugin-zoom.min.js https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js
+	wget -O hammer.min.js https://hammerjs.github.io/dist/hammer.min.js
