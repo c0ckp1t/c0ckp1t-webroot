@@ -9,7 +9,7 @@ import {reactive, onMounted, defineAsyncComponent, computed} from 'vue'
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
 import {api as notify} from "NotifyUtils"
-import {DEFAULTS, deepMerge, findHostnamePortProtocol} from "ConfigUtils"
+import {findHostnamePortProtocol} from "ConfigUtils"
 
 const ConnectionHeader = defineAsyncComponent(() => import("./connections/connection-header.vue"))
 
@@ -39,7 +39,6 @@ const local = reactive({
 function createDefaultIsland(connectionName) {
   const config = {}
   config.instanceId = connectionName
-  deepMerge(config, DEFAULTS)
   config.routes = [
     {
       path: '/', name: 'root', children: [
@@ -114,6 +113,12 @@ function createConnectionByURL() {
   logger.info(`Creating connection by URL: ${local.islandConfigURL}`)
   logger.error("Not implemented yet")
 }
+
+async function loadStoredConfiguration() {
+  const res = await apiMain.listStoredIslandConfigs()
+  console.log(res)
+}
+
 </script>
 
 
@@ -124,21 +129,29 @@ function createConnectionByURL() {
       <ConnectionHeader :id="k"></ConnectionHeader>
     </div>
 
+    <x-section :level="3" :visible="true" k="Stored Connections">
+      <template v-slot:header>
+        <ExecButton icon="fa-rotate-right " :callback="() => loadStoredConfiguration()" />
+      </template>
+    </x-section>
+
     <x-section :level="3" :visible="true" k="Create New Connection">
       <div class="row align-items-center">
         <div class="col">
-          <x-input k="Name" v-model="local.connectionName"></x-input>
+          <x-input k="Name" v-model="local.connectionName" />
         </div>
         <div class="col-auto">
-          <x-dropdown2 k="Type" :items="storeMain.registryType" v-model="local.connectionType"></x-dropdown2>
+          <x-dropdown2 k="Type" :items="storeMain.registryType" v-model="local.connectionType" />
         </div>
       </div>
-      <ExecButton icon="fa-floppy-disk me-1 " :callback="() => createConnectionByType()">Create connection by type
+      <ExecButton icon="fa-floppy-disk me-1 " :callback="() => createConnectionByType()">
+        Create connection by type
       </ExecButton>
 
       <h3>or</h3>
-      <x-input k="Config URL" v-model="local.islandConfigURL"></x-input>
-      <ExecButton icon="fa-floppy-disk me-1 " :callback="() => createConnectionByURL()">Create connection by URL
+      <x-input k="Config URL" v-model="local.islandConfigURL" />
+      <ExecButton icon="fa-floppy-disk me-1 " :callback="() => createConnectionByURL()">
+        Create connection by URL
       </ExecButton>
 
     </x-section>

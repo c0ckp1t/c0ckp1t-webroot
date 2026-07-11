@@ -64,7 +64,7 @@ export const store = reactive({
     // ________________________________________________________________________________
     // Registries
     // ________________________________________________________________________________
-    r: {},
+    r: {}, // registries
     defaultInstanceId: "default",
     selectedInstId: null,
     router: null,
@@ -184,12 +184,16 @@ export const api = {
     },
 
     saveIslandConfig: async (instanceId) => {
-        logger.info(`[saved island config] - instanceId=${instanceId}`)
+        logger.info(`[saving island config] - instanceId=${instanceId}`)
         const registry = store.r[instanceId]
         if(!registry) {
             throw new Error(`No registry found for instanceId=${instanceId}`)
         }
-        const config = registry.getConnectionConfig()
+        const config = JSON.parse(JSON.stringify(registry.config))
+        if(!config) {
+            throw new Error(`Not configuration for instanceId=${instanceId}`)
+        }
+        if (config?.connection) config.connection.password = null
         await stashConnections.set(instanceId, config)
     },
 
@@ -199,6 +203,12 @@ export const api = {
             throw new Error(`No registry found for instanceId=${instanceId}`)
         }
         await stashConnections.del(instanceId)
+    },
+
+    listStoredIslandConfigs: async() => {
+        logger.info(`[listStoredIslandConfigs]`)
+        const res = await stashConnections.list()
+        console.log(res)
     },
 
     // ________________________________________________________________________________
@@ -391,6 +401,13 @@ export const api = {
             store.selectedInstId = islandDefault.instanceId
         }
         store.isReady = true
+
+        //________________________________________________________________________________
+        // Register additional islands declared in the config
+        //________________________________________________________________________________
+        for (const islandConfig of (config.islands ?? [])) {
+            await api.registerIsland(islandConfig)
+        }
     }
 }
 

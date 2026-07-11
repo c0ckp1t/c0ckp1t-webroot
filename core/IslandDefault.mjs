@@ -24,6 +24,7 @@ export default class IslandDefault {
         this.type = "IslandDefault";
         this.config = config;
         this.apiMain = apiMain;
+        this.isStored = false
 
         this.LOG_HEADER = `${this.instanceId}`;
         this.logger = getLogger(this.LOG_HEADER);

@@ -63,23 +63,61 @@
 <script type="module">
   import {init as initLogger} from 'Logging';
   import {api as apiMain} from 'GlobalStore'
-  import { createConfig } from 'https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/Config.mjs'
+  import { defaultVueComponents, findHostnamePortProtocol } from 'ConfigUtils'
 
-  const config = createConfig({
-    appEndpoint: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19",
-    routePrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19",
-    componentPrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19",
+  const CDN = "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19"
+  const instanceId = "default"
+
+  // The entire app config — one explicit object (no factory, no merge).
+  const config = {
+    isDev: true,
+    WITH_CREDENTIALS: false,
+    defaultInstanceId: "default",
+    instanceId: instanceId,
+    type: "IslandDefault",
     appMainComponent: "./PageMain.vue",
-    navCloseLogo: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/img/logo_v1.svg",
-    navOpenLogo: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19/core/img/logo_v2.svg",
+    appEndpoint: CDN,
+    showSidebar: false,
+    componentsDefaultExpand: true,
+    componentPrefix: CDN,
     appName: "C0ckp1t",
+    navCloseLogo: `${CDN}/core/img/logo_v1.svg`,
+    navOpenLogo: `${CDN}/core/img/logo_v2.svg`,
+    showTopNavBar: true,
+    navAutoCollapse: false,
+    navItems: [],
+    navHasSearch: false,
+    navHasThemeSel: false,
+    showFooter: true,
+    showDocNav: true,
     showDocReload: false,
     showDocTrail: false,
+    allowDocWrite: true,
+    allowDocReload: true,
     vueRouterModeIsHash: true,
-    defaultLoggerLevels: {
-            "VueUtils.mjs": "INFO"
-    }
-  })
+    routePrefix: CDN,
+    defaultLogLevel: "INFO",
+    defaultLoggerLevels: { "VueUtils.mjs": "INFO" },
+    bootswatchURL: "https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist",
+    root: {
+      icon: "fa-house", depth: 0, endpoint: "/", isLeaf: false, isRoot: true, name: "", path: [],
+      children: [
+        { depth: 1, endpoint: `/${instanceId}/docs`, isLeaf: true, isRoot: false, path: ["docs"], name: "Documentation", children: [] },
+      ]
+    },
+    routes: [
+      { path: '/', name: 'root', children: [
+        { path: '', redirect: `/${instanceId}/docs/Introduction.md` },
+        { path: `${instanceId}`, children: [
+          { path: 'docs', redirect: `/${instanceId}/docs/Introduction.md` },
+          { path: 'docs/:pathMatch(.*)*', location: `${CDN}/core/pages/Documentation.vue` },
+        ]}
+      ]},
+      { path: '/:pathMatch(.*)*', name: '404', location: `${CDN}/core/Page404.vue` }
+    ],
+    components: defaultVueComponents(CDN),
+    islands: [],
+  }
   initLogger(config)
   await apiMain.init("app-default", config)
 

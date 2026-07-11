@@ -106,7 +106,7 @@ This is not a hypothetical future. C0ckp1t gives you the infrastructure to build
 The key imperative of software engineering is managing complexity. C0ckp1t's design reflects this:
 
 - **One file = one component.** Vue SFCs enforce clean boundaries. Template, logic, and style live together — no hunting across file trees.
-- **No build configuration.** Zero `webpack.config.js`, zero `vite.config.ts`, zero `tsconfig.json`. The framework's entire configuration lives in a single `Config.mjs` and your `index.html` importmap.
+- **No build configuration.** Zero `webpack.config.js`, zero `vite.config.ts`, zero `tsconfig.json`. The framework's entire configuration lives in a single `config.mjs` and your `index.html` importmap.
 - **Modular core.** The framework is composed of small, focused modules (`GlobalStore.mjs`, `VueUtils.mjs`, `WsUtils.mjs`, `ConfigUtils.mjs`) that you can inspect, replace, or extend individually.
 - **Lazy loading by default.** Only the core modules load upfront. Advanced components and external libraries (Ace, CodeMirror, WaveSurfer, KaTeX, highlight.js, etc.) load on demand when a component that needs them is first rendered.
 

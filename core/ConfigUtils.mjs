@@ -1,240 +1,36 @@
-// ________________________________________________________________________________
-// Application Configuration
-// ________________________________________________________________________________
-export const DEFAULTS = {
-    isDev: true,
-    /**
-     * XMLHttpRequest from a different domain cannot set cookie values for their own
-     * domain unless withCredentials is set to true before making the request.
-     * https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredential/
-     *
-     * `true` tells the browser “this cross-origin request should include credentials”,
-     *  meaning: - send cookies (and HTTP auth) *with* the request, and
-     *  allow the browser to store cookies from the response, *if* the server also opts in.
-     */
-    WITH_CREDENTIALS: false,
+// ============================================================================
+//  ConfigUtils.mjs
+// ----------------------------------------------------------------------------
+//  Framework configuration HELPERS ONLY.
+//
+//  This file intentionally contains NO application configuration and NO
+//  default config object. The application configuration lives entirely in a
+//  single, explicit file: `config.mjs` (copied from `config.default.mjs`).
+//
+//  There are exactly three exports here — nothing more should be added:
+//
+//    1. defaultVueComponents(prefix)  -> the built-in SFC component registry
+//    2. validateAppConfig(config)     -> validates a config object (throws)
+//    3. findHostnamePortProtocol()    -> derives connection info from window
+//
+//  Do NOT reintroduce DEFAULTS / deepMerge / createConfig / buildNavTree /
+//  buildRoutes here. The config is a single hand-written object; if you need
+//  to change nav/routes/options, edit `config.mjs` directly.
+// ============================================================================
 
-    // ________________________________________________________________________________
-    // Island Configuration
-    // ________________________________________________________________________________
-    defaultInstanceId: "default",
-    instanceId: "default",
-    type: "IslandDefault",
-
-    // Main entry point
-    appMainComponent: "/core/PageMain.vue",
-    // Used for requestion app components and files (GlobalStore.appEndpoint)
-    appEndpoint: "",
-
-    showSidebar: false,
-    // ________________________________________________________________________________
-    // Components Configuration
-    // ________________________________________________________________________________
-    componentsDefaultExpand: true,
-    // Used for default components prefix (used only in config)
-    componentPrefix: "",
-
-    // ________________________________________________________________________________
-    // Nav Configuration
-    // ________________________________________________________________________________
-    appName: "C0ckp1t Application",
-    showTopNavBar: true,
-    navAutoCollapse: false,
-    navItems: [],
-    navHasSearch: false,
-    navHasThemeSel: false,
-
-    // ________________________________________________________________________________
-    // Footer Configuration
-    // ________________________________________________________________________________
-    showFooter: true,
-
-    // ________________________________________________________________________________
-    // Documentation Configuration
-    // ________________________________________________________________________________
-    showDocNav: true,
-    showDocReload: true,
-    showDocTrail: false,
-    allowDocWrite: true,
-    allowDocReload: true,
-
-    // ________________________________________________________________________________
-    // Router Configuration
-    // ________________________________________________________________________________
-    // Determine if VueRouter is createWebHashHistory or createWebHistory
-    vueRouterModeIsHash: true,
-    // Used for default routes prefix (used only in config)
-    routePrefix: "",
-
-    // ________________________________________________________________________________
-    // Logger Config (see Logging.mjs)
-    // ________________________________________________________________________________
-    defaultLogLevel: "INFO",
-    defaultLoggerLevels: {
-        "GlobalStore.mjs": "INFO",
-        "VueUtils.mjs": "INFO",
-        "Connection.mjs": "INFO",
-        "default": "INFO",
-        "anonymous": "INFO",
-        "demo": "INFO"
-    },
-
-    // ________________________________________________________________________________
-    // Theming Configuration
-    // ________________________________________________________________________________
-    bootswatchURL: "https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist",
-};
-
-// ________________________________________________________________________________
-// Default Nav Tree
-// ________________________________________________________________________________
-export function buildNavTree(instanceId) {
-    return {
-        icon: "fa-house",
-        depth: 0,
-        endpoint: "/",
-        isLeaf: false,
-        isRoot: true,
-        name: "",
-        path: [],
-        children: [
-            {
-                depth: 1,
-                endpoint: `/${instanceId}/connections`,
-                isLeaf: true,
-                isRoot: false,
-                path: ["connections"],
-                name: "Connections",
-                children: []
-            },
-            {
-                depth: 1,
-                endpoint: `/${instanceId}/cache`,
-                isLeaf: true,
-                isRoot: false,
-                path: ["cache"],
-                name: "Cache",
-                children: []
-            },
-            {
-                icon: "fa-network-wired",
-                depth: 1,
-                endpoint: `/${instanceId}/traffic`,
-                isLeaf: true,
-                isRoot: false,
-                path: ["traffic"],
-                name: "Traffic",
-                children: []
-            },
-            {
-                icon: "fa-bell",
-                depth: 1,
-                endpoint: `/${instanceId}/notifies`,
-                isLeaf: true,
-                isRoot: false,
-                path: ["notifies"],
-                name: "Notifies",
-                children: []
-            },
-            {
-                icon: "fa-info",
-                depth: 1,
-                endpoint: `/${instanceId}/docs`,
-                isLeaf: true,
-                isRoot: false,
-                path: ["docs"],
-                name: "Documentation",
-                children: []
-            },
-            {
-                icon: "fa-info",
-                depth: 1,
-                endpoint: `/${instanceId}/components`,
-                isLeaf: true,
-                isRoot: false,
-                path: ["components"],
-                name: "Components",
-                children: [
-                    {
-                        icon: "fa-info",
-                        depth: 2,
-                        endpoint: `/${instanceId}/components/bootstrap`,
-                        isLeaf: true,
-                        isRoot: false,
-                        path: ["bootstrap"],
-                        name: "Bootstrap",
-                        children: []
-                    },
-                    {
-                        icon: "fa-info",
-                        depth: 2,
-                        endpoint: `/${instanceId}/components/basic`,
-                        isLeaf: true,
-                        isRoot: false,
-                        path: ["basic"],
-                        name: "Basic",
-                        children: []
-                    },
-                    {
-                        icon: "fa-info",
-                        depth: 2,
-                        endpoint: `/${instanceId}/components/advanced`,
-                        isLeaf: true,
-                        isRoot: false,
-                        path: ["advanced"],
-                        name: "Advanced",
-                        children: []
-                    },
-                    {
-                        icon: "fa-info",
-                        depth: 2,
-                        endpoint: `/${instanceId}/components/theme`,
-                        isLeaf: true,
-                        isRoot: false,
-                        path: ["theme"],
-                        name: "Theme",
-                        children: []
-                    },
-                ]
-            }
-        ]
-    };
-}
-
-// ________________________________________________________________________________
-// Default Routes
-// ________________________________________________________________________________
-export function buildRoutes(instanceId = "default", prefix = "") {
-    return [
-        { path: '/', name: 'root', children: [
-                {path: '', redirect: `/${instanceId}/docs/Introduction.md`},
-                {path: `${instanceId}`, children: [
-                        {path: 'docs', redirect: `/${instanceId}/docs/Introduction.md`},
-                        {path: 'docs/:pathMatch(.*)*', location: `${prefix}/core/pages/Documentation.vue`},
-                        {path: 'connections', location: `${prefix}/core/pages/Connections.vue`},
-                        {path: 'connections/:id', location: `${prefix}/core/pages/Connection.vue`},
-                        {path: 'cache', location: `${prefix}/core/pages/Cache.vue`},
-                        {path: 'traffic', location: `${prefix}/core/pages/Traffic.vue`},
-                        {path: 'notifies', location: `${prefix}/core/pages/Notifies.vue`},
-                        {path: 'components', location: `${prefix}/core/pages/frontend/Components.vue`, children: [
-                                {path: 'basic', location: `${prefix}/core/pages/frontend/ComponentsBasic.vue`},
-                                {path: 'advanced', location: `${prefix}/core/pages/frontend/ComponentsAdv.vue`},
-                                {path: 'theme', location: `${prefix}/core/pages/frontend/Theme.vue`},
-                                {path: 'bootstrap', location: `${prefix}/core/pages/frontend/Bootstrap.vue`},
-                            ]},
-                    ]}
-            ] },
-        { path: '/:pathMatch(.*)*', name: '404', location: `${prefix}/core/Page404.vue` }
-    ];
-}
-
-// ________________________________________________________________________________
-// Components
-// ________________________________________________________________________________
+// ============================================================================
+//  Components Registry
+// ============================================================================
 /**
- * Return the default Vue components
- * using sha1 hashes
- * @returns {Object}
+ * Return the built-in C0ckp1t Vue component registry (path + sha1 hash).
+ *
+ * This is framework boilerplate — the same 30+ components ship with every
+ * app — so it stays here instead of being copied into every `config.mjs`.
+ * `config.mjs` calls this once: `components: defaultVueComponents(componentPrefix)`.
+ *
+ * @param {string} prefix - Base URL/path prefixed to every component path
+ *                          (e.g. a CDN root). Use "" for same-origin.
+ * @returns {Object} map of componentName -> { path, hash }
  */
 export function defaultVueComponents(prefix = "") {
     return {
@@ -276,57 +72,67 @@ export function defaultVueComponents(prefix = "") {
     }
 }
 
-// ________________________________________________________________________________
-// UTILITY FUNCTIONS
-// ________________________________________________________________________________
+// ============================================================================
+//  Validation
+// ============================================================================
 /**
- * Validate and set defaults for the config object.
- * @param config
- * @returns {*}
+ * Validate an application config object.
+ *
+ * The config is written by hand in `config.mjs` and is expected to be
+ * COMPLETE — this function does NOT fill in defaults or merge anything.
+ * It simply asserts that the critical fields are present and well-typed,
+ * failing fast (throwing) if the hand-written config is broken.
+ *
+ * The only mutation performed is coercing the optional array fields
+ * (`navItems`, `islands`) to `[]` when omitted, so downstream code can
+ * iterate them safely.
+ *
+ * @param {Object} config
+ * @returns {Object} the same config (validated / lightly coerced)
  */
 export function validateAppConfig(config) {
-    if (!config) {
-        throw new Error("config is required")
-    }
-    if (typeof config !== 'object') {
-        throw new Error("Config must be an object must was `" + typeof config + "`")
+    if (!config || typeof config !== 'object') {
+        throw new Error(`config must be an object but was \`${typeof config}\``)
     }
 
-    // Apply all DEFAULTS — fill in any missing properties
-    for (const key of Object.keys(DEFAULTS)) {
-        if (config[key] === undefined || config[key] === null) {
-            config[key] = structuredClone(DEFAULTS[key]);
+    // ---- required, non-empty string fields ----
+    for (const key of ['instanceId', 'type', 'appMainComponent']) {
+        if (typeof config[key] !== 'string' || config[key].trim() === '') {
+            throw new Error(`config.${key} is required and must be a non-empty string`)
         }
     }
 
-    // Special validations (type coercion / empty-string guards)
-    if (typeof config.instanceId !== 'string' || config.instanceId.trim() === '') {
-        config.instanceId = DEFAULTS.instanceId;
-    }
-    if (typeof config.type !== 'string' || config.type.trim() === '') {
-        config.type = DEFAULTS.type;
-    }
-    if (!Array.isArray(config.navItems)) {
-        config.navItems = DEFAULTS.navItems;
-    }
-
-    // Derived defaults that depend on other config values
-    if (!Array.isArray(config.routes) || config.routes.length < 1) {
-        config.routes = buildRoutes(config.instanceId, config.routePrefix);
-    }
-    if (typeof config.components !== 'object' || config.components === null) {
-        config.components = defaultVueComponents(config.componentPrefix);
+    // ---- required structures ----
+    if (!Array.isArray(config.routes)) {
+        throw new Error(`config.routes is required and must be an array`)
     }
     if (!config.root || typeof config.root !== 'object') {
-        config.root = buildNavTree(config.instanceId);
+        throw new Error(`config.root is required and must be an object (nav tree)`)
+    }
+    if (!config.components || typeof config.components !== 'object') {
+        throw new Error(`config.components is required and must be an object`)
+    }
+
+    // ---- optional arrays: coerce so callers can iterate safely ----
+    if (!Array.isArray(config.navItems)) {
+        config.navItems = []
+    }
+    if (!Array.isArray(config.islands)) {
+        config.islands = []
     }
 
     return config
 }
 
+// ============================================================================
+//  Environment
+// ============================================================================
 /**
- * Use window to extract the hostname, port, protocol, and whether the connection is secure.
- * @returns {{hostname: string, port: string, protocol: string, isSecure: boolean}}
+ * Use `window.location` to derive hostname, port, protocol, TLS flag and a
+ * fully-qualified server URL. Used by `config.mjs` to point island
+ * connections at the server that served the page.
+ *
+ * @returns {{hostname: string, port: string, protocol: string, isSecure: boolean, serverUrl: string}}
  */
 export function findHostnamePortProtocol() {
     const hostname = window.location.hostname
@@ -335,31 +141,4 @@ export function findHostnamePortProtocol() {
     const port = window.location.port || (isSecure ? "443" : "80")
     const serverUrl = `${protocol}//${hostname}:${port}`
     return {hostname, port, protocol, isSecure, serverUrl}
-}
-
-/**
- * Deep merge source into target. Returns a new object.
- * - Objects are recursively merged (source keys override target keys)
- * - Arrays are replaced entirely (source array wins)
- * - Scalars are replaced (source wins)
- */
-export function deepMerge(target, source) {
-    const result = { ...target };
-    for (const key of Object.keys(source)) {
-        const sourceVal = source[key];
-        const targetVal = target[key];
-        if (
-            sourceVal !== null &&
-            typeof sourceVal === 'object' &&
-            !Array.isArray(sourceVal) &&
-            targetVal !== null &&
-            typeof targetVal === 'object' &&
-            !Array.isArray(targetVal)
-        ) {
-            result[key] = deepMerge(targetVal, sourceVal);
-        } else {
-            result[key] = sourceVal;
-        }
-    }
-    return result;
 }

@@ -1,6 +1,5 @@
 /**
  * Important that you assigned it to the registry before you init it
- *
  */
 // ________________________________________________________________________________
 // IMPORT
@@ -30,18 +29,19 @@ import { throwError } from 'rxjs';
 export default class Island {
 
     /**
+     *  Websocket Islands
      *
-     * @param config
-     *   instanceId
-     *
-     * @param apiMain
+     *  @param apiMain
+     *  @param config
      */
     constructor(apiMain, config) {
 
         this.instanceId = config.instanceId
         this.SERVER_API_URL = config.SERVER_API_URL
         this.type = "Island"
-        this.apiMain = apiMain;
+        this.apiMain = apiMain
+        this.config = config
+        this.isStored = false
 
         this.LOG_HEADER = `${this.instanceId}`;
         this.logger = getLogger(this.LOG_HEADER);
@@ -138,10 +138,6 @@ export default class Island {
     async disconnect() {
         this.logger.info("[disconnect]");
         return this.connection.disconnect();
-    }
-
-    getConnectionConfig = () => {
-        return this.config
     }
 
     // ________________________________________________________________________________

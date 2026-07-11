@@ -27,21 +27,29 @@ The main entry point is [GlobalStore.mjs](https://github.com/c0ckp1t/c0ckp1t-web
 <script type="module">
 import {init as initLogger} from 'Logging'; // specified in importmap
 import {api as apiMain} from 'GlobalStore' // specified in importmap
-// Helper to create configuration object with default values
-import { createConfig } from 'https://cdn.jsdelivr.net/npm/c0ckp1t@latest/Config.mjs'
-// Configuration Object
-const config = createConfig({
-  appEndpoint: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
-  routePrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
-  componentPrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
-  appMainComponent: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/PageMain.vue",
-  defaultLoggerLevels: {
-    "VueUtils.mjs": "INFO"
-  }
-})
+// The component registry helper (framework boilerplate)
+import { defaultVueComponents } from 'https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/ConfigUtils.mjs'
+
+// Configuration is a single, explicit plain object — no factory, no merge.
+const CDN = "https://cdn.jsdelivr.net/npm/c0ckp1t@latest"
+const config = {
+  isDev: false,
+  instanceId: "default",
+  type: "IslandDefault",
+  appMainComponent: `${CDN}/core/PageMain.vue`,
+  appEndpoint: CDN,
+  routePrefix: CDN,
+  componentPrefix: CDN,
+  vueRouterModeIsHash: true,
+  defaultLoggerLevels: { "VueUtils.mjs": "INFO" },
+  root: { icon: "fa-house", depth: 0, endpoint: "/", isLeaf: false, isRoot: true, name: "", path: [], children: [] },
+  routes: [ { path: '/', name: 'root', children: [] } ],
+  components: defaultVueComponents(CDN),
+  islands: [],
+}
 initLogger(config)
 await apiMain.init("app-default", config)
 </script>
 ```
 
-See [Configuration](./Configuration.md) for more details on the configuration options (i.e, to add your own pages).
+See [Configuration](./Configuration.md) for the full list of options and how to add your own pages. For a complete, commented reference copy [`config.default.mjs`](https://github.com/c0ckp1t/c0ckp1t-webroot/blob/main/config.default.mjs) to `config.mjs` and edit it.

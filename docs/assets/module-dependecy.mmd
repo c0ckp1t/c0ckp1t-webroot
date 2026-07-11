@@ -1,18 +1,12 @@
 graph TD
     HTML["index.html"]
-    CONFIG["Config.mjs"]
-    CA["ConfigAdmin.mjs"]
-    CANON["ConfigAnonymous.mjs"]
+    CONFIG["config.mjs"]
 
     HTML --> CONFIG
-    HTML --> CA
-    HTML --> CANON
     HTML --> LOG["Logging.mjs"]
     HTML --> GS["GlobalStore.mjs"]
 
     CONFIG --> CU["ConfigUtils.mjs"]
-    CA --> CU
-    CANON --> CU
 
     GS --> VU["VueUtils.mjs"]
     GS --> CU
