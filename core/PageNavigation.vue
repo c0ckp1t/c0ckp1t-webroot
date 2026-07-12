@@ -52,7 +52,7 @@ const navbarClass = computed(() => ({
         <div class="collapse navbar-collapse" id="navbarText">
           <ul class="navbar-nav flex-grow-1 justify-content-center">
             <li class="nav-item" v-for="item in storeMain.config.navItems" :key="item.path">
-              <RouterLink :to="item.path" class="nav-link">
+              <RouterLink :to="item.path" class="nav-link" active-class="active" exact-active-class="active" aria-current="page">
                 {{ item.name }}
               </RouterLink>
             </li>
@@ -85,6 +85,30 @@ const navbarClass = computed(() => ({
 /* Fixed navbar height compensation */
 .navbar.fixed-top {
   z-index: 1030;
+}
+
+/* Nav item links */
+.navbar-nav .nav-link {
+  padding: 0.5rem 1rem;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.1s ease, text-decoration-color 0.2s ease;
+  border-radius: 6px;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.25rem;
+  text-decoration-thickness: 2px;
+}
+
+.navbar-nav .nav-link:hover {
+  background-color: var(--bs-tertiary-bg);
+}
+
+.navbar-nav .nav-link:active {
+  transform: scale(0.97);
+}
+
+.navbar-nav .nav-link.active {
+  font-weight: 600;
+  text-decoration-color: currentColor;
 }
 
 /* !# C0CKP1T_END style */

@@ -85,7 +85,10 @@ export default {
     appName: "C0ckp1t Application",
     showTopNavBar: true,
     navAutoCollapse: false,
-    navItems: [],
+    navItems: [
+        {name: "Connections", path: "/default/connections"},
+        {name: "Test", path: "/default/test"}
+    ],
     navHasSearch: false,
     navHasThemeSel: false,
 
@@ -304,24 +307,7 @@ export default {
                 password: "root",
                 isSecure: isSecure,
             }
-        },
-        {
-            instanceId: "anonymous",
-            type: "Island",
-            appEndpoint: "",
-            isDev: true,
-            WITH_CREDENTIALS: false,
-            connection: {
-                readOnly: true,
-                hostname: hostname,
-                port: 1995,
-                protocol: protocol,
-                endpoint: "socket",
-                username: "anonymous",
-                password: "anonymous",
-                isSecure: isSecure,
-            }
-        },
+        }
     ],
 
 }

@@ -98,6 +98,11 @@ async function deleteConnection() {
           Delete
         </ExecButton>
       </div>
+      <div class="col-auto"  v-if="instanceId !== storeMain.defaultInstanceId">
+        <ExecButton icon="fa-trash me-1" :callback="() => apiMain.unregisterIsland(instanceId)">
+          Unregister
+        </ExecButton>
+      </div>
     </div>
 
     <div v-if="registry?.type === 'IslandDefault'">

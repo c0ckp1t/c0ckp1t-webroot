@@ -4,29 +4,34 @@
 // ________________________________________________________________________________
 // IMPORT
 // ________________________________________________________________________________
-import {markRaw, reactive, watch, defineAsyncComponent, getCurrentInstance} from 'vue'
-import {ok, nok, sha1} from "JsUtils"
+import {reactive, watch} from 'vue'
+import {nok, indexOfNonString} from "JsUtils"
 import {getLogger} from 'Logging';
 import Connection from "./ws-client/Connection.mjs";
 
-import {findHostnamePortProtocol, validateAndCleanIslandConfig} from 'ConfigUtils';
-import {indexOfNonString} from "JsUtils";
 import {fromBinary, fromByteArray, Http} from "WsUtils";
+import {adjustNode, adjustConfig, validateIslandConfig} from "./IslandHelpers.mjs";
 
-import { map } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import {map} from 'rxjs/operators';
+import {throwError} from 'rxjs';
+
+import IslandBase from "./IslandBase.mjs";
+
 // ________________________________________________________________________________
-// Default Island
+// Island
 // ________________________________________________________________________________
 /**
+ *  WebSocket Islands
+ *
  *  state
  *      isLoading
  *      isReady
+ *      workflowTable
  *  store
  *      id
  *  connection
  */
-export default class Island {
+export default class Island extends IslandBase {
 
     /**
      *  Websocket Islands
@@ -35,81 +40,33 @@ export default class Island {
      *  @param config
      */
     constructor(apiMain, config) {
+        super(apiMain, config);
 
-        this.instanceId = config.instanceId
-        this.SERVER_API_URL = config.SERVER_API_URL
-        this.type = "Island"
-        this.apiMain = apiMain
-        this.config = reactive(config)
-        this.isStored = false
-
-        this.LOG_HEADER = `${this.instanceId}`;
+        this.SERVER_API_URL = config.SERVER_API_URL;
+        this.type = "Island";
         this.logger = getLogger(this.LOG_HEADER);
         this.logger.debug('[INIT]');
 
-        this.connection = new Connection(this.config)
+        this.connection = new Connection(config);
+
         // ________________________________________________________________________________
         // STATE - NOT saved in browser storage
         // ________________________________________________________________________________
-        this.state = reactive({
-            isLoading: false,
-            isReady: false,
-            workflowTable: { }
-        })
+        this.state.workflowTable = {};
+
         // isReady is tied to connection state
         watch(
             () => this.connection.state.isConnected,
             (connected) => {
                 this.state.isReady = connected;
             }
-        )
+        );
+
         // ________________________________________________________________________________
         // STORE - saved in browser storage
         // ________________________________________________________________________________
-        this.store = reactive({
-            id: this.LOG_HEADER,
-            updated: null,
-            showRegistry: true,
-            root: null,
-            selectedNode: null,
-        })
-        this.apiMain = apiMain
+        this.store.context = null;
     } // end of constructor
-
-    // ________________________________________________________________________________
-    // NODE METHODS
-    // ________________________________________________________________________________
-    routeByEndpoint = async (endpoint) => {
-        this.logger.debug(`routeByEndpoint - endpoint=${endpoint}`);
-        await this.apiMain.routeByEndpoint(`/${this.instanceId}${endpoint}`);
-    }
-
-    /**
-     * Select the default dashboard (root).
-     * @returns {Promise<void>}
-     */
-    selectDefaultDashboard = async () => {
-        await this.apiMain.routerPush(`/${this.instanceId}`);
-    }
-
-    /**
-     * Select a node and navigate to its endpoint.
-     * A node has:
-     *   - endpoint = "/documentation"
-     *   - name = "documentation"
-     * @param {Object} node
-     * @param {Boolean} route
-     * @returns {Promise<void>}
-     */
-    selectNode = async (node, route = true) => {
-        this.logger.debug(`selectNode - node.endpoint=${node.endpoint}`);
-        // this.apiMain.
-        this.store.selectedNode = null;
-        this.store.selectedNode = node;
-        if(route) {
-            await this.routeByEndpoint(node.endpoint);
-        }
-    }
 
     // ________________________________________________________________________________
     // CONNECTION MANAGEMENT
@@ -133,7 +90,6 @@ export default class Island {
         // if (currentRoute.fullPath === '/') {
         //     await this.routeByEndpoint(this.store.settings.defaultEndpoint);
         // }
-        return res
     }
 
     async disconnect() {
@@ -145,15 +101,16 @@ export default class Island {
     // USER API
     // ________________________________________________________________________________
     userContext = async () => {
-        const resp = await this.exec('/user', ["userContext"])
-        this.logger.debug(resp)
+        const resp = await this.exec('/user', ["userContext"]);
+        this.logger.debug(resp);
         if (!resp.isOk) {
-            this.logger.warn(`[${this.store.id}] - userContext failed`, `${resp.result}`)
-            return this.store.context
+            this.logger.warn(`[${this.store.id}] - userContext failed`, `${resp.result}`);
+            return this.store.context;
         }
-        this.store.context = JSON.parse(resp.result)
-        return this.store.context
+        this.store.context = JSON.parse(resp.result);
+        return this.store.context;
     }
+
     /**
      * Fetch and set the root node.
      * @returns {Promise<void>}
@@ -169,14 +126,13 @@ export default class Island {
         }
 
         const rootNode = JSON.parse(resp.result);
-        adjustNode(rootNode)
-        this.createWorkflowTable(rootNode)
+        adjustNode(rootNode);
+        this.createWorkflowTable(rootNode);
         this.logger.debug("rootNode:");
         this.logger.debug(rootNode);
 
         // Note: possibly mutates rootNode
         await this._initializeRootNode(rootNode);
-        // adjustNode(rootNode)
 
         this.store.root = rootNode;
     }
@@ -210,7 +166,7 @@ export default class Island {
             const res = await this.exec("/sys/resolver", args)
             if (res.isOk) {
                 this.logger.debug(`[node=${node.name}] - load config=${node.config} -) ${res.result}`)
-                // TODO: warnign will not work if node.depth !== 1
+                // TODO: warning will not work if node.depth !== 1
                 const config = JSON.parse(res.result.replaceAll("##instanceId##", this.instanceId))
                 adjustConfig(config, this.instanceId)
                 await this.apiMain.insertRoutes(`/${this.instanceId}${node.endpoint}`, config)
@@ -222,16 +178,16 @@ export default class Island {
                 // This happens when i.e osgi doesn't have a config.json
                 // it tries to read it and fails
                 if (node.depth === 1) {
-                    if (this.store.context.accessLevel < 500 ) {
+                    if (this.store.context.accessLevel < 500) {
                         await this.apiMain.insertRoutes(`/${this.instanceId}${node.endpoint}`,
-                                [{"path": node.name, "location": `/${this.instanceId}/v3/actions/root/admin/_admin.vue`}],
+                            [{"path": node.name, "location": `/${this.instanceId}/v3/actions/root/admin/_admin.vue`}],
                         )
                     } else {
                         await this.apiMain.insertRoutes(`/${this.instanceId}${node.endpoint}`,
                             [{"path": node.name, "location": "/core/nodes/_api.vue"}]
                         )
                     }
-                } else if(node.depth === 2 && node.endpoint.startsWith(`/wf/`)) {
+                } else if (node.depth === 2 && node.endpoint.startsWith(`/wf/`)) {
                     this.logger.debug(`insert admin`)
                     await this.apiMain.insertRoutes(`/${this.instanceId}${node.endpoint}`,
                         [{"path": node.name, "location": `/${this.instanceId}/v3/actions/root/admin/_admin.vue`}],
@@ -251,7 +207,7 @@ export default class Island {
                     )
                 }
             }
-            if(node.name === "api") {
+            if (node.name === "api") {
                 await this.apiMain.insertRoutes(`/${this.instanceId}${node.endpoint}`,
                     [{"path": node.name, "location": "/core/nodes/place-holder.vue"}]
                 )
@@ -264,6 +220,7 @@ export default class Island {
             }
         }
     }
+
     // ________________________________________________________________________________
     // EXEC API
     // ________________________________________________________________________________
@@ -335,6 +292,7 @@ export default class Island {
             map(this._createExecResultMapper(true))
         );
     }
+
     /**
      * Execute and return structured result with STDOUT BINARY
      * @param {string} endpointId
@@ -407,10 +365,12 @@ export default class Island {
         return new Promise((resolve, reject) => {
             const chunks = [];
             this.exec2("/sys/resolver", args).subscribe({
-                next: (pkt) => { chunks.push(pkt) },
+                next: (pkt) => {
+                    chunks.push(pkt)
+                },
                 error: (err) => {
                     this.logger.error(`[getBinary] - error - endpoint=${endpoint}`, err);
-                    resolve({ isOk: false, result: err.toString() });
+                    resolve({isOk: false, result: err.toString()});
                 },
                 complete: () => {
                     // Concatenate all chunks into a single Uint8Array
@@ -422,7 +382,7 @@ export default class Island {
                         offset += chunk.length;
                     }
                     this.logger.debug(`[getBinary] - complete - totalBytes=${totalLength}`);
-                    resolve({ isOk: true, result: merged });
+                    resolve({isOk: true, result: merged});
                 }
             });
         });
@@ -481,14 +441,14 @@ export default class Island {
     createWorkflowTable = (node) => {
         // if endpoint starts with "/wf/" and depth is 2
         //  then we likely are looking at workflow nodes
-        if(node.endpoint.startsWith("/wf/") && node.depth === 2) {
-            if(typeof node.kv === 'object' && node.kv !== null && typeof node.kv["wfId"] === "string") {
-               const key = node.endpoint.replace("/wf/", "")
-               this.state.workflowTable[key] = node
+        if (node.endpoint.startsWith("/wf/") && node.depth === 2) {
+            if (typeof node.kv === 'object' && node.kv !== null && typeof node.kv["wfId"] === "string") {
+                const key = node.endpoint.replace("/wf/", "")
+                this.state.workflowTable[key] = node
             }
         }
         // we recurse into / and its children only.
-        if(node.depth === 0 || node.depth === 1) {
+        if (node.depth === 0 || node.depth === 1) {
             node.children.forEach((child) => {
                 this.createWorkflowTable(child);
             });
@@ -534,30 +494,11 @@ export default class Island {
         await this.connect()
     }
 
-    destroy = async() => {
-        await this.disconnect()
-    }
-
-} // end of IslandDefault class
-
+} // end of Island class
 
 // ________________________________________________________________________________
-// HELPER METHODS
+// CONFIGURATION
 // ________________________________________________________________________________
-function adjustNode(node) {
-    node._expanded ??= true;
-    node.children.forEach((child) => {
-        adjustNode(child);
-    });
-}
-
-function adjustConfig(children, instanceId) {
-    children.forEach((node) => {
-        if (node.location) {
-            node.location = `/${instanceId}${node.location}`
-        }
-        if (node.children) {
-            adjustConfig(node.children, instanceId);
-        }
-    });
+export function validate(config) {
+    return validateIslandConfig(config);
 }

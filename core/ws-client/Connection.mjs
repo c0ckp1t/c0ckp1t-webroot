@@ -175,6 +175,10 @@ export default class Connection {
     // ________________________________________________________________________________
     // CONSTRUCTOR
     // ________________________________________________________________________________
+    /**
+     * @param config
+     * Note: config is reactive
+     */
     constructor(config) {
         this.instanceId = config.instanceId;
         this.client = new WsClient(this.instanceId);
@@ -187,7 +191,8 @@ export default class Connection {
         // ________________________________________________________________________________
         // STORE — persisted connection settings
         // ________________________________________________________________________________
-        this.store = reactive({ ...config.connection });
+        // NOTE: this is by reference and reactive
+        this.store = config.connection
 
         // ________________________________________________________________________________
         // STATE — reactive, derived from the state machine

@@ -1,30 +1,53 @@
 // ________________________________________________________________________________
 // IMPORT
 // ________________________________________________________________________________
-import {markRaw, reactive, watch, defineAsyncComponent, getCurrentInstance} from 'vue'
-import {ok, nok, sha1} from "JsUtils"
-import {Http} from "WsUtils"
+import {reactive} from 'vue'
+import {nok} from "JsUtils"
 import {getLogger} from 'Logging';
 
 // ________________________________________________________________________________
-// Default Island
+// Island Base
 // ________________________________________________________________________________
 /**
- *  state
- *      isLoading
- *      isReady
- *  store
- *      id
- *  connection
+ * Common interface for all islands.
+ *
+ * Lifecycle:
+ *   - init()               should connect / load root node
+ *   - connect()            optional connection lifecycle (WebSocket islands)
+ *   - disconnect()         optional connection lifecycle (WebSocket islands)
+ *
+ * Navigation:
+ *   - routeByEndpoint(endpoint)
+ *   - selectDefaultDashboard()
+ *   - selectNode(node, route = true)
+ *
+ * Identity:
+ *   - userContext()
+ *   - rootNode()
+ *
+ * Execution:
+ *   - exec(endpointId, args = [], bytes = null)
+ *   - exec2(endpointId, args = [], bytes = null)
+ *   - exec2Result(endpointId, args = [], bytes = null)
+ *   - exec2ResultBinary(endpointId, args = [], bytes = null)
+ *
+ * HTTP / resource loading:
+ *   - resolver(endpoint, type)
+ *   - getText(endpoint)
+ *   - getBinary(endpoint)
+ *   - getJson(endpoint, params = {})
+ *   - postJson(endpoint, body)
  */
-export default class IslandDefault {
+export default class IslandBase {
+
     constructor(apiMain, config) {
+        if (new.target === IslandBase) {
+            throw new Error("IslandBase is abstract and cannot be instantiated directly");
+        }
 
         this.instanceId = config.instanceId;
-        this.type = "IslandDefault";
         this.config = config;
         this.apiMain = apiMain;
-        this.isStored = false
 
         this.LOG_HEADER = `${this.instanceId}`;
         this.logger = getLogger(this.LOG_HEADER);
@@ -44,13 +67,27 @@ export default class IslandDefault {
         this.store = reactive({
             id: this.LOG_HEADER,
             updated: null,
-
             showRegistry: true,
             root: null,
             selectedNode: null,
+            context: null,
         })
-        this.apiMain = apiMain
     } // end of constructor
+
+    // ________________________________________________________________________________
+    // LIFECYCLE - override in subclasses
+    // ________________________________________________________________________________
+    async init() {
+        throw new Error("init() must be implemented by subclass");
+    }
+
+    async connect() {
+        // no-op by default
+    }
+
+    async disconnect() {
+        // no-op by default
+    }
 
     // ________________________________________________________________________________
     // NODE METHODS
@@ -74,27 +111,23 @@ export default class IslandDefault {
      *   - endpoint = "/documentation"
      *   - name = "documentation"
      * @param {Object} node
+     * @param {Boolean} route
      * @returns {Promise<void>}
      */
-    selectNode = async (node) => {
+    selectNode = async (node, route = true) => {
         this.logger.debug(`selectNode - node.endpoint=${node.endpoint}`);
         this.store.selectedNode = null;
         this.store.selectedNode = node;
-        await this.apiMain.routeByEndpoint(node.endpoint);
+        if (route) {
+            await this.routeByEndpoint(node.endpoint);
+        }
     }
 
     // ________________________________________________________________________________
-    // CONNECTION MANAGEMENT
-    // ________________________________________________________________________________
-    getConnectionConfig = () => {
-        return this.config
-    }
-
-    // ________________________________________________________________________________
-    // USER API
+    // IDENTITY / TREE - override in subclasses
     // ________________________________________________________________________________
     userContext = async () => {
-        return this.store.context
+        return this.store.context;
     }
 
     /**
@@ -102,15 +135,11 @@ export default class IslandDefault {
      * @returns {Promise<void>}
      */
     rootNode = async () => {
-        this.logger.debug('[rootNode]');
-        this.logger.debug(this.config)
-        const root = this.config.root
-        adjustNode(root)
-        this.store.root = root
+        throw new Error("rootNode() must be implemented by subclass");
     }
 
     // ________________________________________________________________________________
-    // EXEC API
+    // EXEC API - override in subclasses
     // ________________________________________________________________________________
     /**
      * Execute a command on the given endpoint.
@@ -136,81 +165,64 @@ export default class IslandDefault {
             const errorMsg = `[EXCEPTION] - endpointId=${endpointId} - args=${args}`;
             this.logger.info(errorMsg);
             this.logger.info(e);
-            return nok(e.toLocaleString(), ['exec', errorMsg]);
+            return nok(e instanceof Error ? e.message : String(e), ['exec', errorMsg]);
         }
     }
 
-    // ________________________________________________________________________________
-    // HTTP
-    // ________________________________________________________________________________
     /**
-     *
-     * @param path
-     * @param type
-     * @returns {Promise<Response>}
+     * Execute a command - returns an Observable, throws on validation errors
+     * @param {string} endpointId
+     * @param {string[]} args
+     * @param {*} bytes
+     * @returns {Observable}
      */
-    resolver = async (path, type) => {
-        /**
-         * Path.normalize() in vue3-sfc-loader's defaultPathResolve
-         *  collapses // in https:// down to https:/
-         *  It uses Path.normalize(Path.join(Path.dirname(getPathname(refPath.toString()))
-         *  but Node's posix.dirname doesn't understand URL protocols
-         */
-        if (path.startsWith("https:/c")) {
-            path = path.replace("https:/c", "https://c");
-        }
-        this.logger.debug(`[resolver] - fetching - ${path} - ${type}`)
-        const res = await fetch(path);
-        if (!res.ok) throw Object.assign(new Error(res.statusText + ' ' + path), {res});
-        return res
+    exec2(endpointId, args = [], bytes = null) {
+        throw new Error("exec2() must be implemented by subclass");
+    }
+
+    /**
+     * Execute and return structured result with text STDOUT
+     * @param {string} endpointId
+     * @param {string[]} args
+     * @param {*} bytes
+     * @returns {Observable}
+     */
+    exec2Result(endpointId, args = [], bytes = null) {
+        throw new Error("exec2Result() must be implemented by subclass");
+    }
+
+    /**
+     * Execute and return structured result with STDOUT BINARY
+     * @param {string} endpointId
+     * @param {string[]} args
+     * @param {*} bytes
+     * @returns {Observable}
+     */
+    exec2ResultBinary(endpointId, args = [], bytes = null) {
+        throw new Error("exec2ResultBinary() must be implemented by subclass");
+    }
+
+    // ________________________________________________________________________________
+    // HTTP / RESOURCE LOADING - override in subclasses
+    // ________________________________________________________________________________
+    resolver = async (endpoint, type) => {
+        throw new Error("resolver() must be implemented by subclass");
     }
 
     getText = async (endpoint) => {
-        this.logger.debug(`[getText] - ${endpoint}`);
-        if (endpoint.startsWith("http") || endpoint.startsWith("HTTP")) {
-            return await Http.getText(endpoint, "omit")
-        } else {
-            const path = `${this.config.SERVER_API_URL}${endpoint}`;
-            return await Http.getText(path)
-        }
+        throw new Error("getText() must be implemented by subclass");
     }
 
     async getBinary(endpoint) {
-        const path = `${this.config.SERVER_API_URL}${endpoint}`;
-        this.logger.debug(`[getBinary] - ${path}`);
-        return await Http.getBinary(path)
+        throw new Error("getBinary() must be implemented by subclass");
     }
 
     async getJson(endpoint, params = {}) {
-        const path = `${this.config.SERVER_API_URL}${endpoint}`;
-        this.logger.debug(`[getJson] - ${path}`);
-        return await Http.getJson(path)
+        throw new Error("getJson() must be implemented by subclass");
     }
 
     async postJson(endpoint, body) {
-        const path = `${this.config.SERVER_API_URL}${endpoint}`;
-        this.logger.debug(`[postJson] - ${path}`);
-        return await Http.postJson(path, body)
+        throw new Error("postJson() must be implemented by subclass");
     }
 
-    // ________________________________________________________________________________
-    // init
-    // ________________________________________________________________________________
-    init = async () => {
-        await this.rootNode()
-        this.state.isReady = true
-    }
-    destroy = async() => {
-    }
-} // end of IslandDefault class
-
-
-// ________________________________________________________________________________
-// HELPER METHODS
-// ________________________________________________________________________________
-function adjustNode(node) {
-    node._expanded ??= true;
-    node.children.forEach((child) => {
-        adjustNode(child);
-    });
-}
+} // end of IslandBase class
