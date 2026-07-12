@@ -162,9 +162,15 @@ export default class WsClient {
             ).subscribe((pkt) => {
                 try {
                     const notify = fromBinary(pkt.bytes)
-                    eventBus.emit(notify.endpoint, notify)
+                    try {
+                        eventBus.emit(notify.endpoint, notify)
+                    } catch(e) {
+                        console.log(`[FAILED_NOTIFY_EMIT] - endpoint=${notify.endpoint} id=${pkt.id}`)
+                        console.log(e)
+                    }
                 } catch(e) {
                     console.log(`[INVALID NOTIFY] - endpoint=${pkt.endpoint} id=${pkt.id}`)
+                    console.log(e)
                 }
             })
         }); // end of promise

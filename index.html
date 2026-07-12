@@ -64,18 +64,11 @@
 <script type="module">
 import {init as initLogger} from 'Logging';
 import {api as apiMain} from 'GlobalStore';
-// Application Configuration
-import { createConfig } from './Config.mjs';
-// Islands
-import ConfigAdmin from './ConfigAdmin.mjs'
-import ConfigAnonymous from './ConfigAnonymous.mjs'
-// Create Application
-const config = createConfig();
+// Application Configuration — edit ./config.mjs (copied from ./config.default.mjs)
+import config from './config.mjs';
+// Create Application (islands in config.islands are registered automatically)
 initLogger(config)
 await apiMain.init("app-default", config)
-// Create Islands
-await apiMain.registerIsland(ConfigAdmin)
-await apiMain.registerIsland(ConfigAnonymous)
 </script>
 
 <script src="/js_ext/bootstrap.bundle.min.js"></script>
@@ -84,5 +77,8 @@ await apiMain.registerIsland(ConfigAnonymous)
 <script src="/js_ext/markdown/markdown-it.min.js"></script>
 <script src="/js_ext/markdown/markdownItAnchor.umd.js"></script>
 <script src="/js_ext/moment.min.js"></script>
-
+<script src="/js_ext/moment-timezone.min.js"></script>
+<script src="/js_ext/chart.umd.min.js"></script>
+<script src="/js_ext/hammer.min.js"></script>
+<script src="/js_ext/chartjs-plugin-zoom.min.js"></script>
 </html>

@@ -62,19 +62,37 @@
 <script type="module">
   import {init as initLogger} from 'Logging';
   import {api as apiMain} from 'GlobalStore'
-  import { createConfig } from '/Config.mjs'
+  import { defaultVueComponents } from 'ConfigUtils'
 
-  const config = createConfig({
-    appEndpoint: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19",
-    routePrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19",
-    componentPrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19",
+  const CDN = "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.19"
+
+  // The entire app config — one explicit object (no factory, no merge).
+  const config = {
+    isDev: false,
+    WITH_CREDENTIALS: false,
+    defaultInstanceId: "default",
+    instanceId: "default",
+    type: "IslandDefault",
     appMainComponent: "./PageMain.vue",
+    appEndpoint: CDN,
+    showSidebar: false,
+    componentsDefaultExpand: true,
+    componentPrefix: CDN,
     appName: "Components Galore",
+    showTopNavBar: true,
+    navItems: [],
+    showFooter: true,
     vueRouterModeIsHash: true,
-    routes: [
-      { path: '/', name: 'root', children: []}
-    ]
-  })
+    routePrefix: CDN,
+    defaultLogLevel: "INFO",
+    defaultLoggerLevels: { "VueUtils.mjs": "INFO" },
+    bootswatchURL: "https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist",
+    // Single-page demo: no sidebar tree, single root route.
+    root: { icon: "fa-house", depth: 0, endpoint: "/", isLeaf: false, isRoot: true, name: "", path: [], children: [] },
+    routes: [ { path: '/', name: 'root', children: [] } ],
+    components: defaultVueComponents(CDN),
+    islands: [],
+  }
   initLogger(config)
   await apiMain.init("app-default", config)
 

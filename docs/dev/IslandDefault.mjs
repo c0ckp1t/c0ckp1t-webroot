@@ -1,100 +1,52 @@
 // ________________________________________________________________________________
 // IMPORT
 // ________________________________________________________________________________
-import {markRaw, reactive, watch, defineAsyncComponent, getCurrentInstance} from 'vue'
-import {ok, nok, sha1} from "JsUtils"
 import {Http} from "WsUtils"
+import {nok} from "JsUtils"
 import {getLogger} from 'Logging';
+import {adjustNode, validateIslandDefaultConfig} from "./IslandHelpers.mjs";
+
+import IslandBase from "./IslandBase.mjs";
 
 // ________________________________________________________________________________
 // Default Island
 // ________________________________________________________________________________
 /**
+ *  HTTP-backed default island.
+ *
  *  state
  *      isLoading
  *      isReady
  *  store
  *      id
- *  connection
+ *      context
+ *      root
+ *      selectedNode
  */
-export default class IslandDefault {
+export default class IslandDefault extends IslandBase {
+
     constructor(apiMain, config) {
+        super(apiMain, config);
 
-        this.instanceId = config.instanceId;
         this.type = "IslandDefault";
-        this.config = config;
-        this.apiMain = apiMain;
-        this.isStored = false
-
-        this.LOG_HEADER = `${this.instanceId}`;
         this.logger = getLogger(this.LOG_HEADER);
         this.logger.debug('[INIT]');
 
-        // ________________________________________________________________________________
-        // STATE - NOT saved in browser storage
-        // ________________________________________________________________________________
-        this.state = reactive({
-            isLoading: false,
-            isReady: false
-        })
-
-        // ________________________________________________________________________________
-        // STORE - saved in browser storage
-        // ________________________________________________________________________________
-        this.store = reactive({
-            id: this.LOG_HEADER,
-            updated: null,
-
-            showRegistry: true,
-            root: null,
-            selectedNode: null,
-        })
-        this.apiMain = apiMain
+        this.store.context = null;
     } // end of constructor
-
-    // ________________________________________________________________________________
-    // NODE METHODS
-    // ________________________________________________________________________________
-    routeByEndpoint = async (endpoint) => {
-        this.logger.debug(`routeByEndpoint - endpoint=${endpoint}`);
-        await this.apiMain.routeByEndpoint(`/${this.instanceId}${endpoint}`);
-    }
-
-    /**
-     * Select the default dashboard (root).
-     * @returns {Promise<void>}
-     */
-    selectDefaultDashboard = async () => {
-        await this.apiMain.routerPush(`/${this.instanceId}`);
-    }
-
-    /**
-     * Select a node and navigate to its endpoint.
-     * A node has:
-     *   - endpoint = "/documentation"
-     *   - name = "documentation"
-     * @param {Object} node
-     * @returns {Promise<void>}
-     */
-    selectNode = async (node) => {
-        this.logger.debug(`selectNode - node.endpoint=${node.endpoint}`);
-        this.store.selectedNode = null;
-        this.store.selectedNode = node;
-        await this.apiMain.routeByEndpoint(node.endpoint);
-    }
 
     // ________________________________________________________________________________
     // CONNECTION MANAGEMENT
     // ________________________________________________________________________________
     getConnectionConfig = () => {
-        return this.config
+        return this.config;
     }
 
     // ________________________________________________________________________________
     // USER API
     // ________________________________________________________________________________
     userContext = async () => {
-        return this.store.context
+        return this.store.context;
     }
 
     /**
@@ -103,17 +55,20 @@ export default class IslandDefault {
      */
     rootNode = async () => {
         this.logger.debug('[rootNode]');
-        this.logger.debug(this.config)
-        const root = this.config.root
-        adjustNode(root)
-        this.store.root = root
+        this.logger.debug(this.config);
+        const root = this.config.root;
+        adjustNode(root);
+        this.store.root = root;
     }
 
     // ________________________________________________________________________________
     // EXEC API
     // ________________________________________________________________________________
     /**
-     * Execute a command on the given endpoint.
+     * Execute a command on the given endpoint via HTTP POST.
+     *
+     * The endpoint is translated to the island's SERVER_API_URL.
+     *
      * @param {string} endpointId
      * @param {Array} args
      * @param {*} bytes
@@ -131,13 +86,64 @@ export default class IslandDefault {
         }
 
         try {
-            return nok("[NOT_IMPLEMENTED]", ['exec']);
+            const path = `${this.config.SERVER_API_URL}${endpointId}`;
+            this.logger.debug(`[exec] - POST ${path}`);
+
+            // Preserve binary path by uploading a raw body when bytes are supplied.
+            let body;
+            let headers = {};
+
+            if (bytes instanceof Blob || bytes instanceof ArrayBuffer || bytes instanceof Uint8Array || bytes instanceof FormData) {
+                body = bytes;
+            } else if (bytes !== null && bytes !== undefined) {
+                body = JSON.stringify({args, bytes});
+                headers["Content-Type"] = "application/json";
+            } else {
+                body = JSON.stringify({args});
+                headers["Content-Type"] = "application/json";
+            }
+
+            const res = await fetch(path, {
+                method: "POST",
+                headers,
+                body
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                return nok(`[HTTP_ERROR] - status=${res.status} - ${text}`, ['exec', endpointId]);
+            }
+
+            // Try JSON first, fall back to text.
+            const contentType = res.headers.get("content-type") || "";
+            if (contentType.includes("application/json")) {
+                const data = await res.json();
+                return {isOk: true, result: data};
+            }
+
+            const text = await res.text();
+            return {isOk: true, result: text};
         } catch (e) {
             const errorMsg = `[EXCEPTION] - endpointId=${endpointId} - args=${args}`;
             this.logger.info(errorMsg);
             this.logger.info(e);
-            return nok(e.toLocaleString(), ['exec', errorMsg]);
+            return nok(e instanceof Error ? e.message : String(e), ['exec', errorMsg]);
         }
+    }
+
+    /**
+     * Observable execution is not supported over plain HTTP.
+     */
+    exec2(endpointId, args = [], bytes = null) {
+        throw new Error("exec2() is not supported by IslandDefault");
+    }
+
+    exec2Result(endpointId, args = [], bytes = null) {
+        throw new Error("exec2Result() is not supported by IslandDefault");
+    }
+
+    exec2ResultBinary(endpointId, args = [], bytes = null) {
+        throw new Error("exec2ResultBinary() is not supported by IslandDefault");
     }
 
     // ________________________________________________________________________________
@@ -200,17 +206,17 @@ export default class IslandDefault {
         await this.rootNode()
         this.state.isReady = true
     }
-    destroy = async() => {
-    }
+
 } // end of IslandDefault class
 
-
 // ________________________________________________________________________________
-// HELPER METHODS
+// CONFIGURATION
 // ________________________________________________________________________________
-function adjustNode(node) {
-    node._expanded ??= true;
-    node.children.forEach((child) => {
-        adjustNode(child);
-    });
+/**
+ * Validate and set defaults for the island config object.
+ * @param config
+ * @returns {*}
+ */
+export function validate(config) {
+    return validateIslandDefaultConfig(config);
 }

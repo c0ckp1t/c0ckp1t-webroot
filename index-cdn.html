@@ -64,15 +64,81 @@
 <script type="module">
   import {init as initLogger} from 'Logging';
   import {api as apiMain} from 'GlobalStore'
-  import { createConfig } from 'https://cdn.jsdelivr.net/npm/c0ckp1t@latest/Config.mjs'
+  import { defaultVueComponents, findHostnamePortProtocol } from 'ConfigUtils'
 
-  const config = createConfig({
+  // ---- CDN-served app: prefix everything with the package root ----
+  const CDN = "https://cdn.jsdelivr.net/npm/c0ckp1t@latest"
+  const instanceId = "default"
+
+  // The entire app config — one explicit object (no factory, no merge).
+  const config = {
+    isDev: true,
+    WITH_CREDENTIALS: false,
+    defaultInstanceId: "default",
+    instanceId: instanceId,
+    type: "IslandDefault",
+    appMainComponent: `${CDN}/core/PageMain.vue`,
+    appEndpoint: CDN,
+    showSidebar: false,
+    componentsDefaultExpand: true,
+    componentPrefix: CDN,
+    appName: "C0ckp1t Application",
+    showTopNavBar: true,
+    navAutoCollapse: false,
+    navItems: [],
+    navHasSearch: false,
+    navHasThemeSel: false,
+    showFooter: true,
+    showDocNav: true,
+    showDocReload: true,
+    showDocTrail: false,
+    allowDocWrite: true,
+    allowDocReload: true,
     vueRouterModeIsHash: true,
-    appEndpoint: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
-    routePrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
-    componentPrefix: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest",
-    appMainComponent: "https://cdn.jsdelivr.net/npm/c0ckp1t@latest/core/PageMain.vue",
-  })
+    routePrefix: CDN,
+    defaultLogLevel: "INFO",
+    defaultLoggerLevels: { "VueUtils.mjs": "INFO" },
+    bootswatchURL: "https://cdn.jsdelivr.net/npm/bootswatch@5.3.8/dist",
+    root: {
+      icon: "fa-house", depth: 0, endpoint: "/", isLeaf: false, isRoot: true, name: "", path: [],
+      children: [
+        { depth: 1, endpoint: `/${instanceId}/connections`, isLeaf: true, isRoot: false, path: ["connections"], name: "Connections", children: [] },
+        { depth: 1, endpoint: `/${instanceId}/cache`, isLeaf: true, isRoot: false, path: ["cache"], name: "Cache", children: [] },
+        { icon: "fa-network-wired", depth: 1, endpoint: `/${instanceId}/traffic`, isLeaf: true, isRoot: false, path: ["traffic"], name: "Traffic", children: [] },
+        { icon: "fa-bell", depth: 1, endpoint: `/${instanceId}/notifies`, isLeaf: true, isRoot: false, path: ["notifies"], name: "Notifies", children: [] },
+        { icon: "fa-info", depth: 1, endpoint: `/${instanceId}/docs`, isLeaf: true, isRoot: false, path: ["docs"], name: "Documentation", children: [] },
+        { icon: "fa-info", depth: 1, endpoint: `/${instanceId}/components`, isLeaf: true, isRoot: false, path: ["components"], name: "Components", children: [
+          { icon: "fa-info", depth: 2, endpoint: `/${instanceId}/components/bootstrap`, isLeaf: true, isRoot: false, path: ["bootstrap"], name: "Bootstrap", children: [] },
+          { icon: "fa-info", depth: 2, endpoint: `/${instanceId}/components/basic`, isLeaf: true, isRoot: false, path: ["basic"], name: "Basic", children: [] },
+          { icon: "fa-info", depth: 2, endpoint: `/${instanceId}/components/advanced`, isLeaf: true, isRoot: false, path: ["advanced"], name: "Advanced", children: [] },
+          { icon: "fa-info", depth: 2, endpoint: `/${instanceId}/components/theme`, isLeaf: true, isRoot: false, path: ["theme"], name: "Theme", children: [] },
+        ]},
+      ]
+    },
+    routes: [
+      { path: '/', name: 'root', children: [
+        { path: '', redirect: `/${instanceId}/docs/Introduction.md` },
+        { path: `${instanceId}`, children: [
+          { path: 'docs', redirect: `/${instanceId}/docs/Introduction.md` },
+          { path: 'docs/:pathMatch(.*)*', location: `${CDN}/core/pages/Documentation.vue` },
+          { path: 'connections', location: `${CDN}/core/pages/Connections.vue` },
+          { path: 'connections/:id', location: `${CDN}/core/pages/Connection.vue` },
+          { path: 'cache', location: `${CDN}/core/pages/Cache.vue` },
+          { path: 'traffic', location: `${CDN}/core/pages/Traffic.vue` },
+          { path: 'notifies', location: `${CDN}/core/pages/Notifies.vue` },
+          { path: 'components', location: `${CDN}/core/pages/frontend/Components.vue`, children: [
+            { path: 'basic', location: `${CDN}/core/pages/frontend/ComponentsBasic.vue` },
+            { path: 'advanced', location: `${CDN}/core/pages/frontend/ComponentsAdv.vue` },
+            { path: 'theme', location: `${CDN}/core/pages/frontend/Theme.vue` },
+            { path: 'bootstrap', location: `${CDN}/core/pages/frontend/Bootstrap.vue` },
+          ]},
+        ]}
+      ]},
+      { path: '/:pathMatch(.*)*', name: '404', location: `${CDN}/core/Page404.vue` }
+    ],
+    components: defaultVueComponents(CDN),
+    islands: [],
+  }
   initLogger(config)
   await apiMain.init("app-default", config)
 </script>

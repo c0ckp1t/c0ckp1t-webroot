@@ -21,6 +21,10 @@ const props = defineProps({
     type: String,
     default: 'text'
   },
+  step: {
+    type: Number,
+    default: 1
+  },
   showLabel: {
     type: Boolean,
     default: true
@@ -65,7 +69,7 @@ const typeCheck = computed (() => {
   <span v-if="showLabel" :style="props.styleObject" class=" input-group-text label fw-bold"  > {{ k }} </span>
 
   <input :type="type" aria-label="message" class="form-control"
-         :style="props.inputStyle" v-model.number="message" :readonly="props.readonly" v-if="type.toUpperCase() === 'NUMBER'">
+         :style="props.inputStyle" v-model.number="message"  :step="step"  :readonly="props.readonly" v-if="type.toUpperCase() === 'NUMBER'">
 
   <input :type="isPasswordVisible ? 'text' : 'password'"  aria-label="message" class="form-control"
          :style="props.inputStyle" v-model="message" :readonly="props.readonly" v-else-if="type.toUpperCase() === 'PASSWORD'">

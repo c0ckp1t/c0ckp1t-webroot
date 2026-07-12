@@ -426,6 +426,9 @@ onMounted(async () => {
     return
   }
 
+  // Guard: component may have unmounted during async loadAce()
+  if (!root.value) return;
+
   ace.config.set('basePath', '/js_ext/ace-editor');
   _editor = markRaw(ace.edit(root.value, {
     mode: 'ace/mode/' + props.mode,

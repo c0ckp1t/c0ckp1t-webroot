@@ -9,7 +9,7 @@ import {reactive, onMounted, defineAsyncComponent, computed} from 'vue'
 import {store as storeMain, api as apiMain} from 'GlobalStore'
 import {getLogger} from "Logging";
 import {api as notify} from "NotifyUtils"
-import {DEFAULTS, deepMerge, findHostnamePortProtocol} from "ConfigUtils"
+import {findHostnamePortProtocol, validateAndCleanIslandConfig} from "ConfigUtils"
 
 const ConnectionHeader = defineAsyncComponent(() => import("./connections/connection-header.vue"))
 
@@ -28,40 +28,23 @@ const local = reactive({
   isLoading: false,
   moduleCache: null,
 
+  storedConnectionsExclude: ['connection', 'WITH_CREDENTIALS', 'appEndpoint', 'routes', 'root'],
+  storedConnections: [],
   connectionName: "root",
-  connectionType: "IslandDefault",
+  connectionType: "Island",
   islandConfigURL: "",
 });
 
 //________________________________________________________________________________
 // CREATE DEFAULT ISLAND
 //________________________________________________________________________________
-function createDefaultIsland(connectionName) {
-  const config = {}
-  config.instanceId = connectionName
-  deepMerge(config, DEFAULTS)
-  config.routes = [
-    {
-      path: '/', name: 'root', children: [
-        {path: '', redirect: `/${config.instanceId}/docs/Introduction.md`}
-      ]
-    }
-  ]
-  config.components = {
+function createDefaultIsland(connectionName, validateAndCleanIslandConfig) {
+  const config = {
+    instanceId: connectionName
   }
-  config.root = {
-    icon: "fa-house",
-    depth: 0,
-    endpoint: "/",
-    isLeaf: false,
-    isRoot: true,
-    name: "",
-    path: [],
-    children: []
-  }
-  config.type = "IslandDefault"
-  return config
+  return validateAndCleanIslandConfig(config)
 }
+
 //________________________________________________________________________________
 // CREATE REMOTE ISLAND
 //________________________________________________________________________________
@@ -102,7 +85,7 @@ async function createConnectionByType() {
 
         break
       default:
-        throw new Error( `Unknown connection type: ${local.connectionType}`)
+        throw new Error(`Unknown connection type: ${local.connectionType}`)
     }
     await apiMain.registerIsland(config)
   } catch (e) {
@@ -114,31 +97,98 @@ function createConnectionByURL() {
   logger.info(`Creating connection by URL: ${local.islandConfigURL}`)
   logger.error("Not implemented yet")
 }
+
+async function loadStoredConfiguration() {
+  // 1. Load stored configs from IndexedDB
+  const storedList = await apiMain.listStoredIslandConfigs() || []
+  const storedMap = {}
+  for (const cfg of storedList) {
+    storedMap[cfg.instanceId] = cfg
+  }
+  const merged = []
+
+  // 2. Running islands take precedence (registry.config overwrites stored config)
+  for (const [instanceId, registry] of Object.entries(storeMain.r)) {
+    const storedCfg = storedMap[instanceId]
+
+    const displayCfg = {
+      ...(storedCfg ?? {}),          // start with stored config (if any)
+      ...registry.config,            // overlay with live registry config
+      isStored: !!storedCfg,
+      isRunning: true
+    }
+
+    merged.push(displayCfg)
+  }
+  // 3. Add stored configs that are not currently running
+  for (const cfg of storedList) {
+    if (!storeMain.r[cfg.instanceId]) {
+      merged.push({
+        ...cfg,
+        isStored: true,
+        isRunning: false
+      })
+    }
+  }
+  local.storedConnections = merged
+}
+
+// ________________________________________________________________________________
+// INIT
+// ________________________________________________________________________________
+async function init() {
+  if (storeMain.isReady) {
+    await loadStoredConfiguration()
+  } else {
+    setTimeout(() => {
+      init()
+    }, 500)
+  }
+}
+
+onMounted(() => {
+  init()
+})
 </script>
 
 
 <template>
   <x-section :level="2" k="Connections">
+    <template v-slot:header>
+      <ExecButton icon="fa-rotate-right " :callback="() => loadStoredConfiguration()"/>
+    </template>
 
-    <div v-for="(v, k) in storeMain.r" class="row m-2">
-      <ConnectionHeader :id="k"></ConnectionHeader>
-    </div>
+    <x-table-open :exclude="local.storedConnectionsExclude" :arr="local.storedConnections" v-slot="slotProps"
+                  idField="instanceId">
+
+      <ExecButton icon="fa-trash me-1"
+                  :callback="() => apiMain.deleteIslandConfig(local.storedConnections[slotProps.v].instanceId)">
+        Delete
+      </ExecButton>
+
+      <ConnectionHeader :id="local.storedConnections[slotProps.v].instanceId"  :key="local.storedConnections[slotProps.v].instanceId"/>
+
+      <x-json :obj="local.storedConnections[slotProps.v]"/>
+    </x-table-open>
+
 
     <x-section :level="3" :visible="true" k="Create New Connection">
       <div class="row align-items-center">
         <div class="col">
-          <x-input k="Name" v-model="local.connectionName"></x-input>
+          <x-input k="Name" v-model="local.connectionName"/>
         </div>
         <div class="col-auto">
-          <x-dropdown2 k="Type" :items="storeMain.registryType" v-model="local.connectionType"></x-dropdown2>
+          <x-dropdown2 k="Type" :items="storeMain.registryType" v-model="local.connectionType"/>
         </div>
       </div>
-      <ExecButton icon="fa-floppy-disk me-1 " :callback="() => createConnectionByType()">Create connection by type
+      <ExecButton icon="fa-floppy-disk me-1 " :callback="() => createConnectionByType()">
+        Create connection by type
       </ExecButton>
 
       <h3>or</h3>
-      <x-input k="Config URL" v-model="local.islandConfigURL"></x-input>
-      <ExecButton icon="fa-floppy-disk me-1 " :callback="() => createConnectionByURL()">Create connection by URL
+      <x-input k="Config URL" v-model="local.islandConfigURL"/>
+      <ExecButton icon="fa-floppy-disk me-1 " :callback="() => createConnectionByURL()">
+        Create connection by URL
       </ExecButton>
 
     </x-section>

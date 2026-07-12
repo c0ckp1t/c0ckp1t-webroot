@@ -56,17 +56,17 @@ const connection = computed(() => {
 //________________________________________________________________________________
 async function saveConnection() {
   try {
-    await apiMain.saveIslandConfig(instanceId)
-    await notifyApi.goodDetails(`saveIslandConfig`, instanceId)
+    await apiMain.saveIslandConfig(instanceId.value)
+    await notifyApi.goodDetails(`saveIslandConfig`, instanceId.value)
   } catch(e) {
     await notifyApi.badDetails(`saveIslandConfig`, e)
   }
 }
 
-async function deleteConnection(instanceId) {
+async function deleteConnection() {
   try {
-    await apiMain.deleteIslandConfig(instanceId)
-    await notifyApi.goodDetails(`deleteConnection`, instanceId)
+    await apiMain.deleteIslandConfig(instanceId.value)
+    await notifyApi.goodDetails(`deleteConnection`, instanceId.value)
   } catch(e) {
     await notifyApi.badDetails(`deleteIslandConfig`, e)
   }
@@ -87,13 +87,21 @@ async function deleteConnection(instanceId) {
       <div class="col-auto">
         <x-label :isCompact="true" k="Instance ID">{{ instanceId }}</x-label>
       </div>
-      <div class="col-auto">
+      <div class="col-auto" v-if="instanceId !== storeMain.defaultInstanceId">
         <ExecButton icon="fa-floppy-disk me-1" :callback="() => saveConnection()"
-                    :disabled="connection && !connection?.state?.connectionDirty">Save
+                    :disabled="(connection && !connection?.state?.connectionDirty) && registry.isStored">Save
         </ExecButton>
       </div>
-      <div class="col-auto">
-        <ExecButton icon="fa-trash me-1" :callback="() => deleteConnection()">Delete</ExecButton>
+      <div class="col-auto"  v-if="instanceId !== storeMain.defaultInstanceId">
+        <ExecButton icon="fa-trash me-1" :callback="() => deleteConnection()"
+                    :disabled="registry?.isStored === false">
+          Delete
+        </ExecButton>
+      </div>
+      <div class="col-auto"  v-if="instanceId !== storeMain.defaultInstanceId">
+        <ExecButton icon="fa-trash me-1" :callback="() => apiMain.unregisterIsland(instanceId)">
+          Unregister
+        </ExecButton>
       </div>
     </div>
 

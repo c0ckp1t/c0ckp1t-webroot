@@ -9,9 +9,9 @@ import * as VueRouter from 'vue-router'
 import {getLogger} from 'Logging';
 import {Stash} from 'Stash'
 import {transformRoutes, loadModule, options, loadModuleFromText} from "VueUtils";
-import {findHostnamePortProtocol, validateAppConfig} from 'ConfigUtils'
+import {findHostnamePortProtocol, validateAndCleanIslandConfig, validateAppConfig} from 'ConfigUtils'
 import {substrAfterFirstSlash, extractLastPath, nok, ok} from "JsUtils";
-import IslandDefault, {validate as validateIslandDefault} from 'IslandDefault'
+import IslandDefault from 'IslandDefault'
 
 const stashConnections = new Stash('connections')
 
@@ -64,7 +64,7 @@ export const store = reactive({
     // ________________________________________________________________________________
     // Registries
     // ________________________________________________________________________________
-    r: {},
+    r: {}, // registries
     defaultInstanceId: "default",
     selectedInstId: null,
     router: null,
@@ -151,14 +151,12 @@ export const api = {
             case "DEFAULT":
             case "default":
             case "IslandDefault":
-                config = validateIslandDefault(config)
                 island = new IslandDefault(api, config)
                 await api.insertRoutes(`/${island.instanceId}`, config.routes)
                 break
             default:
                 try {
-                    const { default: Island, validate: validateIsland } = await import(config.type)
-                    config = validateIsland(config)
+                    const { default: Island} = await import(config.type)
                     island = new Island(api, config)
                 } catch(e) {
                     throw new Error(`Unknown island type: ${config.type}`)
@@ -180,16 +178,22 @@ export const api = {
         if(instanceId === store.defaultInstanceId) {
             throw new Error("Cannot unregister Island with defaultInstanceId")
         }
-        throw new Error("NOT_IMPLEMENTED - unregisterIsland")
+        const registry = store.r[instanceId]
+        await registry.destroy()
+        delete store.r[instanceId]
     },
 
     saveIslandConfig: async (instanceId) => {
-        logger.info(`[saved island config] - instanceId=${instanceId}`)
+        logger.info(`[saving island config] - instanceId=${instanceId}`)
         const registry = store.r[instanceId]
         if(!registry) {
             throw new Error(`No registry found for instanceId=${instanceId}`)
         }
-        const config = registry.getConnectionConfig()
+        const config = JSON.parse(JSON.stringify(registry.config))
+        if(!config) {
+            throw new Error(`Not configuration for instanceId=${instanceId}`)
+        }
+        if (config?.connection) config.connection.password = null
         await stashConnections.set(instanceId, config)
     },
 
@@ -199,6 +203,21 @@ export const api = {
             throw new Error(`No registry found for instanceId=${instanceId}`)
         }
         await stashConnections.del(instanceId)
+    },
+
+    listStoredIslandConfigs: async() => {
+        logger.info(`[listStoredIslandConfigs]`)
+        return await stashConnections.values()
+    },
+
+    cookieStatus: async () => {
+        const resp = await store.r[store.defaultInstanceId].getJson("/status")
+        logger.debug(resp)
+        if (!resp.isOk) {
+            logger.info(`[${store.id}] - cookieStatus failed`, `${resp.result}`)
+            return []
+        }
+        return resp.result
     },
 
     // ________________________________________________________________________________
@@ -357,11 +376,7 @@ export const api = {
         // Create Default Island
         //________________________________________________________________________________
         // Load default island
-        const decoratedIslandConfig = {
-            ...config,
-            SERVER_API_URL: store.serverInfo.serverUrl,
-        }
-        const islandDefault = new IslandDefault(api, decoratedIslandConfig)
+        const islandDefault = new IslandDefault(api, validateAndCleanIslandConfig(config))
         store.r[islandDefault.instanceId] = islandDefault
         await islandDefault.init()
 
@@ -391,6 +406,13 @@ export const api = {
             store.selectedInstId = islandDefault.instanceId
         }
         store.isReady = true
+
+        //________________________________________________________________________________
+        // Register additional islands declared in the config
+        //________________________________________________________________________________
+        for (const islandConfig of (config.islands ?? [])) {
+            await api.registerIsland(validateAndCleanIslandConfig(islandConfig))
+        }
     }
 }
 

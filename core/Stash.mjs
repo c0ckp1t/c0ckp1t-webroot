@@ -56,6 +56,9 @@ export class Stash {
 
     /**
      * List all entries as [key, value] pairs.
+     * i.e, [
+     *      ["admin", { ...config object... }]
+     *  ]
      * @returns {Promise<[string, any][]>}
      */
     async list() {
@@ -68,6 +71,15 @@ export class Stash {
      */
     async keys() {
         return keys(this.#store)
+    }
+
+    /**
+     * Get all keys in the store.
+     * @returns {Promise<any[]>}
+     */
+    async values() {
+        const allEntries = await entries(this.#store)
+        return allEntries.map(([key, value]) => value)
     }
 
     /**

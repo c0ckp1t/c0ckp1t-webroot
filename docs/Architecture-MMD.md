@@ -34,7 +34,7 @@ block-beta
 
   block:browser["Browser"]
     columns 3
-    A["index.html\nImport Map\nConfig.mjs"]
+    A["index.html\nImport Map\nconfig.mjs"]
     B["GlobalStore\n(Orchestrator)"]
     C["Vue 3 App\nVue Router\nPageMain.vue"]
 
@@ -87,7 +87,7 @@ The application starts from `index.html`, which loads CSS, defines the import ma
 ```mermaid
 sequenceDiagram
     participant HTML as index.html
-    participant Config as Config.mjs
+    participant Config as config.mjs
     participant Log as Logging.mjs
     participant GS as GlobalStore
     participant CU as ConfigUtils
@@ -95,9 +95,9 @@ sequenceDiagram
     participant ID as IslandDefault
     participant IS as Island
 
-    HTML->>Config: import { createConfig }
-    Config->>CU: deepMerge(DEFAULTS, overrides)
-    Config-->>HTML: config object
+    HTML->>Config: import config
+    Config->>CU: (imports defaultVueComponents / findHostnamePortProtocol)
+    Config-->>HTML: config object (incl. config.islands)
 
     HTML->>Log: initLogger(config)
     HTML->>GS: api.init("app-default", config)
@@ -110,29 +110,20 @@ sequenceDiagram
     GS->>GS: Register 35+ async components
     GS->>VU: transformRoutes(routes)
     GS->>GS: app.mount("#app-default")
-    deactivate GS
-
-    HTML->>GS: api.registerIsland(ConfigAdmin)
+    GS->>GS: for each config.islands → api.registerIsland(island)
     activate GS
     GS->>IS: import("Island") → new Island(config)
     GS->>IS: island.init() → connect()
     IS-->>GS: Routes + nav tree
     GS->>GS: router.addRoute(islandRoutes)
     deactivate GS
-
-    HTML->>GS: api.registerIsland(ConfigAnonymous)
-    activate GS
-    GS->>IS: new Island(config)
-    GS->>IS: island.init() → connect()
-    IS-->>GS: Routes + nav tree
-    GS->>GS: router.addRoute(islandRoutes)
     deactivate GS
 ```
 
 **Step-by-step:**
 
-1. **`index.html`** loads CSS (Bootstrap, FontAwesome, highlight.js, KaTeX) and defines the import map mapping bare specifiers to local files.
-2. **`Config.mjs`** calls `createConfig()` which deep-merges user overrides with `DEFAULTS` from `ConfigUtils.mjs`.
+1. **`index.html`** loads CSS (Bootstrap, FontAwesome, highlight.js, KaTeX), defines the import map, and imports the single app config from `config.mjs`.
+2. **`config.mjs`** is a single, explicit plain config object (no factory, no merge). It declares all app settings, the inline `root` nav tree and `routes`, `components` (via `defaultVueComponents`), and any extra backends in `config.islands`.
 3. **`Logging.mjs`** initializes `loglevel` with per-module log levels from config.
 4. **`GlobalStore.api.init()`** bootstraps the Vue application:
    - Validates config via `validateAppConfig()`
@@ -141,7 +132,8 @@ sequenceDiagram
    - Registers 35+ reusable components as global async components
    - Transforms route configs into lazy-loaded Vue Router routes
    - Mounts the app to the `#app-default` DOM element
-5. **`api.registerIsland()`** is called for each WebSocket backend:
+   - Registers each island in `config.islands` via `api.registerIsland()`
+5. **`api.registerIsland()`** is called for each WebSocket backend declared in `config.islands`:
    - Dynamically imports the island class (e.g., `Island.mjs`)
    - Creates the island instance and calls `island.init()`
    - The island connects to the server, authenticates, and loads its route/nav tree
@@ -227,7 +219,7 @@ Islands are registered via `api.registerIsland(config)`:
 | Module | File | Purpose |
 |--------|------|---------|
 | **GlobalStore** | `core/GlobalStore.mjs` | Central orchestrator. Creates the Vue app, router, island registry (`store.r`), and provides the public `api` for island registration, routing, and module loading. |
-| **ConfigUtils** | `core/ConfigUtils.mjs` | Configuration backbone. Contains `DEFAULTS`, `validateAppConfig()`, `buildNavTree()`, `buildRoutes()`, `defaultVueComponents()`, and `deepMerge()`. |
+| **ConfigUtils** | `core/ConfigUtils.mjs` | Configuration helpers only: `defaultVueComponents()`, `validateAppConfig()`, and `findHostnamePortProtocol()`. The app config itself is the hand-written `config.mjs`. |
 
 ### SFC Engine
 
@@ -522,7 +514,7 @@ Vue Router is configured in hash mode by default (`createWebHashHistory()`), con
 
 Routes come from three sources:
 
-1. **Default routes** (`ConfigUtils.buildRoutes()`) -- Documentation, connections, cache, traffic, notifies, component showcase, and 404 catch-all.
+1. **Default routes** (the inline `routes` literal in `config.mjs`) -- Documentation, connections, cache, traffic, notifies, component showcase, and 404 catch-all.
 2. **Config routes** (`config.routes`) -- User-defined routes in the application config.
 3. **Island routes** (`api.insertRoutes()`) -- Dynamically added when an island connects and provides its navigation tree from the server.
 
@@ -640,19 +632,13 @@ The top navbar (`PageNavigation.vue`) includes:
 ```mermaid
 graph TD
     HTML["index.html"]
-    CONFIG["Config.mjs"]
-    CA["ConfigAdmin.mjs"]
-    CANON["ConfigAnonymous.mjs"]
+    CONFIG["config.mjs"]
 
     HTML --> CONFIG
-    HTML --> CA
-    HTML --> CANON
     HTML --> LOG["Logging.mjs"]
     HTML --> GS["GlobalStore.mjs"]
 
     CONFIG --> CU["ConfigUtils.mjs"]
-    CA --> CU
-    CANON --> CU
 
     GS --> VU["VueUtils.mjs"]
     GS --> CU
@@ -700,9 +686,8 @@ graph TD
 c0ckp1t-webroot/
 ├── index.html                  # Main entry point (local modules)
 ├── index-cdn.html              # CDN entry point (jsdelivr)
-├── Config.mjs                  # App config factory (createConfig)
-├── ConfigAdmin.mjs             # Admin WebSocket island config
-├── ConfigAnonymous.mjs         # Anonymous WebSocket island config
+├── config.mjs                  # Single app config (edit this; app + islands)
+├── config.default.mjs          # Pristine config template (copy to config.mjs)
 ├── package.json                # npm package (v1.0.19)
 ├── style.css                   # Global styles
 │

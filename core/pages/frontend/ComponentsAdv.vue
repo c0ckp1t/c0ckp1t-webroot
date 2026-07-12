@@ -277,6 +277,13 @@ async function delay() {
       <x-code-slot lang="javascript" title="Random JS Code" :code="`function helloWorld() {\n  console.log('Hello, world!');\n}`" />
     </ComponentView>
 
+
+    <ComponentView name="x-md"  :url="`${local.pathPrefix}/components/xmd.vue`" :defaultExpand="local.defaultExpand">
+
+      <XMd url="/docs/Introduction.md" />
+
+    </ComponentView>
+
     <ComponentView name="x-markdown"  :url="`${local.pathPrefix}/components/xmarkdown.vue`" :defaultExpand="local.defaultExpand">
       <div class="row mb-2">
         <div class="col-auto">

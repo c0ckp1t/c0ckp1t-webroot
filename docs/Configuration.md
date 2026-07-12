@@ -1,6 +1,56 @@
 
 # Configuration 
 
+## The Config File
+
+All application configuration lives in a **single file**: `config.mjs`.
+
+To configure an app:
+
+1. Copy the shipped template: `cp config.default.mjs config.mjs`
+2. Edit `config.mjs` — it contains every option (app settings) plus a
+   `config.islands` array for any extra backends.
+3. `index.html` imports `config.mjs` and passes it to `apiMain.init()`. Islands
+   in `config.islands` are registered automatically by `GlobalStore.init()` — you
+   do not add island wiring to `index.html`.
+
+`config.default.mjs` is the pristine reference and lists every option with its
+value and a comment. It is a **plain object** — no factory, no merge, no hidden
+defaults. What you read is exactly what runs. The nav tree (`root`) and `routes`
+are written inline as static literals built from the `instanceId` / `routePrefix`
+constants at the top of the file. The only thing pulled from the framework is the
+component registry via `defaultVueComponents(componentPrefix)`.
+
+```js
+// config.mjs
+import { defaultVueComponents, findHostnamePortProtocol } from 'ConfigUtils'
+
+const instanceId      = "default"
+const routePrefix     = ""
+const componentPrefix = ""
+const { hostname, protocol, isSecure } = findHostnamePortProtocol()
+
+export default {
+    appName: "My App",
+    instanceId,
+    type: "IslandDefault",
+    appMainComponent: "/core/PageMain.vue",
+    // ...every other option, explicit...
+
+    root:   { icon: "fa-house", depth: 0, endpoint: "/", isLeaf: false, isRoot: true, name: "", path: [], children: [ /* ... */ ] },
+    routes: [ { path: '/', name: 'root', children: [ /* ... */ ] } ],
+    components: defaultVueComponents(componentPrefix),
+
+    islands: [
+        { instanceId: "admin", type: "Island",
+          connection: { hostname, port: 1995, protocol, endpoint: "socket",
+                        username: "root", password: "root", isSecure } },
+    ],
+}
+```
+
+## Required Modules
+
 These core modules are required for the app to run, so they need to be included:
 
 * C0ckp1t Core Modules (required):
@@ -53,7 +103,6 @@ The main page that determines the layout and contains the `<RouterView/>` elemen
 
 `appMainComponent: "https://cdn.jsdelivr.net/npm/c0ckp1t@1.0.14/core/PageMain.vue"`
 
-See [DEFAULTS](https://github.com/c0ckp1t/c0ckp1t-webroot/blob/52eb14195d5d0f9c8d75c96463d696e161599a2d/core/CoreUtils.mjs#L44) for a complete list of all the configuration options. Also see 
-[Config](https://github.com/c0ckp1t/c0ckp1t-webroot/blob/main/Config.mjs) to understand how components and routes are registered.
+See [config.default.mjs](https://github.com/c0ckp1t/c0ckp1t-webroot/blob/main/config.default.mjs) for the complete, commented list of every configuration option. The framework helpers (`defaultVueComponents`, `validateAppConfig`, `findHostnamePortProtocol`) live in [core/ConfigUtils.mjs](https://github.com/c0ckp1t/c0ckp1t-webroot/blob/main/core/ConfigUtils.mjs).
 
 
