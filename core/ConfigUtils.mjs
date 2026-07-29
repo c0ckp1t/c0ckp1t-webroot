@@ -137,6 +137,7 @@ export function validateAppConfig(config) {
  *   "isDev": true,
  *   "WITH_CREDENTIALS": false,
  *   "connection": {  // NULLABLE
+ *     "autoConnect": true,
  *     "readOnly": true,
  *     "hostname": "localhost",
  *     "port": 1995,
@@ -186,6 +187,7 @@ export function validateAndCleanIslandConfig(config) {
 
     const conn = (typeof raw.connection === 'object') ? raw.connection : {}
     cleaned.connection = {
+        autoConnect: typeof conn.readOnly === 'boolean' ? conn.readOnly : true,
         readOnly: typeof conn.readOnly === 'boolean' ? conn.readOnly : true,
         hostname: typeof conn.hostname === 'string' && conn.hostname.trim() !== ''
             ? conn.hostname.trim()

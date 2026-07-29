@@ -531,7 +531,9 @@ export default class Island {
     // init
     // ________________________________________________________________________________
     init = async () => {
-        await this.connect()
+        if(this.config.connection.autoConnect) {
+            await this.connect()
+        }
     }
 
     destroy = async() => {
